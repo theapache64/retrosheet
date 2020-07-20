@@ -1,0 +1,19 @@
+{
+ "added": [
+  {
+   "id": 1,
+   "type": "implementation",
+   "installed_name": "okhttp",
+   "gpm_dep": {
+    "artifact_id": "okhttp",
+    "default_type": "implementation",
+    "docs": "https://square.github.io/okhttp/",
+    "get_from": "maven",
+    "github": "square/okhttp",
+    "group_id": "com.squareup.okhttp3",
+    "name": "OkHttp",
+    "description": "For networking"
+   }
+  }
+ ]
+}

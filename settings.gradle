@@ -1,0 +1,2 @@
+rootProject.name = 'retrosheet-library'
+include 'retrosheet'
