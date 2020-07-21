@@ -1,14 +1,79 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm'
+    id 'maven'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.5'
 }
 
 group 'com.theapache64'
-version 'v1.0.0-alpha01'
+version '1.0.0'
 
 repositories {
     mavenCentral()
 }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "shifarshifz"
+            name "shifarshifz"
+            email "theapache64@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/theapache64/retrosheet"
+    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            groupId 'com.theapache64'
+            artifactId 'retrosheet'
+            version '1.0.0'
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Turn Google Spreadsheet to JSON endpoint (for Android and JVM)')
+                root.appendNode('name', 'retrosheet')
+                root.appendNode('url', 'https://github.com/theapache64/retrosheet')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
@@ -29,4 +94,24 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_API_KEY')
+    publications = ['mavenPublication']
+
+    pkg {
+        repo = 'maven'
+        name = 'retrosheet'
+        userOrg = 'shifarshifz'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/theapache64/retrosheet.git'
+        version {
+            name = '1.0.0'
+            desc = '1.0.0'
+            released = new Date()
+        }
+    }
+
 }
