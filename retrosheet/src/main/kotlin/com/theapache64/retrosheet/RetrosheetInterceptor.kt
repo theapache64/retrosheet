@@ -5,21 +5,19 @@ import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Invocation
-import java.lang.IllegalArgumentException
-import java.lang.NumberFormatException
-import java.lang.StringBuilder
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:33
  */
 class RetrosheetInterceptor : Interceptor {
+
     companion object {
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
         private const val KEY_GROUP_DOC_ID = "docId"
         private const val KEY_GROUP_PAGE_NAME = "pageName"
 
         private val URL_REGEX by lazy {
-            "https:\\/\\/docs\\.google\\.com\\/spreadsheets\\/d\\/(?<docId>.+)\\/(?<pageName>.+)?".toRegex()
+            "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<pageName>.+)?".toRegex()
         }
 
         fun isDouble(field: String): Boolean {
@@ -62,7 +60,6 @@ class RetrosheetInterceptor : Interceptor {
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
 
         val joRoot = convertCsvToJson(csvBody, newRequest).toString(2)
-        println(joRoot)
         return response.newBuilder().body(
             ResponseBody.create(
                 MediaType.parse("application/json"),
@@ -75,6 +72,8 @@ class RetrosheetInterceptor : Interceptor {
         return CsvReader().apply {
             setContainsHeader(true)
         }.parse(csvBody.charStream()).use {
+
+            // Parsing CSV
             val sheetName = newRequest.url().queryParameter("sheet")!!
             val joRoot = JSONObject().apply {
                 val jaItems = JSONArray().apply {
@@ -119,6 +118,9 @@ class RetrosheetInterceptor : Interceptor {
         }
     }
 
+    /**
+     * To modify request with proper URL
+     */
     private fun getModifiedRequest(request: Request): Request {
 
         val url = request.url().toString()
