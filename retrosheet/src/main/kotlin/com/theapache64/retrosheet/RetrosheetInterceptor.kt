@@ -1,16 +1,41 @@
 package com.theapache64.retrosheet
 
-import de.siegmar.fastcsv.reader.CsvReader
+import com.theapache64.retrosheet.core.SmartQueryMapVerifier
+import com.theapache64.retrosheet.core.UrlBuilder
+import com.theapache64.retrosheet.utils.CsvConverter
 import okhttp3.*
-import org.json.JSONArray
-import org.json.JSONObject
-import retrofit2.Invocation
-import java.net.URLEncoder
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:33
  */
-class RetrosheetInterceptor(private val isLoggingEnabled: Boolean = false) : Interceptor {
+class RetrosheetInterceptor
+private constructor(
+    private val isLoggingEnabled: Boolean = false,
+    private val smartQueryMaps: Map<String, Map<String, String>>
+) : Interceptor {
+
+    class Builder {
+        private val smartQueryMaps = mutableMapOf<String, Map<String, String>>()
+        private var isLoggingEnabled: Boolean = false
+
+        fun build(): RetrosheetInterceptor {
+            return RetrosheetInterceptor(
+                isLoggingEnabled,
+                smartQueryMaps
+            )
+        }
+
+        fun setLogging(isLoggingEnabled: Boolean): Builder {
+            this.isLoggingEnabled = isLoggingEnabled
+            return this
+        }
+
+        fun addSmartQueryMap(sheetName: String, smartQueryMap: Map<String, String>): Builder {
+            SmartQueryMapVerifier(smartQueryMap).verify()
+            this.smartQueryMaps[sheetName] = smartQueryMap
+            return this
+        }
+    }
 
     companion object {
         private val TAG = RetrosheetInterceptor::class.java.simpleName
@@ -20,27 +45,6 @@ class RetrosheetInterceptor(private val isLoggingEnabled: Boolean = false) : Int
             "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<pageName>.+)?".toRegex()
         }
 
-        fun isDouble(field: String): Boolean {
-            return try {
-                field.toDouble()
-                true
-            } catch (e: NumberFormatException) {
-                false
-            }
-        }
-
-        fun isInteger(field: String): Boolean {
-            return try {
-                field.toLong()
-                true
-            } catch (e: NumberFormatException) {
-                false
-            }
-        }
-
-        fun isBoolean(field: String): Boolean {
-            return field.equals("true", ignoreCase = true) || field.equals("false", ignoreCase = true)
-        }
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -59,7 +63,7 @@ class RetrosheetInterceptor(private val isLoggingEnabled: Boolean = false) : Int
         val csvBody = response.body()
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
 
-        val joRoot = convertCsvToJson(csvBody, newRequest).toString(2)
+        val joRoot = CsvConverter.convertCsvToJson(csvBody, newRequest).toString(2)
         println("$TAG : GET <--- $joRoot")
         return response.newBuilder().body(
             ResponseBody.create(
@@ -67,56 +71,6 @@ class RetrosheetInterceptor(private val isLoggingEnabled: Boolean = false) : Int
                 joRoot
             )
         ).build()
-    }
-
-    private fun convertCsvToJson(csvBody: ResponseBody, newRequest: Request): JSONObject {
-        return CsvReader().apply {
-            setContainsHeader(true)
-        }.parse(csvBody.charStream()).use {
-
-            // Parsing CSV
-            val sheetName = newRequest.url().queryParameter("sheet")!!
-            val joRoot = JSONObject().apply {
-                val jaItems = JSONArray().apply {
-                    // Loading headers first
-                    while (true) {
-                        val row = it.nextRow() ?: break
-                        val joItem = JSONObject().apply {
-                            for (header in it.header) {
-                                val field = row.getField(header)
-                                when {
-                                    isInteger(
-                                        field
-                                    ) -> {
-                                        put(header, field.toLong())
-                                    }
-
-                                    isBoolean(
-                                        field
-                                    ) -> {
-                                        put(header, field!!.toBoolean())
-                                    }
-
-                                    isDouble(
-                                        field
-                                    ) -> {
-                                        put(header, field.toDouble())
-                                    }
-
-                                    else -> {
-                                        put(header, field)
-                                    }
-                                }
-                            }
-                        }
-                        put(joItem)
-                    }
-                }
-
-                put(sheetName, jaItems)
-            }
-            joRoot
-        }
     }
 
     /**
@@ -137,28 +91,17 @@ class RetrosheetInterceptor(private val isLoggingEnabled: Boolean = false) : Int
             ?: throw IllegalArgumentException("Couldn't find params from URL '$url'. You must specify the page name")
 
         // Creating realUrl
-        val realUrl = StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$pageName")
-        request.tag(Invocation::class.java)?.method()?.getAnnotation(Params::class.java)
-            ?.let { params ->
-                if (params.query.isNotBlank()) {
-                    realUrl.append("&tq=${URLEncoder.encode(params.query, "UTF-8")}")
-                }
-
-                if (params.range.isNotBlank()) {
-                    realUrl.append("&range=${params.range}")
-                }
-
-                if (params.headers != -1) {
-                    realUrl.append("&headers=${params.headers}")
-                }
-            }
-
-        val finalUrl = realUrl.toString()
+        val realUrl = UrlBuilder(
+            request,
+            docId,
+            pageName,
+            smartQueryMaps
+        ).build()
         if (isLoggingEnabled) {
-            println("$TAG : GET --> $finalUrl")
+            println("$TAG : GET --> $realUrl")
         }
         return request.newBuilder()
-            .url(finalUrl)
+            .url(realUrl)
             .build()
     }
 

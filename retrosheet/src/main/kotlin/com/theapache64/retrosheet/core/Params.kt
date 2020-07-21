@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet
+package com.theapache64.retrosheet.core
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 03:08
@@ -9,5 +9,6 @@ package com.theapache64.retrosheet
 annotation class Params(
     val query: String = "",
     val range: String = "",
-    val headers: Int = -1
+    val headers: Int = -1,
+    val smartQuery: String = ""
 )

@@ -11,6 +11,7 @@ group 'com.theapache64'
 version "$versions.retrosheet_version"
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
@@ -88,6 +89,9 @@ dependencies {
 
     // Retrofit : A type-safe HTTP client for Android and Java.
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+
+    // Expekt : An assertion library for Kotlin
+    testImplementation 'com.theapache64:expekt:0.0.1'
 }
 
 compileKotlin {

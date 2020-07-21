@@ -11,9 +11,21 @@ import retrofit2.converter.moshi.MoshiConverterFactory
  */
 fun main() = runBlocking {
 
+    val retrosheetInterceptor = RetrosheetInterceptor.Builder()
+        .setLogging(true)
+        .addSmartQueryMap(
+            "products", mapOf(
+                "id" to "A",
+                "title" to "B",
+                "image_url" to "C",
+                "price" to "D",
+                "quantity" to "E"
+            )
+        )
+        .build()
 
     val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(RetrosheetInterceptor(isLoggingEnabled = true))
+        .addInterceptor(retrosheetInterceptor)
         .build()
 
     val retrofit = Retrofit.Builder()
