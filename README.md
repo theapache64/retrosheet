@@ -70,9 +70,16 @@ Create your response model
 
 Done 👍 Now you can call start calling the API as you'd call normal `Retrofit` or `OkHttp` endpoint
 
+<<<<<<< HEAD
 ## Output 
 
 ![output](output.gif)
+=======
+
+## Output 
+
+![output](https://i.imgur.com/bYAV351.png)
+>>>>>>> 5ac5ec96463f1d94b6cddbac06c5a7656bacd069
 
 ## Author ✍️
 
