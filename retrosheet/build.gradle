@@ -5,9 +5,10 @@ plugins {
     id 'maven-publish'
     id 'com.jfrog.bintray' version '1.8.5'
 }
+apply from: "${rootProject.projectDir}/dependencies.gradle"
 
 group 'com.theapache64'
-version '1.0.1'
+version "$versions.retrosheet_version"
 
 repositories {
     mavenCentral()
@@ -62,7 +63,7 @@ publishing {
             }
             groupId 'com.theapache64'
             artifactId 'retrosheet'
-            version '1.0.1'
+            version "$versions.retrosheet_version"
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Turn Google Spreadsheet to JSON endpoint (for Android and JVM)')
@@ -93,7 +94,7 @@ compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1    .8"
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 bintray {
@@ -108,8 +109,8 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/theapache64/retrosheet.git'
         version {
-            name = '1.0.1'
-            desc = '1.0.1'
+            name = versions.retrosheet_version
+            desc = versions.retrosheet_version
             released = new Date()
         }
     }
