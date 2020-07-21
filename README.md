@@ -74,6 +74,14 @@ Done 👍 Now you can call start calling the API as you'd call normal `Retrofit`
 
 ![output](output.gif)
 
+## Advanced
+
+### @Param
+
+![param](https://i.imgur.com/OHyIwHA.png)
+
+You can use `@Param` annotation to query sheet data.
+
 ## Samples
 
 - [Nemo](https://github.com/theapache64/nemo) - Android App
