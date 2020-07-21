@@ -13,7 +13,7 @@ fun main() = runBlocking {
 
 
     val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(RetrosheetInterceptor())
+        .addInterceptor(RetrosheetInterceptor(isLoggingEnabled = true))
         .build()
 
     val retrofit = Retrofit.Builder()

@@ -5,13 +5,15 @@ import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Invocation
+import java.net.URLEncoder
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:33
  */
-class RetrosheetInterceptor : Interceptor {
+class RetrosheetInterceptor(private val isLoggingEnabled: Boolean = false) : Interceptor {
 
     companion object {
+        private val TAG = RetrosheetInterceptor::class.java.simpleName
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
 
         private val URL_REGEX by lazy {
@@ -58,6 +60,7 @@ class RetrosheetInterceptor : Interceptor {
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
 
         val joRoot = convertCsvToJson(csvBody, newRequest).toString(2)
+        println("$TAG : GET <--- $joRoot")
         return response.newBuilder().body(
             ResponseBody.create(
                 MediaType.parse("application/json"),
@@ -138,7 +141,7 @@ class RetrosheetInterceptor : Interceptor {
         request.tag(Invocation::class.java)?.method()?.getAnnotation(Params::class.java)
             ?.let { params ->
                 if (params.query.isNotBlank()) {
-                    realUrl.append("&tq=${params.query}")
+                    realUrl.append("&tq=${URLEncoder.encode(params.query, "UTF-8")}")
                 }
 
                 if (params.range.isNotBlank()) {
@@ -150,8 +153,12 @@ class RetrosheetInterceptor : Interceptor {
                 }
             }
 
+        val finalUrl = realUrl.toString()
+        if (isLoggingEnabled) {
+            println("$TAG : GET --> $finalUrl")
+        }
         return request.newBuilder()
-            .url(realUrl.toString())
+            .url(finalUrl)
             .build()
     }
 
