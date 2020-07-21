@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.theapache64'
-version '1.0.0'
+version '1.0.1'
 
 repositories {
     mavenCentral()
@@ -62,7 +62,7 @@ publishing {
             }
             groupId 'com.theapache64'
             artifactId 'retrosheet'
-            version '1.0.0'
+            version '1.0.1'
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Turn Google Spreadsheet to JSON endpoint (for Android and JVM)')
@@ -108,8 +108,8 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/theapache64/retrosheet.git'
         version {
-            name = '1.0.0'
-            desc = '1.0.0'
+            name = '1.0.1'
+            desc = '1.0.1'
             released = new Date()
         }
     }

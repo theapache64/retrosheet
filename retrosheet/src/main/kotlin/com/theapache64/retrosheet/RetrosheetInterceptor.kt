@@ -13,8 +13,6 @@ class RetrosheetInterceptor : Interceptor {
 
     companion object {
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
-        private const val KEY_GROUP_DOC_ID = "docId"
-        private const val KEY_GROUP_PAGE_NAME = "pageName"
 
         private val URL_REGEX by lazy {
             "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<pageName>.+)?".toRegex()
@@ -128,11 +126,11 @@ class RetrosheetInterceptor : Interceptor {
             URL_REGEX.find(url) ?: throw IllegalArgumentException("URL '$url' doesn't match with expected RegEx")
 
         // Getting docId from URL
-        val docId = matcher.groups[KEY_GROUP_DOC_ID]?.value
+        val docId = matcher.groups[1]?.value
             ?: throw IllegalArgumentException("Couldn't find docId from URL '$url'")
 
         // Getting page name from URL
-        val pageName = matcher.groups[KEY_GROUP_PAGE_NAME]?.value
+        val pageName = matcher.groups[2]?.value
             ?: throw IllegalArgumentException("Couldn't find params from URL '$url'. You must specify the page name")
 
         // Creating realUrl
