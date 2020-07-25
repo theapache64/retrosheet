@@ -6,6 +6,6 @@ package com.theapache64.retrosheet.core
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION)
 @Retention
-annotation class Query(
+annotation class SheetQuery(
     val query: String
 )

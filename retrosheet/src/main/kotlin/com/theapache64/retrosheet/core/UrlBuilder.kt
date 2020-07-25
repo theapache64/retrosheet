@@ -11,14 +11,17 @@ class UrlBuilder(
     private val request: Request,
     private val docId: String,
     private val sheetName: String,
+    private val params: String,
     private val sheets: Map<String, Map<String, String>>
 ) {
     fun build(): String {
 
+        val paramMap = convertToMap(params)
+
         val realUrlBuilder =
             StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
         var isQueryAdded = false
-        request.tag(Invocation::class.java)?.method()?.getAnnotation(Query::class.java)
+        request.tag(Invocation::class.java)?.method()?.getAnnotation(SheetQuery::class.java)
             ?.let { params ->
 
                 if (params.query.isNotBlank()) {
@@ -27,7 +30,8 @@ class UrlBuilder(
                         ?: throw IllegalArgumentException("Couldn't find smartQueryMap for pageName '$sheetName'")
                     val realQuery = QueryConverter(
                         params.query,
-                        page
+                        page,
+                        paramMap
                     ).convert()
                     realUrlBuilder.append("&tq=${URLEncoder.encode(realQuery, "UTF-8")}")
                     isQueryAdded = true
@@ -35,7 +39,7 @@ class UrlBuilder(
 
             }
 
-        request.tag(Invocation::class.java)?.method()?.getAnnotation(Params::class.java)
+        request.tag(Invocation::class.java)?.method()?.getAnnotation(SheetParams::class.java)
             ?.let { params ->
 
                 if (params.range.isNotBlank()) {
@@ -55,5 +59,23 @@ class UrlBuilder(
 
 
         return realUrlBuilder.toString()
+    }
+
+    private fun convertToMap(params: String): Map<String, String>? {
+        return if (params.contains("?")) {
+            val x = params.substring(params.indexOf('?') + 1)
+            val paramMap = mutableMapOf<String, String>()
+            for (paramPair in x.split("&")) {
+                val paramSplit = paramPair.split("=")
+                if (paramSplit.size >= 2) {
+                    val key = paramSplit[0]
+                    val value = paramPair.substring(key.length + 1)
+                    paramMap[key] = value
+                }
+            }
+            paramMap
+        } else {
+            null
+        }
     }
 }

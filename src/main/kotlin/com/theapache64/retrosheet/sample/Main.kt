@@ -5,7 +5,6 @@ import com.theapache64.retrosheet.RetrosheetInterceptor
 import com.theapache64.retrosheet.core.either.EitherCallAdapterFactory
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
-import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -42,7 +41,7 @@ fun main() = runBlocking {
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)
-    nemoApi.getProducts().run {
+    /*nemoApi.getProducts().run {
         fold({
             println("error : ${it.error?.errors?.first()?.humanMessage}")
         }, {
@@ -56,6 +55,7 @@ fun main() = runBlocking {
         }
     } catch (e: HttpException) {
         println("Failed to get list")
-    }
+    }*/
+    println(nemoApi.getProduct(1))
     Unit
 }

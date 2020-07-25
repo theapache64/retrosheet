@@ -7,7 +7,10 @@ import de.siegmar.fastcsv.reader.CsvReader
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:05
  */
 object CsvConverter {
-    fun convertCsvToJson(csvData: String): String {
+    fun convertCsvToJson(
+        csvData: String,
+        isReturnTypeList: Boolean
+    ): String {
         return CsvReader().apply {
             setContainsHeader(true)
         }.parse(csvData.reader()).use {
@@ -48,9 +51,23 @@ object CsvConverter {
                     add(item)
                 }
             }
-            val type = Types.newParameterizedType(List::class.java, Map::class.java)
-            val adapter = MoshiUtils.moshi.adapter<List<Map<String, Any>>>(type)
-            adapter.toJson(items)
+            when {
+                isReturnTypeList -> {
+                    val type = Types.newParameterizedType(List::class.java, Map::class.java)
+                    val adapter = MoshiUtils.moshi.adapter<List<Map<String, Any>>>(type)
+                    adapter.toJson(items)
+                }
+
+                items.isNotEmpty() -> {
+                    val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
+                    val adapter = MoshiUtils.moshi.adapter<Map<String, Any>>(type)
+                    adapter.toJson(items.first())
+                }
+
+                else -> {
+                    "{}"
+                }
+            }
         }
     }
 

@@ -6,7 +6,7 @@ package com.theapache64.retrosheet.core
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION)
 @Retention
-annotation class Params(
+annotation class SheetParams(
     val rawQuery: String = "",
     val range: String = "",
     val headers: Int = -1

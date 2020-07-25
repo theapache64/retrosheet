@@ -7,6 +7,8 @@ import com.theapache64.retrosheet.utils.CsvConverter
 import com.theapache64.retrosheet.utils.JsonValidator
 import com.theapache64.retrosheet.utils.MoshiUtils
 import okhttp3.*
+import retrofit2.Invocation
+import java.lang.reflect.Method
 import javax.net.ssl.HttpsURLConnection
 
 /**
@@ -23,9 +25,10 @@ private constructor(
         private val TAG = RetrosheetInterceptor::class.java.simpleName
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
         private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
+        private const val SIGNATURE_LIST_START = "(ILkotlin/coroutines/Continuation<-Ljava/util/List<L"
 
         private val URL_REGEX by lazy {
-            "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<sheetName>.+)?".toRegex()
+            "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<params>.+)".toRegex()
         }
 
         private val sheetErrorJsonAdapter by lazy {
@@ -98,7 +101,7 @@ private constructor(
         } else {
 
             // It's the CSV.
-            jsonRoot = CsvConverter.convertCsvToJson(responseBody)
+            jsonRoot = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request))
             if (isLoggingEnabled) {
                 println("$TAG : GET <--- $jsonRoot")
             }
@@ -111,6 +114,14 @@ private constructor(
                 jsonRoot
             )
         ).build()
+    }
+
+    private fun isReturnTypeList(request: Request): Boolean {
+        val method = request.tag(Invocation::class.java)?.method()
+        val f = Method::class.java.getDeclaredField("signature")
+        f.isAccessible = true
+        val signature = f.get(method).toString()
+        return signature.startsWith(SIGNATURE_LIST_START)
     }
 
     /**
@@ -127,16 +138,20 @@ private constructor(
             ?: throw IllegalArgumentException("Couldn't find docId from URL '$url'")
 
         // Getting page name from URL
-        val sheetName = matcher.groups[2]?.value
+        val params = matcher.groups[2]?.value
             ?: throw IllegalArgumentException("Couldn't find params from URL '$url'. You must specify the page name")
+
+        val sheetName = parseSheetName(params)
 
         // Creating realUrl
         val realUrl = UrlBuilder(
             request,
             docId,
             sheetName,
+            params,
             sheets
         ).build()
+
         if (isLoggingEnabled) {
             println("$TAG : GET --> $realUrl")
         }
@@ -145,6 +160,10 @@ private constructor(
             .build()
 
         return Pair(sheetName, csvRequest)
+    }
+
+    private fun parseSheetName(params: String): String {
+        return params.split("?")[0]
     }
 
     private fun isRetrosheetUrl(httpUrl: HttpUrl): Boolean {
