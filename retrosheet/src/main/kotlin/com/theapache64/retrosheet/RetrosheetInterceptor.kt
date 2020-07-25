@@ -4,6 +4,8 @@ import com.theapache64.retrosheet.core.SmartQueryMapVerifier
 import com.theapache64.retrosheet.core.UrlBuilder
 import com.theapache64.retrosheet.utils.CsvConverter
 import okhttp3.*
+import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:33
@@ -13,6 +15,7 @@ private constructor(
     private val isLoggingEnabled: Boolean = false,
     private val smartQueryMaps: Map<String, Map<String, String>>
 ) : Interceptor {
+
 
     class Builder {
         private val smartQueryMaps = mutableMapOf<String, Map<String, String>>()
@@ -40,6 +43,8 @@ private constructor(
     companion object {
         private val TAG = RetrosheetInterceptor::class.java.simpleName
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
+        private const val KEY_DATA = "data"
+        private const val KEY_ERROR = "error"
 
         private val URL_REGEX by lazy {
             "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<pageName>.+)?".toRegex()
@@ -60,15 +65,29 @@ private constructor(
     private fun getResponse(chain: Interceptor.Chain, request: Request): Response {
         val newRequest = getModifiedRequest(request)
         val response = chain.proceed(newRequest)
-        val csvBody = response.body()
+        val responseBody = response.body()?.string()
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
+        val joRoot = JSONObject()
+        try {
+            val errorResponse = JSONObject(responseBody)
+            // error in request
+            joRoot.put(KEY_ERROR, errorResponse)
+        } catch (e: JSONException) {
+            // no error
+            val joData = CsvConverter.convertCsvToJson(responseBody, newRequest)
+            if (isLoggingEnabled) {
+                println("$TAG : GET <--- $joData")
+            }
 
-        val joRoot = CsvConverter.convertCsvToJson(csvBody, newRequest).toString(2)
-        println("$TAG : GET <--- $joRoot")
+            joRoot.put(KEY_DATA, joData)
+        }
+
+        println(joRoot)
+
         return response.newBuilder().body(
             ResponseBody.create(
                 MediaType.parse("application/json"),
-                joRoot
+                joRoot.toString(2)
             )
         ).build()
     }

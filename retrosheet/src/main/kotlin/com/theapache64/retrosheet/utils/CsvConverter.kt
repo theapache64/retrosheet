@@ -2,7 +2,6 @@ package com.theapache64.retrosheet.utils
 
 import de.siegmar.fastcsv.reader.CsvReader
 import okhttp3.Request
-import okhttp3.ResponseBody
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -10,10 +9,10 @@ import org.json.JSONObject
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:05
  */
 object CsvConverter {
-    fun convertCsvToJson(csvBody: ResponseBody, newRequest: Request): JSONObject {
+    fun convertCsvToJson(csvData: String, newRequest: Request): JSONObject {
         return CsvReader().apply {
             setContainsHeader(true)
-        }.parse(csvBody.charStream()).use {
+        }.parse(csvData.reader()).use {
 
             // Parsing CSV
             val sheetName = newRequest.url().queryParameter("sheet")!!

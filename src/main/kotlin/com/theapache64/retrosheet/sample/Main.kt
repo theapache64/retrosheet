@@ -1,6 +1,7 @@
 package com.theapache64.retrosheet.sample
 
 import com.theapache64.retrosheet.RetrosheetInterceptor
+import com.theapache64.retrosheet.sample.core.EitherCallAdapterFactory
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -31,10 +32,21 @@ fun main() = runBlocking {
     val retrofit = Retrofit.Builder()
         .baseUrl("https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/")
         .client(okHttpClient)
+        .addCallAdapterFactory(object : EitherCallAdapterFactory<String>() {
+            override fun parse(): String? {
+                return "Some shit!"
+            }
+        })
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)
-    println("Got ${nemoApi.getProducts().products.size} products")
+    val productsResp = nemoApi.getProducts()
+
+    productsResp.fold({
+        println("Error: ${it.message}")
+    }, {
+        println("Yey!!! Got products! : ${it.size}")
+    })
 
 }
