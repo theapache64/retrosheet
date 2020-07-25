@@ -1,7 +1,8 @@
 package com.theapache64.retrosheet.sample
 
+import com.squareup.moshi.Moshi
 import com.theapache64.retrosheet.RetrosheetInterceptor
-import com.theapache64.retrosheet.sample.core.EitherCallAdapterFactory
+import com.theapache64.retrosheet.core.either.EitherCallAdapterFactory
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -29,24 +30,22 @@ fun main() = runBlocking {
         .addInterceptor(retrosheetInterceptor)
         .build()
 
+
+    val moshi = Moshi.Builder().build()
+
     val retrofit = Retrofit.Builder()
         .baseUrl("https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/")
         .client(okHttpClient)
-        .addCallAdapterFactory(object : EitherCallAdapterFactory<String>() {
-            override fun parse(): String? {
-                return "Some shit!"
-            }
-        })
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addCallAdapterFactory(EitherCallAdapterFactory())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)
-    val productsResp = nemoApi.getProducts()
-
-    productsResp.fold({
-        println("Error: ${it.message}")
-    }, {
-        println("Yey!!! Got products! : ${it.size}")
-    })
-
+    nemoApi.getProducts().run {
+        fold({
+            println("error : ${it.error?.errors?.first()?.humanMessage}")
+        }, {
+            println("yey! $it")
+        })
+    }
 }

@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.sample.core
+package com.theapache64.retrosheet.core.either
 
 import okhttp3.Request
 import retrofit2.Call

@@ -9,53 +9,48 @@ import org.json.JSONObject
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:05
  */
 object CsvConverter {
-    fun convertCsvToJson(csvData: String, newRequest: Request): JSONObject {
+    fun convertCsvToJson(csvData: String, newRequest: Request): JSONArray {
         return CsvReader().apply {
             setContainsHeader(true)
         }.parse(csvData.reader()).use {
 
             // Parsing CSV
-            val sheetName = newRequest.url().queryParameter("sheet")!!
-            val joRoot = JSONObject().apply {
-                val jaItems = JSONArray().apply {
-                    // Loading headers first
-                    while (true) {
-                        val row = it.nextRow() ?: break
-                        val joItem = JSONObject().apply {
-                            for (header in it.header) {
-                                val field = row.getField(header)
-                                when {
-                                    TypeIdentifier.isInteger(
-                                        field
-                                    ) -> {
-                                        put(header, field.toLong())
-                                    }
+            val jaItems = JSONArray().apply {
+                // Loading headers first
+                while (true) {
+                    val row = it.nextRow() ?: break
+                    val joItem = JSONObject().apply {
+                        for (header in it.header) {
+                            val field = row.getField(header)
+                            when {
+                                TypeIdentifier.isInteger(
+                                    field
+                                ) -> {
+                                    put(header, field.toLong())
+                                }
 
-                                    TypeIdentifier.isBoolean(
-                                        field
-                                    ) -> {
-                                        put(header, field!!.toBoolean())
-                                    }
+                                TypeIdentifier.isBoolean(
+                                    field
+                                ) -> {
+                                    put(header, field!!.toBoolean())
+                                }
 
-                                    TypeIdentifier.isDouble(
-                                        field
-                                    ) -> {
-                                        put(header, field.toDouble())
-                                    }
+                                TypeIdentifier.isDouble(
+                                    field
+                                ) -> {
+                                    put(header, field.toDouble())
+                                }
 
-                                    else -> {
-                                        put(header, field)
-                                    }
+                                else -> {
+                                    put(header, field)
                                 }
                             }
                         }
-                        put(joItem)
                     }
+                    put(joItem)
                 }
-
-                put(sheetName, jaItems)
             }
-            joRoot
+            jaItems
         }
     }
 }

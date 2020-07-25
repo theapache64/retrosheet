@@ -1,11 +1,14 @@
-package com.theapache64.retrosheet.sample.core
+package com.theapache64.retrosheet.core.either
 
+import com.squareup.moshi.Moshi
 import okio.Timeout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EitherCall<T>(proxy: Call<T>) : CallDelegate<T, Either<ApiError, T>>(proxy) {
+class EitherCall<T>(
+    proxy: Call<T>
+) : CallDelegate<T, Either<ApiError, T>>(proxy) {
 
     override fun enqueueImpl(callback: Callback<Either<ApiError, T>>) = proxy.enqueue(object : Callback<T> {
 
@@ -15,15 +18,30 @@ class EitherCall<T>(proxy: Call<T>) : CallDelegate<T, Either<ApiError, T>>(proxy
                 val body = response.body()!!
                 Either.right(body)
             } else {
-                val message = response.errorBody()?.string() ?: "Something went wrong"
-                Either.left(ApiError(code, message))
+                val errorJson = response.errorBody()?.string()!!
+                val moshi = Moshi.Builder().build()
+                val adapter = SheetErrorJsonAdapter(moshi)
+                val error = adapter.fromJson(errorJson)
+                Either.left(
+                    ApiError(
+                        code,
+                        "Something utterly went wrong",
+                        error
+                    )
+                )
             }
 
             callback.onResponse(this@EitherCall, Response.success(result))
         }
 
         override fun onFailure(call: Call<T>, t: Throwable) {
-            val result = Either.left(ApiError(-1, t.message ?: "Something went wrong"))
+            val result = Either.left(
+                ApiError(
+                    -1,
+                    t.message ?: "Something went wrong",
+                    null
+                )
+            )
             callback.onResponse(this@EitherCall, Response.success(result))
         }
     })

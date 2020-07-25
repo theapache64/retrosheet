@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.sample.core
+package com.theapache64.retrosheet.core.either
 
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-open class EitherCallAdapterFactory<T> : CallAdapter.Factory() {
+open class EitherCallAdapterFactory : CallAdapter.Factory() {
     override fun get(
         returnType: Type,
         annotations: Array<Annotation>,
@@ -23,9 +23,5 @@ open class EitherCallAdapterFactory<T> : CallAdapter.Factory() {
             }
         }
         else -> null
-    }
-
-    open fun parse(): T? {
-        return null
     }
 }

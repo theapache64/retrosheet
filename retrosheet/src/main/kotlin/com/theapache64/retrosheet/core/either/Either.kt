@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.sample.core
+package com.theapache64.retrosheet.core.either
 
 sealed class Either<out L, out R> {
 

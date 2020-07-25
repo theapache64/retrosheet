@@ -2,10 +2,12 @@ package com.theapache64.retrosheet
 
 import com.theapache64.retrosheet.core.SmartQueryMapVerifier
 import com.theapache64.retrosheet.core.UrlBuilder
+import com.theapache64.retrosheet.core.either.SheetError
 import com.theapache64.retrosheet.utils.CsvConverter
 import okhttp3.*
 import org.json.JSONException
 import org.json.JSONObject
+import javax.net.ssl.HttpsURLConnection
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:33
@@ -43,8 +45,8 @@ private constructor(
     companion object {
         private val TAG = RetrosheetInterceptor::class.java.simpleName
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
-        private const val KEY_DATA = "data"
-        private const val KEY_ERROR = "error"
+        private const val KEY_PAGE_NAME = "page_name"
+        private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
 
         private val URL_REGEX by lazy {
             "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<pageName>.+)?".toRegex()
@@ -64,30 +66,31 @@ private constructor(
 
     private fun getResponse(chain: Interceptor.Chain, request: Request): Response {
         val newRequest = getModifiedRequest(request)
-        val response = chain.proceed(newRequest)
+        val response = chain.proceed(newRequest.second)
         val responseBody = response.body()?.string()
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
-        val joRoot = JSONObject()
+        var jsonResp: String
+        val responseBuilder = response.newBuilder()
         try {
-            val errorResponse = JSONObject(responseBody)
-            // error in request
-            joRoot.put(KEY_ERROR, errorResponse)
+            jsonResp = JSONObject(responseBody).apply {
+                put(KEY_PAGE_NAME, newRequest.first)
+            }.toString(2)
+            responseBuilder
+                .code(HttpsURLConnection.HTTP_BAD_REQUEST)
+                .message(jsonResp)
         } catch (e: JSONException) {
             // no error
-            val joData = CsvConverter.convertCsvToJson(responseBody, newRequest)
+            jsonResp = CsvConverter.convertCsvToJson(responseBody, newRequest.second).toString(2)
             if (isLoggingEnabled) {
-                println("$TAG : GET <--- $joData")
+                println("$TAG : GET <--- $jsonResp")
             }
-
-            joRoot.put(KEY_DATA, joData)
+            responseBuilder.code(HttpsURLConnection.HTTP_OK)
         }
 
-        println(joRoot)
-
-        return response.newBuilder().body(
+        return responseBuilder.body(
             ResponseBody.create(
                 MediaType.parse("application/json"),
-                joRoot.toString(2)
+                jsonResp
             )
         ).build()
     }
@@ -95,7 +98,7 @@ private constructor(
     /**
      * To modify request with proper URL
      */
-    private fun getModifiedRequest(request: Request): Request {
+    private fun getModifiedRequest(request: Request): Pair<String, Request> {
 
         val url = request.url().toString()
         val matcher =
@@ -119,13 +122,52 @@ private constructor(
         if (isLoggingEnabled) {
             println("$TAG : GET --> $realUrl")
         }
-        return request.newBuilder()
+        val csvRequest = request.newBuilder()
             .url(realUrl)
             .build()
+
+        return Pair(pageName, csvRequest)
     }
 
     private fun isRetrosheetUrl(httpUrl: HttpUrl): Boolean {
         val url = httpUrl.toString()
         return url.startsWith(URL_START)
+    }
+
+    /**
+     * Make error more understandable
+     */
+    fun transformError(error: SheetError?): SheetError? {
+        return error?.copy(
+            errors = error.errors.map {
+                it.humanMessage = translateErrorMessage(error.pageName, it.detailedMessage)
+                it
+            }
+        )
+    }
+
+    /**
+     * To translate google sheet error message to more understandable form.
+     */
+    private fun translateErrorMessage(
+        pageName: String,
+        _detailedMessage: String
+    ): String {
+        var detailedMessage = _detailedMessage
+        if (detailedMessage.startsWith(ERROR_NO_COLUMN_START)) {
+            val errorPart = detailedMessage.substring(ERROR_NO_COLUMN_START.length)
+            var modErrorPart = errorPart
+            smartQueryMaps[pageName]?.let { table ->
+                for (entry in table) {
+                    if (modErrorPart.contains(entry.value, ignoreCase = true)) {
+                        modErrorPart = modErrorPart.replace(entry.value, entry.key)
+                        break
+                    }
+                }
+            }
+
+            detailedMessage = ERROR_NO_COLUMN_START + modErrorPart
+        }
+        return detailedMessage
     }
 }
