@@ -7,8 +7,7 @@ package com.theapache64.retrosheet.core
 @Target(AnnotationTarget.FUNCTION)
 @Retention
 annotation class Params(
-    val query: String = "",
+    val rawQuery: String = "",
     val range: String = "",
-    val headers: Int = -1,
-    val smartQuery: String = ""
+    val headers: Int = -1
 )

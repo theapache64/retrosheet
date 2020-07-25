@@ -18,7 +18,7 @@ data class SheetError(
     @Json(name = "version")
     val version: String, // 0.6
     @Json(name = "page_name")
-    var pageName: String? = null // products
+    var sheetName: String? = null // products
 ) {
     @JsonClass(generateAdapter = true)
     data class ErrorNode(

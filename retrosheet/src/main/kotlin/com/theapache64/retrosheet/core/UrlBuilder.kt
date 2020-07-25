@@ -10,40 +10,50 @@ import java.net.URLEncoder
 class UrlBuilder(
     private val request: Request,
     private val docId: String,
-    private val pageName: String,
-    private val smartQueryMaps: Map<String, Map<String, String>>
+    private val sheetName: String,
+    private val sheets: Map<String, Map<String, String>>
 ) {
     fun build(): String {
 
-        val realUrl = StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$pageName")
+        val realUrlBuilder =
+            StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
+        var isQueryAdded = false
+        request.tag(Invocation::class.java)?.method()?.getAnnotation(Query::class.java)
+            ?.let { params ->
+
+                if (params.query.isNotBlank()) {
+                    // has smart query
+                    val page = sheets[sheetName]
+                        ?: throw IllegalArgumentException("Couldn't find smartQueryMap for pageName '$sheetName'")
+                    val realQuery = QueryConverter(
+                        params.query,
+                        page
+                    ).convert()
+                    realUrlBuilder.append("&tq=${URLEncoder.encode(realQuery, "UTF-8")}")
+                    isQueryAdded = true
+                }
+
+            }
+
         request.tag(Invocation::class.java)?.method()?.getAnnotation(Params::class.java)
             ?.let { params ->
 
-                require(params.query.isBlank() || params.smartQuery.isBlank()) {
-                    "query and smartQuery can't be defined at the same time"
-                }
-
-                if (params.query.isNotBlank()) {
-                    realUrl.append("&tq=${URLEncoder.encode(params.query, "UTF-8")}")
-                } else if (params.smartQuery.isNotBlank()) {
-                    // has smart query
-                    val smartQueryMap = smartQueryMaps[pageName]
-                        ?: throw IllegalArgumentException("Couldn't find smartQueryMap for pageName '$pageName'")
-                    val realQuery = QueryConverter(
-                        params.smartQuery,
-                        smartQueryMap
-                    ).convert()
-                    realUrl.append("&tq=${URLEncoder.encode(realQuery, "UTF-8")}")
-                }
-
                 if (params.range.isNotBlank()) {
-                    realUrl.append("&range=${params.range}")
+                    realUrlBuilder.append("&range=${params.range}")
                 }
 
                 if (params.headers != -1) {
-                    realUrl.append("&headers=${params.headers}")
+                    realUrlBuilder.append("&headers=${params.headers}")
+                }
+
+                if (params.rawQuery.isNotBlank()) {
+                    require(!isQueryAdded) { "Both rawQuery and @Query cannot work together" }
+
+                    realUrlBuilder.append("&tq=${URLEncoder.encode(params.rawQuery, "UTF-8")}")
                 }
             }
-        return realUrl.toString()
+
+
+        return realUrlBuilder.toString()
     }
 }

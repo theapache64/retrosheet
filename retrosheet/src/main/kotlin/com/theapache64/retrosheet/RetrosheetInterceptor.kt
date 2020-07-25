@@ -15,7 +15,7 @@ import javax.net.ssl.HttpsURLConnection
 class RetrosheetInterceptor
 private constructor(
     private val isLoggingEnabled: Boolean = false,
-    private val smartQueryMaps: Map<String, Map<String, String>>
+    private val sheets: Map<String, Map<String, String>>
 ) : Interceptor {
 
 
@@ -25,7 +25,7 @@ private constructor(
         private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
 
         private val URL_REGEX by lazy {
-            "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<pageName>.+)?".toRegex()
+            "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<sheetName>.+)?".toRegex()
         }
 
         private val sheetErrorJsonAdapter by lazy {
@@ -35,13 +35,13 @@ private constructor(
     }
 
     class Builder {
-        private val smartQueryMaps = mutableMapOf<String, Map<String, String>>()
+        private val pages = mutableMapOf<String, Map<String, String>>()
         private var isLoggingEnabled: Boolean = false
 
         fun build(): RetrosheetInterceptor {
             return RetrosheetInterceptor(
                 isLoggingEnabled,
-                smartQueryMaps
+                pages
             )
         }
 
@@ -52,7 +52,7 @@ private constructor(
 
         fun addSmartQueryMap(sheetName: String, smartQueryMap: Map<String, String>): Builder {
             SmartQueryMapVerifier(smartQueryMap).verify()
-            this.smartQueryMaps[sheetName] = smartQueryMap
+            this.pages[sheetName] = smartQueryMap
             return this
         }
     }
@@ -82,9 +82,9 @@ private constructor(
 
             // Adding human understandable error
             val sheetError = sheetErrorJsonAdapter.fromJson(responseBody)?.apply {
-                this.pageName = newRequest.first
+                this.sheetName = newRequest.first
                 for (error in errors) {
-                    error.humanMessage = translateErrorMessage(this.pageName!!, error.detailedMessage)
+                    error.humanMessage = translateErrorMessage(this.sheetName!!, error.detailedMessage)
                 }
             }
 
@@ -127,15 +127,15 @@ private constructor(
             ?: throw IllegalArgumentException("Couldn't find docId from URL '$url'")
 
         // Getting page name from URL
-        val pageName = matcher.groups[2]?.value
+        val sheetName = matcher.groups[2]?.value
             ?: throw IllegalArgumentException("Couldn't find params from URL '$url'. You must specify the page name")
 
         // Creating realUrl
         val realUrl = UrlBuilder(
             request,
             docId,
-            pageName,
-            smartQueryMaps
+            sheetName,
+            sheets
         ).build()
         if (isLoggingEnabled) {
             println("$TAG : GET --> $realUrl")
@@ -144,7 +144,7 @@ private constructor(
             .url(realUrl)
             .build()
 
-        return Pair(pageName, csvRequest)
+        return Pair(sheetName, csvRequest)
     }
 
     private fun isRetrosheetUrl(httpUrl: HttpUrl): Boolean {
@@ -157,14 +157,14 @@ private constructor(
      * To translate google sheet error message to more understandable form.
      */
     private fun translateErrorMessage(
-        pageName: String,
+        sheetName: String,
         _detailedMessage: String
     ): String {
         var detailedMessage = _detailedMessage
         if (detailedMessage.startsWith(ERROR_NO_COLUMN_START)) {
             val errorPart = detailedMessage.substring(ERROR_NO_COLUMN_START.length)
             var modErrorPart = errorPart
-            smartQueryMaps[pageName]?.let { table ->
+            sheets[sheetName]?.let { table ->
                 for (entry in table) {
                     if (modErrorPart.contains(entry.value, ignoreCase = true)) {
                         modErrorPart = modErrorPart.replace(entry.value, entry.key)
