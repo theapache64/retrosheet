@@ -7,7 +7,11 @@ import retrofit2.http.GET
 
 interface NemoApi {
 
-    @Params(smartQuery = "SELECT id, title, image_urls")
+    @Params(smartQuery = "SELECT id, title, image_url")
     @GET("products") // sheetName
     suspend fun getProducts(): Either<ApiError, List<Product>>
+
+    @Params(smartQuery = "SELECT id, title, image_url")
+    @GET("products") // sheetName
+    suspend fun getProductsList(): List<Product>
 }

@@ -15,10 +15,10 @@ data class SheetError(
     val reqId: String, // 0
     @Json(name = "status")
     val status: String, // error
-    @Json(name = "page_name")
-    val pageName: String, // products
     @Json(name = "version")
-    val version: String // 0.6
+    val version: String, // 0.6
+    @Json(name = "page_name")
+    var pageName: String? = null // products
 ) {
     @JsonClass(generateAdapter = true)
     data class ErrorNode(

@@ -85,9 +85,6 @@ dependencies {
     // FastCSV : Ultra fast and simple RFC 4180 compliant CSV library.
     implementation 'de.siegmar:fastcsv:1.0.3'
 
-    // license includes this restriction: "The software ...
-    implementation 'org.json:json:20200518'
-
     // Retrofit : A type-safe HTTP client for Android and Java.
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
