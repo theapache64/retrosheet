@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.core.either
+package com.theapache64.retrofit.calladapter.either
 
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -16,8 +16,9 @@ open class EitherCallAdapterFactory : CallAdapter.Factory() {
             val callType = getParameterUpperBound(0, returnType as ParameterizedType)
             when (getRawType(callType)) {
                 Either::class.java -> {
-                    val resultType = getParameterUpperBound(1, callType as ParameterizedType)
-                    EitherAdapter(resultType)
+                    val errorType = getParameterUpperBound(0, callType as ParameterizedType)
+                    val resultType = getParameterUpperBound(1, callType)
+                    EitherAdapter(errorType, resultType)
                 }
                 else -> null
             }

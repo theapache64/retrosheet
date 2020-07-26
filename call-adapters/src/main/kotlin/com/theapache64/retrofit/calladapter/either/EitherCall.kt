@@ -1,23 +1,23 @@
-package com.theapache64.retrosheet.core.either
+package com.theapache64.retrofit.calladapter.either
 
-import com.theapache64.retrosheet.RetrosheetInterceptor.Companion.ERROR_UNKNOWN
-import com.theapache64.retrosheet.utils.MoshiUtils
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okio.Timeout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.reflect.Type
 
 class EitherCall<T>(
+    private val errorType: Type,
     proxy: Call<T>
-) : CallDelegate<T, Either<ApiError, T>>(proxy) {
+) : CallDelegate<T, Either<*, T>>(proxy) {
 
-    companion object {
-        val apiErrorJsonAdapter by lazy {
-            ApiErrorJsonAdapter(MoshiUtils.moshi)
-        }
-    }
+    private val moshi = Moshi.Builder()
+        .add(KotlinJsonAdapterFactory())
+        .build()
 
-    override fun enqueueImpl(callback: Callback<Either<ApiError, T>>) = proxy.enqueue(object : Callback<T> {
+    override fun enqueueImpl(callback: Callback<Either<*, T>>) = proxy.enqueue(object : Callback<T> {
 
         override fun onResponse(call: Call<T>, response: Response<T>) {
             val code = response.code()
@@ -26,7 +26,8 @@ class EitherCall<T>(
                 Either.right(body)
             } else {
                 val errorJson = response.errorBody()?.string()!!
-                val error = apiErrorJsonAdapter.fromJson(errorJson) ?: ApiError(-1, ERROR_UNKNOWN, null)
+                val error = moshi.adapter<Any>(errorType)
+                    .fromJson(errorJson)
                 Either.left(error)
             }
 
@@ -34,17 +35,14 @@ class EitherCall<T>(
         }
 
         override fun onFailure(call: Call<T>, t: Throwable) {
+
             val result = Either.left(
-                ApiError(
-                    -1,
-                    t.message ?: "Something went wrong",
-                    null
-                )
+                null
             )
             callback.onResponse(this@EitherCall, Response.success(result))
         }
     })
 
-    override fun cloneImpl() = EitherCall(proxy.clone())
+    override fun cloneImpl() = EitherCall<T>(errorType, proxy.clone())
     override fun timeout(): Timeout = proxy.timeout()
 }

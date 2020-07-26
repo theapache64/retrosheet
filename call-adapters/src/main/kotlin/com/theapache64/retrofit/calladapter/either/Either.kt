@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.core.either
+package com.theapache64.retrofit.calladapter.either
 
 sealed class Either<out L, out R> {
 

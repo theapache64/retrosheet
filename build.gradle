@@ -36,6 +36,7 @@ dependencies {
 	implementation 'com.squareup.moshi:moshi:1.9.3'
 
     implementation project(':retrosheet')
+    implementation project(':call-adapters')
 }
 
 compileKotlin {
