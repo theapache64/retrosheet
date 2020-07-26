@@ -13,7 +13,6 @@ class QueryConverter(
         // Replacing values
         paramMap?.let {
             for (entry in paramMap.entries) {
-                println(entry)
                 outputQuery = smartQuery.replace(":${entry.key}", entry.value)
             }
         }
@@ -22,7 +21,6 @@ class QueryConverter(
         for (entry in smartQueryMap) {
             outputQuery = outputQuery.replace(entry.key, entry.value)
         }
-        println(outputQuery)
         return outputQuery
     }
 }

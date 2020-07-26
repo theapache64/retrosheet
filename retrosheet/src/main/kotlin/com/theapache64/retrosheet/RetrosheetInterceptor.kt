@@ -1,6 +1,6 @@
 package com.theapache64.retrosheet
 
-import com.theapache64.retrosheet.core.MapVerifier
+import com.theapache64.retrosheet.core.SheetVerifier
 import com.theapache64.retrosheet.core.UrlBuilder
 import com.theapache64.retrosheet.core.either.ApiError
 import com.theapache64.retrosheet.core.either.ApiErrorJsonAdapter
@@ -28,7 +28,7 @@ private constructor(
         private val TAG = RetrosheetInterceptor::class.java.simpleName
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
         private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
-        private const val SIGNATURE_LIST_START = "(ILkotlin/coroutines/Continuation<-Ljava/util/List<L"
+        private const val SIGNATURE_LIST_CONTAINS = "java/util/List"
         const val ERROR_UNKNOWN = "Something went wrong"
 
         private val URL_REGEX by lazy {
@@ -49,19 +49,19 @@ private constructor(
             val f = Method::class.java.getDeclaredField("signature")
             f.isAccessible = true
             val signature = f.get(method).toString()
-            return signature.startsWith(SIGNATURE_LIST_START)
+            return signature.contains(SIGNATURE_LIST_CONTAINS)
         }
 
     }
 
     class Builder {
-        private val pages = mutableMapOf<String, Map<String, String>>()
+        private val sheets = mutableMapOf<String, Map<String, String>>()
         private var isLoggingEnabled: Boolean = false
 
         fun build(): RetrosheetInterceptor {
             return RetrosheetInterceptor(
                 isLoggingEnabled,
-                pages
+                sheets
             )
         }
 
@@ -70,9 +70,9 @@ private constructor(
             return this
         }
 
-        fun addSmartQueryMap(sheetName: String, smartQueryMap: Map<String, String>): Builder {
-            MapVerifier(smartQueryMap).verify()
-            this.pages[sheetName] = smartQueryMap
+        fun addSheet(sheetName: String, columnMap: Map<String, String>): Builder {
+            SheetVerifier(columnMap).verify()
+            this.sheets[sheetName] = columnMap
             return this
         }
     }

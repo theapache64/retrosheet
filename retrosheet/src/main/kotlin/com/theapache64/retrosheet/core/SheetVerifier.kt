@@ -3,7 +3,7 @@ package com.theapache64.retrosheet.core
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 23:01
  */
-class MapVerifier(
+class SheetVerifier(
     private val map: Map<String, String>
 ) {
     companion object {

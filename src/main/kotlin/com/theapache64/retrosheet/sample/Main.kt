@@ -2,7 +2,8 @@ package com.theapache64.retrosheet.sample
 
 import com.squareup.moshi.Moshi
 import com.theapache64.retrosheet.RetrosheetInterceptor
-import com.theapache64.retrosheet.core.either.EitherCallAdapterFactory
+import com.theapache64.retrosheet.sample.flow.FlowResourceCallAdapterFactory
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -14,8 +15,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 fun main() = runBlocking {
 
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()
-        .setLogging(true)
-        .addSmartQueryMap(
+        .setLogging(false)
+        .addSheet(
             "products", mapOf(
                 "id" to "A",
                 "title" to "B",
@@ -36,26 +37,25 @@ fun main() = runBlocking {
     val retrofit = Retrofit.Builder()
         .baseUrl("https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/")
         .client(okHttpClient)
-        .addCallAdapterFactory(EitherCallAdapterFactory())
+        .addCallAdapterFactory(FlowResourceCallAdapterFactory())
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)
-    /*nemoApi.getProducts().run {
-        fold({
-            println("error : ${it.error?.errors?.first()?.humanMessage}")
-        }, {
-            println("yey! $it")
-        })
+
+    nemoApi.getProducts().collect {
+        when (it) {
+            is Resource.Loading -> {
+                println("Loading products...")
+            }
+            is Resource.Success -> {
+                println("Got products... ${it.data}")
+            }
+            is Resource.Error -> {
+                println("Failed to get products : ${it.message}")
+            }
+        }
     }
 
-    try {
-        nemoApi.getProductsList().apply {
-            println("List is $this")
-        }
-    } catch (e: HttpException) {
-        println("Failed to get list")
-    }*/
-    println(nemoApi.getProduct(3))
     Unit
 }
