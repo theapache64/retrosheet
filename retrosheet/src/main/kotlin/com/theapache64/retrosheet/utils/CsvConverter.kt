@@ -10,7 +10,7 @@ object CsvConverter {
     fun convertCsvToJson(
         csvData: String,
         isReturnTypeList: Boolean
-    ): String {
+    ): String? {
         return CsvReader().apply {
             setContainsHeader(true)
         }.parse(csvData.reader()).use {
@@ -65,7 +65,7 @@ object CsvConverter {
                 }
 
                 else -> {
-                    "{}"
+                    null
                 }
             }
         }

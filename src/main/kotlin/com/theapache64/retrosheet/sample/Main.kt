@@ -56,6 +56,6 @@ fun main() = runBlocking {
     } catch (e: HttpException) {
         println("Failed to get list")
     }*/
-    println(nemoApi.getProduct(1))
+    println(nemoApi.getProduct(3))
     Unit
 }

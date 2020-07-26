@@ -18,11 +18,5 @@ interface NemoApi {
     @GET("products")
     suspend fun getProduct(
         @Query("id") id: Int
-    ): Product
-
-    @GET("products")
-    suspend fun getProducts(): List<Product>
-
-    @GET("product")
-    suspend fun getProduct(): Product
+    ): Product?
 }

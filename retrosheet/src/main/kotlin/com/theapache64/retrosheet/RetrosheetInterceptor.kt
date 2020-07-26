@@ -1,7 +1,9 @@
 package com.theapache64.retrosheet
 
-import com.theapache64.retrosheet.core.SmartQueryMapVerifier
+import com.theapache64.retrosheet.core.MapVerifier
 import com.theapache64.retrosheet.core.UrlBuilder
+import com.theapache64.retrosheet.core.either.ApiError
+import com.theapache64.retrosheet.core.either.ApiErrorJsonAdapter
 import com.theapache64.retrosheet.core.either.SheetErrorJsonAdapter
 import com.theapache64.retrosheet.utils.CsvConverter
 import com.theapache64.retrosheet.utils.JsonValidator
@@ -9,6 +11,7 @@ import com.theapache64.retrosheet.utils.MoshiUtils
 import okhttp3.*
 import retrofit2.Invocation
 import java.lang.reflect.Method
+import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
 
 /**
@@ -26,6 +29,7 @@ private constructor(
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
         private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
         private const val SIGNATURE_LIST_START = "(ILkotlin/coroutines/Continuation<-Ljava/util/List<L"
+        const val ERROR_UNKNOWN = "Something went wrong"
 
         private val URL_REGEX by lazy {
             "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<params>.+)".toRegex()
@@ -33,6 +37,19 @@ private constructor(
 
         private val sheetErrorJsonAdapter by lazy {
             SheetErrorJsonAdapter(MoshiUtils.moshi)
+        }
+
+        private val apiErrorJsonAdapter by lazy {
+            ApiErrorJsonAdapter(MoshiUtils.moshi)
+        }
+
+
+        private fun isReturnTypeList(request: Request): Boolean {
+            val method = request.tag(Invocation::class.java)?.method()
+            val f = Method::class.java.getDeclaredField("signature")
+            f.isAccessible = true
+            val signature = f.get(method).toString()
+            return signature.startsWith(SIGNATURE_LIST_START)
         }
 
     }
@@ -54,7 +71,7 @@ private constructor(
         }
 
         fun addSmartQueryMap(sheetName: String, smartQueryMap: Map<String, String>): Builder {
-            SmartQueryMapVerifier(smartQueryMap).verify()
+            MapVerifier(smartQueryMap).verify()
             this.pages[sheetName] = smartQueryMap
             return this
         }
@@ -92,7 +109,13 @@ private constructor(
             }
 
             // Converting back to JSON
-            jsonRoot = sheetErrorJsonAdapter.toJson(sheetError)
+            val apiError = ApiError(
+                HttpURLConnection.HTTP_BAD_REQUEST,
+                sheetError?.errors?.firstOrNull()?.humanMessage ?: ERROR_UNKNOWN,
+                sheetError
+            )
+
+            jsonRoot = apiErrorJsonAdapter.toJson(apiError)
 
             // Telling it's an error
             responseBuilder
@@ -101,11 +124,26 @@ private constructor(
         } else {
 
             // It's the CSV.
-            jsonRoot = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request))
-            if (isLoggingEnabled) {
-                println("$TAG : GET <--- $jsonRoot")
+            val csvJson = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request))
+            if (csvJson != null) {
+                jsonRoot = csvJson
+                if (isLoggingEnabled) {
+                    println("$TAG : GET <--- $jsonRoot")
+                }
+                responseBuilder.code(HttpsURLConnection.HTTP_OK)
+            } else {
+                // no data
+                jsonRoot = apiErrorJsonAdapter.toJson(
+                    ApiError(
+                        HttpURLConnection.HTTP_NOT_FOUND,
+                        "No data found",
+                        null
+                    )
+                )
+                responseBuilder
+                    .code(HttpURLConnection.HTTP_NOT_FOUND)
+                    .message("No data found")
             }
-            responseBuilder.code(HttpsURLConnection.HTTP_OK)
         }
 
         return responseBuilder.body(
@@ -114,14 +152,6 @@ private constructor(
                 jsonRoot
             )
         ).build()
-    }
-
-    private fun isReturnTypeList(request: Request): Boolean {
-        val method = request.tag(Invocation::class.java)?.method()
-        val f = Method::class.java.getDeclaredField("signature")
-        f.isAccessible = true
-        val signature = f.get(method).toString()
-        return signature.startsWith(SIGNATURE_LIST_START)
     }
 
     /**
@@ -179,9 +209,10 @@ private constructor(
         sheetName: String,
         _detailedMessage: String
     ): String {
-        var detailedMessage = _detailedMessage
-        if (detailedMessage.startsWith(ERROR_NO_COLUMN_START)) {
-            val errorPart = detailedMessage.substring(ERROR_NO_COLUMN_START.length)
+        var humanMessage = _detailedMessage
+        if (humanMessage.startsWith(ERROR_NO_COLUMN_START)) {
+            // It's a wrong column problem. Now find the column name and
+            val errorPart = humanMessage.substring(ERROR_NO_COLUMN_START.length)
             var modErrorPart = errorPart
             sheets[sheetName]?.let { table ->
                 for (entry in table) {
@@ -192,8 +223,8 @@ private constructor(
                 }
             }
 
-            detailedMessage = ERROR_NO_COLUMN_START + modErrorPart
+            humanMessage = ERROR_NO_COLUMN_START + modErrorPart
         }
-        return detailedMessage
+        return humanMessage
     }
 }
