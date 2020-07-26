@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.sample
+package com.theapache64.retrofit.calladapter.flow
 
 /**
  * Created by theapache64 : Jul 26 Sun,2020 @ 13:22
@@ -13,6 +13,6 @@ sealed class Resource<T> {
     ) : Resource<T>()
 
     data class Error<T>(
-        val message: Throwable
+        val errorData: String
     ) : Resource<T>()
 }

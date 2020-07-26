@@ -1,7 +1,6 @@
-package com.theapache64.retrosheet.sample.flow
+package com.theapache64.retrofit.calladapter.flow
 
 
-import com.theapache64.retrosheet.sample.Resource
 import kotlinx.coroutines.flow.Flow
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory
@@ -25,6 +24,9 @@ class FlowResourceCallAdapterFactory(
         require(rawObservableType == Resource::class.java) { "type must be a resource" }
         require(observableType is ParameterizedType) { "resource must be parameterized" }
         val bodyType = getParameterUpperBound(0, observableType)
-        return FlowResourceCallAdapter<Any>(bodyType, isSelfExceptionHandling)
+        return FlowResourceCallAdapter<Any>(
+            bodyType,
+            isSelfExceptionHandling
+        )
     }
 }

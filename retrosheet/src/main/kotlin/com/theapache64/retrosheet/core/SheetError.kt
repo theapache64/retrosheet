@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.core.either
+package com.theapache64.retrosheet.core
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

@@ -1,0 +1,60 @@
+{
+  "added": [
+    {
+      "id": 1,
+      "type": "implementation",
+      "installed_name": "retrofit",
+      "gpm_dep": {
+        "artifact_id": "retrofit",
+        "default_type": "implementation",
+        "docs": "https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit",
+        "get_from": "Central",
+        "group_id": "com.squareup.retrofit2",
+        "name": "Retrofit",
+        "description": "A type-safe HTTP client for Android and Java."
+      }
+    },
+    {
+      "id": 2,
+      "type": "implementation",
+      "installed_name": "moshi",
+      "gpm_dep": {
+        "artifact_id": "moshi",
+        "default_type": "implementation",
+        "docs": "https://mvnrepository.com/artifact/com.squareup.moshi/moshi",
+        "get_from": "Central",
+        "group_id": "com.squareup.moshi",
+        "name": "Moshi",
+        "description": "Moshi"
+      }
+    },
+    {
+      "id": 3,
+      "type": "implementation",
+      "installed_name": "moshi-kotlin",
+      "gpm_dep": {
+        "artifact_id": "moshi-kotlin",
+        "default_type": "implementation",
+        "docs": "https://mvnrepository.com/artifact/com.squareup.moshi/moshi-kotlin",
+        "get_from": "Central",
+        "group_id": "com.squareup.moshi",
+        "name": "Moshi Kotlin",
+        "description": "Moshi Kotlin"
+      }
+    },
+    {
+      "id": 4,
+      "type": "implementation",
+      "installed_name": "coroutines",
+      "gpm_dep": {
+        "artifact_id": "kotlinx-coroutines-core",
+        "default_type": "implementation",
+        "docs": "https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core",
+        "get_from": "Central",
+        "group_id": "org.jetbrains.kotlinx",
+        "name": "Kotlinx Coroutines Core",
+        "description": "Coroutines support libraries for Kotlin"
+      }
+    }
+  ]
+}

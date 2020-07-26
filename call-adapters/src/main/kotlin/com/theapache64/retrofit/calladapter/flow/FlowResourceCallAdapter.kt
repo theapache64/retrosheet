@@ -1,6 +1,7 @@
-package com.theapache64.retrosheet.sample.flow
+package com.theapache64.retrofit.calladapter.flow
 
-import com.theapache64.retrosheet.sample.Resource
+import com.theapache64.retrofit.calladapter.flow.Resource.Error
+import com.theapache64.retrofit.calladapter.flow.Resource.Success
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -31,17 +32,22 @@ class FlowResourceCallAdapter<R>(
 
         if (resp.isSuccessful) {
             resp.body()?.let { data ->
-                emit(Resource.Success(null, data))
+                // Success
+                emit(Success(null, data))
             } ?: kotlin.run {
-                emit(Resource.Error(Throwable("Response can't be null")))
+                // Error
+                emit(Error("Response can't be null"))
             }
         } else {
-            emit(Resource.Error(Throwable(resp.message())))
+            // Error
+            println("Hit!")
+            val errorBody = resp.message()
+            emit(Error(errorBody))
         }
 
-    }.catch { error ->
+    }.catch { error: Throwable ->
         if (isSelfExceptionHandling) {
-            emit(Resource.Error(error))
+            emit(Error(error.message ?: "Something went wrong"))
         } else {
             throw error
         }

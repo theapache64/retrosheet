@@ -2,9 +2,8 @@ package com.theapache64.retrosheet.sample
 
 import com.squareup.moshi.Moshi
 import com.theapache64.retrofit.calladapter.either.EitherCallAdapterFactory
+import com.theapache64.retrofit.calladapter.flow.FlowResourceCallAdapterFactory
 import com.theapache64.retrosheet.RetrosheetInterceptor
-import com.theapache64.retrosheet.sample.flow.FlowResourceCallAdapterFactory
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -45,7 +44,7 @@ fun main() = runBlocking {
 
     val nemoApi = retrofit.create(NemoApi::class.java)
 
-    nemoApi.getProductsFlow().collect {
+    /*nemoApi.getProducts().collect {
         when (it) {
             is Resource.Loading -> {
                 println("Loading products...")
@@ -54,11 +53,11 @@ fun main() = runBlocking {
                 println("Got products... ${it.data}")
             }
             is Resource.Error -> {
-                println("Failed to get products : ${it.message}")
+                println("Failed to get products : ${it.errorData}")
             }
         }
-    }
+    }*/
 
-    // println(nemoApi.getProducts())
+    println(nemoApi.getProducts())
     Unit
 }

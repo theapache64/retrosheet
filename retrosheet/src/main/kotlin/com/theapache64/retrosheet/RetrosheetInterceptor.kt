@@ -1,10 +1,6 @@
 package com.theapache64.retrosheet
 
-import com.theapache64.retrosheet.core.SheetVerifier
-import com.theapache64.retrosheet.core.UrlBuilder
-import com.theapache64.retrosheet.core.either.ApiError
-import com.theapache64.retrosheet.core.either.ApiErrorJsonAdapter
-import com.theapache64.retrosheet.core.either.SheetErrorJsonAdapter
+import com.theapache64.retrosheet.core.*
 import com.theapache64.retrosheet.utils.CsvConverter
 import com.theapache64.retrosheet.utils.JsonValidator
 import com.theapache64.retrosheet.utils.MoshiUtils
@@ -29,6 +25,8 @@ private constructor(
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
         private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
         private const val SIGNATURE_LIST_CONTAINS = "java/util/List"
+        private const val PACKAGE_LIST_CONTAINS = "java.util.List"
+        private const val TYPE_OBJECT = "class java.lang.Object"
         const val ERROR_UNKNOWN = "Something went wrong"
 
         private val URL_REGEX by lazy {
@@ -46,10 +44,21 @@ private constructor(
 
         private fun isReturnTypeList(request: Request): Boolean {
             val method = request.tag(Invocation::class.java)?.method()
-            val f = Method::class.java.getDeclaredField("signature")
-            f.isAccessible = true
-            val signature = f.get(method).toString()
-            return signature.contains(SIGNATURE_LIST_CONTAINS)
+            val genericReturnType = method?.genericReturnType?.toString()
+            return if (genericReturnType != null && genericReturnType != TYPE_OBJECT) {
+                genericReturnType.contains(PACKAGE_LIST_CONTAINS)
+            } else {
+                // go for hard reflection
+                try {
+                    val f = Method::class.java.getDeclaredField("signature")
+                    f.isAccessible = true
+                    val signature = f.get(method).toString()
+                    signature.contains(SIGNATURE_LIST_CONTAINS)
+                } catch (e: NoSuchFieldException) {
+                    false
+                }
+            }
+
         }
 
     }
@@ -120,7 +129,7 @@ private constructor(
             // Telling it's an error
             responseBuilder
                 .code(HttpsURLConnection.HTTP_BAD_REQUEST)
-                .message(jsonRoot)
+                .message(apiError.message)
         } else {
 
             // It's the CSV.
