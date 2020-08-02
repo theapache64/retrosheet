@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.sample
+package com.theapache64.retrosheet.sample.nemo
 
 import com.theapache64.retrosheet.core.SheetQuery
 import retrofit2.http.GET

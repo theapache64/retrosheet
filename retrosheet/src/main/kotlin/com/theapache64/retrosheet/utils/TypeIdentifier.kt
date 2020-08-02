@@ -25,4 +25,8 @@ object TypeIdentifier {
     fun isBoolean(field: String): Boolean {
         return field.equals("true", ignoreCase = true) || field.equals("false", ignoreCase = true)
     }
+
+    fun isNumber(value: String): Boolean {
+        return isDouble(value)
+    }
 }

@@ -1,9 +1,10 @@
-package com.theapache64.retrosheet.sample
+package com.theapache64.retrosheet.sample.heads
 
 import com.squareup.moshi.Moshi
 import com.theapache64.retrofit.calladapter.either.EitherCallAdapterFactory
 import com.theapache64.retrofit.calladapter.flow.FlowResourceCallAdapterFactory
 import com.theapache64.retrosheet.RetrosheetInterceptor
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -17,13 +18,8 @@ fun main() = runBlocking {
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()
         .setLogging(false)
         .addSheet(
-            "products", mapOf(
-                "id" to "A",
-                "title" to "B",
-                "image_url" to "C",
-                "price" to "D",
-                "quantity" to "E"
-            )
+            "users",
+            "id", "username", "password", "api_key"
         )
         .build()
 
@@ -35,29 +31,17 @@ fun main() = runBlocking {
     val moshi = Moshi.Builder().build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/")
+        .baseUrl("https://docs.google.com/spreadsheets/d/1zah1fltkf-kKvu1K3dTn6ODsFxKYFshTxssNw8ehRdY/")
         .client(okHttpClient)
         .addCallAdapterFactory(EitherCallAdapterFactory())
         .addCallAdapterFactory(FlowResourceCallAdapterFactory())
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
-    val nemoApi = retrofit.create(NemoApi::class.java)
-
-    /*nemoApi.getProducts().collect {
-        when (it) {
-            is Resource.Loading -> {
-                println("Loading products...")
-            }
-            is Resource.Success -> {
-                println("Got products... ${it.data}")
-            }
-            is Resource.Error -> {
-                println("Failed to get products : ${it.errorData}")
-            }
+    val headsApi = retrofit.create(HeadsApi::class.java)
+    headsApi.login("john", "12345").run {
+        collect {
+            println(it)
         }
-    }*/
-
-    println(nemoApi.getProducts())
-    Unit
+    }
 }

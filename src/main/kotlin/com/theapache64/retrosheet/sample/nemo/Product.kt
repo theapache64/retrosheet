@@ -1,4 +1,4 @@
-package com.theapache64.retrosheet.sample
+package com.theapache64.retrosheet.sample.nemo
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

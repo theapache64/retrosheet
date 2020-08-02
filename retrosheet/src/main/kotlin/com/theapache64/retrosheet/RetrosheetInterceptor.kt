@@ -4,6 +4,7 @@ import com.theapache64.retrosheet.core.*
 import com.theapache64.retrosheet.utils.CsvConverter
 import com.theapache64.retrosheet.utils.JsonValidator
 import com.theapache64.retrosheet.utils.MoshiUtils
+import com.theapache64.retrosheet.utils.SheetUtils
 import okhttp3.*
 import retrofit2.Invocation
 import java.lang.reflect.Method
@@ -83,6 +84,16 @@ private constructor(
             SheetVerifier(columnMap).verify()
             this.sheets[sheetName] = columnMap
             return this
+        }
+
+        /**
+         * Columns should be in order
+         */
+        fun addSheet(sheetName: String, vararg columns: String): Builder {
+            return addSheet(
+                sheetName,
+                SheetUtils.toLetterMap(*columns)
+            )
         }
     }
 

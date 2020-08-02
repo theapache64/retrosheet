@@ -1,5 +1,7 @@
 package com.theapache64.retrosheet.core
 
+import com.theapache64.retrosheet.utils.TypeIdentifier
+
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 22:37
  */
@@ -10,10 +12,13 @@ class QueryConverter(
 ) {
     fun convert(): String {
         var outputQuery = smartQuery
+        println("Before:  $smartQuery")
         // Replacing values
         paramMap?.let {
             for (entry in paramMap.entries) {
-                outputQuery = smartQuery.replace(":${entry.key}", entry.value)
+                val value = sanitizeValue(entry.value)
+                outputQuery = outputQuery.replace(":${entry.key}", value)
+                println("-> $outputQuery")
             }
         }
 
@@ -21,6 +26,15 @@ class QueryConverter(
         for (entry in smartQueryMap) {
             outputQuery = outputQuery.replace(entry.key, entry.value)
         }
+        println("After: $outputQuery")
         return outputQuery
+    }
+
+    private fun sanitizeValue(value: String): String {
+        return if (TypeIdentifier.isNumber(value)) {
+            value
+        } else {
+            "'$value'"
+        }
     }
 }
