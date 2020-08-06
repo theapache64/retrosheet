@@ -111,6 +111,20 @@
     "name": "Expekt",
     "description": "An assertion library for Kotlin"
    }
+  },
+  {
+   "id": 9,
+   "type": "implementation",
+   "installed_name": "materialratingbar",
+   "gpm_dep": {
+    "artifact_id": "library",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/me.zhanghai.android.materialratingbar/library",
+    "get_from": "Central",
+    "group_id": "me.zhanghai.android.materialratingbar",
+    "name": "MaterialRatingBar Library",
+    "description": "A Material Design RatingBar with consistent appearance"
+   }
   }
  ]
 }

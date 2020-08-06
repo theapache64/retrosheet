@@ -4,7 +4,7 @@ plugins {
     id "org.jetbrains.kotlin.kapt" version "1.3.72"
 }
 
-allprojects{
+allprojects {
     apply from: "${rootProject.projectDir}/dependencies.gradle"
     repositories {
         mavenCentral()
@@ -20,20 +20,20 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-	// Retrofit : A type-safe HTTP client for Android and Java.
-	implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    // Retrofit : A type-safe HTTP client for Android and Java.
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
-	// Converter: Moshi : A Retrofit Converter which uses Moshi for serialization.
-	implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    // Converter: Moshi : A Retrofit Converter which uses Moshi for serialization.
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
-	// Kotlinx Coroutines Core : Coroutines support libraries for Kotlin
-	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8'
+    // Kotlinx Coroutines Core : Coroutines support libraries for Kotlin
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8'
 
-	// Moshi Kotlin Codegen : Moshi Kotlin Codegen
-	kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.3'
+    // Moshi Kotlin Codegen : Moshi Kotlin Codegen
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.3'
 
-	// Moshi : Moshi
-	implementation 'com.squareup.moshi:moshi:1.9.3'
+    // Moshi : Moshi
+    implementation 'com.squareup.moshi:moshi:1.9.3'
 
     implementation project(':retrosheet')
     implementation project(':call-adapters')

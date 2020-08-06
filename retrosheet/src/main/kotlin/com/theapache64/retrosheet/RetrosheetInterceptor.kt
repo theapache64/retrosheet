@@ -7,6 +7,7 @@ import com.theapache64.retrosheet.utils.MoshiUtils
 import com.theapache64.retrosheet.utils.SheetUtils
 import okhttp3.*
 import retrofit2.Invocation
+import retrofit2.http.POST
 import java.lang.reflect.Method
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
@@ -66,6 +67,7 @@ private constructor(
 
     class Builder {
         private val sheets = mutableMapOf<String, Map<String, String>>()
+        private val forms = mutableMapOf<String, String>()
         private var isLoggingEnabled: Boolean = false
 
         fun build(): RetrosheetInterceptor {
@@ -95,26 +97,54 @@ private constructor(
                 SheetUtils.toLetterMap(*columns)
             )
         }
+
+        fun addForm(endPoint: String, formLink: String): Builder {
+            forms[endPoint] = formLink
+            return this
+        }
     }
 
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        return if (isRetrosheetUrl(request.url())) {
-            getResponse(chain, request)
-        } else {
-            chain.proceed(request)
+        return when {
+
+            isGoogleFormSubmit(request) -> {
+                getFormResponse(request)
+            }
+
+            isRetrosheetUrl(request.url()) -> {
+                getRetrosheetResponse(chain, request)
+            }
+            else -> {
+                chain.proceed(request)
+            }
         }
     }
 
-    private fun getResponse(chain: Interceptor.Chain, request: Request): Response {
+    private fun getFormResponse(request: Request): Response {
+        TODO("Not yet implemented")
+    }
+
+    private fun isGoogleFormSubmit(request: Request): Boolean {
+        val isForm = (request.tag(Invocation::class.java)?.method()?.getAnnotation(Form::class.java) != null)
+        val requestMethod = request.method()
+        if (isForm && requestMethod != "POST") {
+            throw IllegalArgumentException("@Form should be always @POST, found @$requestMethod")
+        }
+        return isForm
+    }
+
+    private fun getRetrosheetResponse(chain: Interceptor.Chain, request: Request): Response {
         val newRequest = getModifiedRequest(request)
         val response = chain.proceed(newRequest.second)
         val responseBody = response.body()?.string()
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
         val jsonRoot: String
         val responseBuilder = response.newBuilder()
+
+        println(responseBody)
 
         // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
         if (JsonValidator.isValidJsonObject(responseBody)) {

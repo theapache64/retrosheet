@@ -12,6 +12,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:11
  */
+const val POST_PLACE_ORDER = "place_order"
 fun main() = runBlocking {
 
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()
@@ -24,6 +25,10 @@ fun main() = runBlocking {
                 "price" to "D",
                 "quantity" to "E"
             )
+        )
+        .addForm(
+            POST_PLACE_ORDER,
+            "https://docs.google.com/forms/d/e/1FAIpQLSdPirYGvRLEOB-8osOxnapXZjUBgOcmTIH9J37qOOx_No2ULg/viewform?usp=sf_link"
         )
         .build()
 
@@ -43,21 +48,26 @@ fun main() = runBlocking {
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)
-
-    /*nemoApi.getProducts().collect {
-        when (it) {
-            is Resource.Loading -> {
-                println("Loading products...")
-            }
-            is Resource.Success -> {
-                println("Got products... ${it.data}")
-            }
-            is Resource.Error -> {
-                println("Failed to get products : ${it.errorData}")
-            }
-        }
-    }*/
-
     println(nemoApi.getProducts())
+
+    // Adding sample order
+    println("Placing order...")
+    println(
+        "Order:  ${nemoApi.placeOrder(
+            Order(
+                "Shifar",
+                "Shifar's Villa, 677325",
+                """
+                    Product 1 - Quantity : 2 - Price : 200
+                    Product 2 - Quantity : 4 - Price : 400
+                """.trimIndent(),
+                """
+                    txnId : 7654534834568345
+                    txnFrom : theapache64@ybl
+                """.trimIndent(),
+                600
+            )
+        )}"
+    )
     Unit
 }
