@@ -1,5 +1,6 @@
 package com.theapache64.retrosheet
 
+import com.squareup.moshi.Types
 import com.theapache64.retrosheet.core.*
 import com.theapache64.retrosheet.utils.CsvConverter
 import com.theapache64.retrosheet.utils.JsonValidator
@@ -7,7 +8,6 @@ import com.theapache64.retrosheet.utils.MoshiUtils
 import com.theapache64.retrosheet.utils.SheetUtils
 import okhttp3.*
 import retrofit2.Invocation
-import retrofit2.http.POST
 import java.lang.reflect.Method
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
@@ -17,8 +17,9 @@ import javax.net.ssl.HttpsURLConnection
  */
 class RetrosheetInterceptor
 private constructor(
-    private val isLoggingEnabled: Boolean = false,
-    private val sheets: Map<String, Map<String, String>>
+    val isLoggingEnabled: Boolean = false,
+    private val sheets: Map<String, Map<String, String>>,
+    val forms: Map<String, String>
 ) : Interceptor {
 
 
@@ -73,7 +74,8 @@ private constructor(
         fun build(): RetrosheetInterceptor {
             return RetrosheetInterceptor(
                 isLoggingEnabled,
-                sheets
+                sheets,
+                forms
             )
         }
 
@@ -99,6 +101,9 @@ private constructor(
         }
 
         fun addForm(endPoint: String, formLink: String): Builder {
+            if (endPoint.contains('/')) {
+                throw java.lang.IllegalArgumentException("Form endPoint name cannot contains '/'. Found '$endPoint'")
+            }
             forms[endPoint] = formLink
             return this
         }
@@ -110,31 +115,21 @@ private constructor(
 
         return when {
 
-            isGoogleFormSubmit(request) -> {
-                getFormResponse(request)
+            GoogleFormHelper.isGoogleFormSubmit(request) -> {
+                GoogleFormHelper(chain, request, this)
+                    .getFormResponse()
             }
 
             isRetrosheetUrl(request.url()) -> {
                 getRetrosheetResponse(chain, request)
             }
+
             else -> {
                 chain.proceed(request)
             }
         }
     }
 
-    private fun getFormResponse(request: Request): Response {
-        TODO("Not yet implemented")
-    }
-
-    private fun isGoogleFormSubmit(request: Request): Boolean {
-        val isForm = (request.tag(Invocation::class.java)?.method()?.getAnnotation(Form::class.java) != null)
-        val requestMethod = request.method()
-        if (isForm && requestMethod != "POST") {
-            throw IllegalArgumentException("@Form should be always @POST, found @$requestMethod")
-        }
-        return isForm
-    }
 
     private fun getRetrosheetResponse(chain: Interceptor.Chain, request: Request): Response {
         val newRequest = getModifiedRequest(request)

@@ -7,6 +7,7 @@ import com.squareup.moshi.Moshi
  */
 object MoshiUtils {
     val moshi by lazy {
-        Moshi.Builder().build()
+        Moshi.Builder()
+            .build()
     }
 }
