@@ -21,7 +21,7 @@ class UrlBuilder(
         val realUrlBuilder =
             StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
         var isQueryAdded = false
-        request.tag(Invocation::class.java)?.method()?.getAnnotation(SheetQuery::class.java)
+        request.tag(Invocation::class.java)?.method()?.getAnnotation(Read::class.java)
             ?.let { params ->
 
                 if (params.query.isNotBlank()) {

@@ -1,18 +1,20 @@
 package com.theapache64.retrosheet.sample.nemo
 
-import com.theapache64.retrosheet.core.Form
-import com.theapache64.retrosheet.core.SheetQuery
+import com.theapache64.retrofit.calladapter.flow.Resource
+import com.theapache64.retrosheet.core.Write
+import com.theapache64.retrosheet.core.Read
+import kotlinx.coroutines.flow.Flow
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface NemoApi {
 
-    @SheetQuery("SELECT id, title, image_url")
+    @Read("SELECT id, title, image_url")
     @GET("products") // sheetName
     suspend fun getProducts(): List<Product>
 
-    @Form
+    @Write
     @POST(POST_PLACE_ORDER)
-    suspend fun placeOrder(@Body order: Order): Order
+    fun placeOrder(@Body order: Order): Flow<Resource<Order>>
 }

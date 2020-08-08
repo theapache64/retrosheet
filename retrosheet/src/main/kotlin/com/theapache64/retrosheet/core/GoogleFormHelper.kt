@@ -41,10 +41,10 @@ class GoogleFormHelper(
         }
 
         fun isGoogleFormSubmit(request: Request): Boolean {
-            val isForm = (request.tag(Invocation::class.java)?.method()?.getAnnotation(Form::class.java) != null)
+            val isForm = (request.tag(Invocation::class.java)?.method()?.getAnnotation(Write::class.java) != null)
             val requestMethod = request.method()
             if (isForm && requestMethod != "POST") {
-                throw IllegalArgumentException("@Form should be always @POST, found @$requestMethod")
+                throw IllegalArgumentException("@Write should be always @POST, found @$requestMethod")
             }
             return isForm
         }

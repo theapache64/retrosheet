@@ -6,4 +6,4 @@ package com.theapache64.retrosheet.core
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION)
 @Retention
-annotation class Form
+annotation class Write
