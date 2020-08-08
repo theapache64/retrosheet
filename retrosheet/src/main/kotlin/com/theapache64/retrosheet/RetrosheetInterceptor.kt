@@ -139,7 +139,6 @@ private constructor(
         val jsonRoot: String
         val responseBuilder = response.newBuilder()
 
-        println(responseBody)
 
         // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
         if (JsonValidator.isValidJsonObject(responseBody)) {

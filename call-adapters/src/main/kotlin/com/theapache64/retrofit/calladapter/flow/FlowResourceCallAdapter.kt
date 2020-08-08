@@ -40,7 +40,6 @@ class FlowResourceCallAdapter<R>(
             }
         } else {
             // Error
-            println("Hit!")
             val errorBody = resp.message()
             emit(Error(errorBody))
         }

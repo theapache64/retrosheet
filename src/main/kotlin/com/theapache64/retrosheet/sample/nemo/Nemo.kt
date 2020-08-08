@@ -52,7 +52,6 @@ fun main() = runBlocking {
     // println(nemoApi.getProducts())
 
     // Adding sample order
-    println("Placing order...")
     val placeOrder = nemoApi.placeOrder(
         Order(
             "Shifar",
