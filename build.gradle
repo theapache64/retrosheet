@@ -35,6 +35,9 @@ dependencies {
     // Moshi : Moshi
     implementation 'com.squareup.moshi:moshi:1.9.3'
 
+    // Converter: Scalars : A Retrofit Converter for Java's scalar value types.
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+
     implementation project(':retrosheet')
     implementation project(':call-adapters')
 }

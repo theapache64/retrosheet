@@ -125,6 +125,20 @@
     "name": "MaterialRatingBar Library",
     "description": "A Material Design RatingBar with consistent appearance"
    }
+  },
+  {
+   "id": 10,
+   "type": "implementation",
+   "installed_name": "scalars-converter",
+   "gpm_dep": {
+    "artifact_id": "converter-scalars",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-scalars",
+    "get_from": "Central",
+    "group_id": "com.squareup.retrofit2",
+    "name": "Converter: Scalars",
+    "description": "A Retrofit Converter for Java's scalar value types."
+   }
   }
  ]
 }
