@@ -4,6 +4,7 @@ import com.squareup.moshi.Moshi
 import com.theapache64.retrofit.calladapter.either.EitherCallAdapterFactory
 import com.theapache64.retrofit.calladapter.flow.FlowResourceCallAdapterFactory
 import com.theapache64.retrosheet.RetrosheetInterceptor
+import com.theapache64.retrosheet.sample.notes.NotesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
