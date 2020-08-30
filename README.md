@@ -93,7 +93,8 @@ You can use `@Param` annotation to query sheet data.
 
 ## Samples
 
-- [Nemo](https://github.com/theapache64/nemo) - Android App
+- [Notes](https://github.com/theapache64/notes) - Android App : Simple note taking app, with add and list feature
+- [Nemo](https://github.com/theapache64/nemo) - Android App :  E-Commerce App
 - [JVM Sample](https://github.com/theapache64/retrosheet/blob/master/src/main/kotlin/com/theapache64/retrosheet/sample/Main.kt) - CLI App
 
 ## TODO ☑️
