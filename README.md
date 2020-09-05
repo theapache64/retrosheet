@@ -15,24 +15,92 @@ any significant code change.
 ## Install 🤝 
 
 ```groovy
-    implementation 'com.theapache64:retrosheet:1.0.2'
+    implementation 'com.theapache64:retrosheet:1.2.0'
 ```
 
 ## Usage ⌨️ 
 
-### Step 1
+#### Step 1 : Writing Data To Sheet
 
-- [Create](https://docs.google.com/spreadsheets/u/0/create?usp=sheets_web) a Google spreadsheet and add your data
+- [Create a Google Form](https://docs.google.com/forms/u/0/) with some fields
+![](https://i.imgur.com/9PeK2EQ.png)
 
-![data](https://i.imgur.com/3Y114g8.png)
+#### Step 2
 
-### Step 2
+- Select response destination and select/create a Google sheet to store the responses.
+![](https://i.imgur.com/fIzWiN5.png)
+![](https://i.imgur.com/7ASAB55.png)
+
+#### Step 3
+
+- Now you can open the sheet and change sheet name and column names if you want. 
+ This is just to make the Google sheet table look like a real database table (optional)
+
+I've changed
+![](https://i.imgur.com/keT8P1o.png)
+to 
+![](https://i.imgur.com/N6xfuZK.png)
+
+#### Step 4
+
+- Next, Press the `Send` button and copy the form link
+
+![](https://i.imgur.com/veATAn5.png)
+
+#### Step 5
+
+- Now let's go to our code and create our `RetrosheetInterceptor`
+
+```kotlin
+val retrosheetInterceptor = RetrosheetInterceptor.Builder()
+    .setLogging(false)
+    // To Read
+    .addSheet(
+        "notes", // sheet name
+        "created_at", "title", "description" // columns in same order
+    )
+    // To write
+    .addForm(
+        ADD_NOTE_ENDPOINT,
+        "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
+    )
+    .build()
+```
+#### Step 6
+
+- Next, let's create a normal Retrofit API interface
+
+```kotlin
+interface NotesApi {
+
+    @Read("SELECT *") 
+    @GET("notes") // sheet name
+    suspend fun getNotes(): List<Note>
+
+    @Write
+    @POST(ADD_NOTE_ENDPOINT) // form name
+    suspend fun addNote(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
+}
+```
+
+- **@Write** : To write data to a sheet
+
+- **@Read** : To read data from a sheet.
+
+You can lean more about query language from here : https://developers.google.com/chart/interactive/docs/querylanguage.
+
+**NOTE**: You can use your column name in the query rather than using column letter such as `A,B,C` etc.
+
+#### Step 7 : Reading data from Sheet
+
+- We're done configuring the writing part. Now let's finish the reading part. Create/open a google sheet, (it can be either
+form connected, or a simple Google sheet).
 
 - Press **Share** and copy the link
 
 ![copy-link](https://i.imgur.com/MNYD7mg.png)
 
-### Step 3
+### Step 8
 
 - Remove contents after the last forward slash from the copied link.
 
@@ -46,56 +114,77 @@ would become this
 https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/
 ```
 
-### Step 4
+### Step 9
 
-- Set the `Retrofit` or `OkHttp`'s `baseUrl` with the above link.
+- Finally, Set the `Retrofit` or `OkHttp`'s `baseUrl` with the above link.
 
 ![baseUrl](https://i.imgur.com/tFMNEC4.png)
 
 
-### Step 5
+Done 👍 
 
-- Add `RetrosheetInterceptor` to your `OkHttpClient`
+## Full Example
 
-![interceptor](https://i.imgur.com/5Jrh0Rx.png)
+```kotlin
+import com.squareup.moshi.Moshi
+import com.theapache64.retrosheet.RetrosheetInterceptor
+import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+
+/**
+ * Created by theapache64 : Jul 21 Tue,2020 @ 02:11
+ */
+const val ADD_NOTE_ENDPOINT = "add_note"
+fun main() = runBlocking {
+
+    val retrosheetInterceptor = RetrosheetInterceptor.Builder()
+        .setLogging(false)
+        // To Read
+        .addSheet(
+            "notes", // sheet name
+            "created_at", "title", "description" // columns in same order
+        )
+        // To write
+        .addForm(
+            ADD_NOTE_ENDPOINT,
+            "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
+        )
+        .build()
+
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(retrosheetInterceptor)
+        .build()
 
 
-### Step 6
+    val moshi = Moshi.Builder().build()
 
-- Create your interface method with `pageName` as endpoint.
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/") // Sheet's public URL
+        .client(okHttpClient)
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .build()
 
-![method](https://i.imgur.com/QF8cFVT.png)
+    val notesApi = retrofit.create(NotesApi::class.java)
+    println(notesApi.getNotes())
 
-`pageName` is your sheet's pageName
+    // Adding sample order
+    val addNote = notesApi.addNote(
+        AddNoteRequest("Dynamic Note 1", "Dynamic Desc 1")
+    )
 
-![pageName](https://i.imgur.com/qCHDdtI.png)
+    println(addNote)
+    Unit
+}
+```
 
-
-### Step 7 - Final Step
-
-- Create your response model
-
-![response](https://user-images.githubusercontent.com/9678279/88100193-d7e94a00-cbb9-11ea-9969-9da9f71905aa.png)
-
-Done 👍 Now you can call start calling the API as you'd call normal `Retrofit` or `OkHttp` endpoint
- 
-## Output 💚
-
-![output](output.gif)
-
-## Advanced
-
-### @Param
-
-![param](https://i.imgur.com/OHyIwHA.png)
-
-You can use `@Param` annotation to query sheet data.
 
 ## Samples
-
-- [Notes](https://github.com/theapache64/notes) - Android App : Simple note taking app, with add and list feature
+- [Notes - JVM](https://github.com/theapache64/retrosheet/blob/master/src/main/kotlin/com/theapache64/retrosheet/sample/notes/Notes.kt) - README Example 👆
+- [Notes - Android](https://github.com/theapache64/notes) - Android App : Simple note taking app, with add and list feature
 - [Nemo](https://github.com/theapache64/nemo) - Android App :  E-Commerce App
-- [JVM Sample](https://github.com/theapache64/retrosheet/blob/master/src/main/kotlin/com/theapache64/retrosheet/sample/Main.kt) - CLI App
+- [More JVM Samples](https://github.com/theapache64/retrosheet/tree/master/src/main/kotlin/com/theapache64/retrosheet/sample) 
 
 ## TODO ☑️
 

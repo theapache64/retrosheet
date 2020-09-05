@@ -11,10 +11,10 @@ import retrofit2.http.POST
 interface NotesApi {
 
     @Read("SELECT *")
-    @GET("notes")
-    fun getNotes(): Flow<Resource<List<Note>>>
+    @GET("notes") // sheet name
+    suspend fun getNotes(): List<Note>
 
     @Write
-    @POST(ADD_NOTE_ENDPOINT)
-    fun addNote(@Body addNoteRequest: AddNoteRequest): Flow<Resource<AddNoteRequest>>
+    @POST(ADD_NOTE_ENDPOINT) // form name
+    suspend fun addNote(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
 }
