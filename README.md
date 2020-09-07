@@ -1,7 +1,7 @@
 # retrosheet 📄
 Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
 
-![](https://i.imgur.com/LYqPOcu.png)
+![](demo.png)
 
 ## Benefits
 
@@ -15,7 +15,7 @@ any significant code change.
 ## Install 🤝 
 
 ```groovy
-    implementation 'com.theapache64:retrosheet:1.2.0'
+    implementation 'com.theapache64:retrosheet:1.2.1'
 ```
 
 ## Usage ⌨️ 

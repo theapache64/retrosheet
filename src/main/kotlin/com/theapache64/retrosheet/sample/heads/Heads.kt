@@ -16,7 +16,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 fun main() = runBlocking {
 
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()
-        .setLogging(false)
+        .setLogging(true)
         .addSheet(
             "users",
             "id", "username", "password", "api_key"
