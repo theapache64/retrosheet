@@ -33,7 +33,7 @@ class UrlBuilder(
                         page,
                         paramMap
                     ).convert()
-                    realUrlBuilder.append("&tq=${URLEncoder.encode(realQuery, "UTF-8")}")
+                    realUrlBuilder.append("&tq=$realQuery")
                     isQueryAdded = true
                 }
 

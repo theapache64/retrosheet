@@ -18,15 +18,10 @@ const val POST_PLACE_ORDER = "place_order"
 fun main() = runBlocking {
 
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()
-        .setLogging(false)
+        .setLogging(true)
         .addSheet(
-            "products", mapOf(
-                "id" to "A",
-                "title" to "B",
-                "image_url" to "C",
-                "price" to "D",
-                "quantity" to "E"
-            )
+            "products",
+            "id", "category_name", "title", "image_url", "is_out_of_stock", "rating", "price"
         )
         .addForm(
             POST_PLACE_ORDER,
@@ -50,7 +45,7 @@ fun main() = runBlocking {
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)
-    // println(nemoApi.getProducts())
+    println(nemoApi.getProducts("Category 2"))
 
     // Adding sample order
     val placeOrder = nemoApi.placeOrder(

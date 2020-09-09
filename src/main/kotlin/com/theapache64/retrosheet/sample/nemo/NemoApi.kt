@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface NemoApi {
 
-    @Read("SELECT id, title, image_url")
-    @GET("products") // sheetName
-    suspend fun getProducts(): List<Product>
+    @Read("SELECT * WHERE category_name = :category_name")
+    @GET("products")
+    suspend fun getProducts(
+        @Query("category_name") categoryName: String
+    ): List<Product>
 
     @Write
     @POST(POST_PLACE_ORDER)
