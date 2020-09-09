@@ -1,7 +1,8 @@
 # retrosheet 📄
 Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
 
-![](demo.png)
+![https://github.com/theapache64/notes](demo.png)
+
 
 ## Benefits
 
