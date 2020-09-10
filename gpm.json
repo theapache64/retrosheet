@@ -139,6 +139,20 @@
     "name": "Converter: Scalars",
     "description": "A Retrofit Converter for Java's scalar value types."
    }
+  },
+  {
+   "id": 11,
+   "type": "implementation",
+   "installed_name": "okhttp-interceptor",
+   "gpm_dep": {
+    "artifact_id": "logging-interceptor",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/com.squareup.okhttp3/logging-interceptor",
+    "get_from": "Central",
+    "group_id": "com.squareup.okhttp3",
+    "name": "OkHttp Logging Interceptor",
+    "description": "Square’s meticulous HTTP client for Java and Kotlin."
+   }
   }
  ]
 }

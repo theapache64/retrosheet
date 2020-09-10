@@ -40,6 +40,10 @@ dependencies {
 
     implementation project(':retrosheet')
     implementation project(':call-adapters')
+
+
+    // OkHttp Logging Interceptor : Square’s meticulous HTTP client for Java and Kotlin.
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.8.1'
 }
 
 compileKotlin {
