@@ -2,10 +2,7 @@ package com.theapache64.retrosheet
 
 import com.squareup.moshi.Types
 import com.theapache64.retrosheet.core.*
-import com.theapache64.retrosheet.utils.CsvConverter
-import com.theapache64.retrosheet.utils.JsonValidator
-import com.theapache64.retrosheet.utils.MoshiUtils
-import com.theapache64.retrosheet.utils.SheetUtils
+import com.theapache64.retrosheet.utils.*
 import okhttp3.*
 import retrofit2.Invocation
 import java.lang.reflect.Method
@@ -134,7 +131,7 @@ private constructor(
     private fun getRetrosheetResponse(chain: Interceptor.Chain, request: Request): Response {
         val newRequest = getModifiedRequest(request)
         val response = chain.proceed(newRequest.second)
-        val responseBody = response.body()?.string()
+        var responseBody = response.body()?.string()
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
         val jsonRoot: String
         val responseBuilder = response.newBuilder()
@@ -168,6 +165,16 @@ private constructor(
         } else {
 
             // It's the CSV.
+
+            // Check if it's a KeyValue pair body
+            val isKeyValue = request.tag(Invocation::class.java)?.method()?.getAnnotation(KeyValue::class.java) != null
+            if (isKeyValue) {
+                if (isLoggingEnabled) {
+                    println("$TAG : Transforming body to KeyValue")
+                }
+                responseBody = KeyValueUtils.transform(responseBody)
+            }
+
             val csvJson = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request))
             if (csvJson != null) {
                 jsonRoot = csvJson
