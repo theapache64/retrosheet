@@ -1,6 +1,7 @@
 package com.theapache64.retrosheet.sample.nemo
 
 import com.theapache64.retrofit.calladapter.flow.Resource
+import com.theapache64.retrosheet.core.KeyValue
 import com.theapache64.retrosheet.core.Write
 import com.theapache64.retrosheet.core.Read
 import kotlinx.coroutines.flow.Flow
@@ -20,4 +21,9 @@ interface NemoApi {
     @Write
     @POST(POST_PLACE_ORDER)
     fun placeOrder(@Body order: Order): Flow<Resource<Order>>
+
+    @KeyValue
+    @GET("config")
+    suspend fun getConfig(): Config
+
 }
