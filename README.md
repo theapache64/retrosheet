@@ -16,7 +16,7 @@ any significant code change.
 ## Install 🤝 
 
 ```groovy
-    implementation 'com.theapache64:retrosheet:1.2.1'
+    implementation 'com.theapache64:retrosheet:1.2.2'
 ```
 
 ## Usage ⌨️ 

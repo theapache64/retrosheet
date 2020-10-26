@@ -17,7 +17,5 @@ data class Config(
     @Json(name = "delivery_charge")
     val deliveryCharge: Int,
     @Json(name = "total_pages")
-    val totalPages: Int, // 4
-    @Json(name = "something")
-    val something: String
+    val totalPages: Int // 4
 )

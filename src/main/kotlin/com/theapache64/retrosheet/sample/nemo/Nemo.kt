@@ -45,7 +45,7 @@ fun main() = runBlocking {
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)
-  /*  println(nemoApi.getProducts("Category 2"))
+    println(nemoApi.getProducts("Category 2"))
 
     // Adding sample order
     val placeOrder = nemoApi.placeOrder(
@@ -66,7 +66,7 @@ fun main() = runBlocking {
 
     placeOrder.collect {
         println(it)
-    }*/
+    }
 
     // Key Value Config
     println("Config-> ${nemoApi.getConfig()}")
