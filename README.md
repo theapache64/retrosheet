@@ -4,7 +4,7 @@ Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
 ![https://github.com/theapache64/notes](demo.png)
 
 
-## Benefits
+## Benefits 🤗
 
 - Since you're using Google's server, you don't have to worry about server health.
 - Rapid response and unlimited bandwidth
@@ -124,7 +124,7 @@ https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcns
 
 Done 👍 
 
-## Full Example
+## Full Example 🌟
 
 ```kotlin
 import com.squareup.moshi.Moshi
@@ -181,7 +181,8 @@ fun main() = runBlocking {
 ```
 
 
-## Samples
+## Samples 🌠
+
 - [Notes - JVM](https://github.com/theapache64/retrosheet/blob/master/src/main/kotlin/com/theapache64/retrosheet/sample/notes/Notes.kt) - README Example 👆
 - [Notes - Android](https://github.com/theapache64/notes) - Android App : Simple note taking app, with add and list feature
 - [Nemo](https://github.com/theapache64/nemo) - Android App :  E-Commerce App
