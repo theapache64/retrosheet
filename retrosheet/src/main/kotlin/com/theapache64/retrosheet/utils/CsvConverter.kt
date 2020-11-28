@@ -16,11 +16,11 @@ object CsvConverter {
         }.parse(csvData.reader()).use {
 
             // Parsing CSV
-            val items = mutableListOf<Map<String, Any>>().apply {
+            val items = mutableListOf<Map<String, Any?>>().apply {
                 // Loading headers first
                 while (true) {
                     val row = it.nextRow() ?: break
-                    val item = mutableMapOf<String, Any>().apply {
+                    val item = mutableMapOf<String, Any?>().apply {
                         for (header in it.header) {
                             val field = row.getField(header)
                             when {
@@ -43,7 +43,12 @@ object CsvConverter {
                                 }
 
                                 else -> {
-                                    put(header, field)
+                                    val finalValue = if(field.isNullOrBlank()){
+                                        null
+                                    }else{
+                                        field
+                                    }
+                                    put(header, finalValue)
                                 }
                             }
                         }
@@ -54,13 +59,13 @@ object CsvConverter {
             when {
                 isReturnTypeList -> {
                     val type = Types.newParameterizedType(List::class.java, Map::class.java)
-                    val adapter = MoshiUtils.moshi.adapter<List<Map<String, Any>>>(type)
+                    val adapter = MoshiUtils.moshi.adapter<List<Map<String, Any?>>>(type)
                     adapter.toJson(items)
                 }
 
                 items.isNotEmpty() -> {
                     val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
-                    val adapter = MoshiUtils.moshi.adapter<Map<String, Any>>(type)
+                    val adapter = MoshiUtils.moshi.adapter<Map<String, Any?>>(type)
                     adapter.toJson(items.first())
                 }
 
