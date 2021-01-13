@@ -20,7 +20,9 @@ any significant code change.
 ```
 
 ## Usage ⌨️ 
-g
+
+### How to write data ? ✍️
+
 #### Step 1 : Writing Data To Sheet
 
 - [Create a Google Form](https://docs.google.com/forms/u/0/) with some fields
@@ -91,6 +93,8 @@ interface NotesApi {
 You can lean more about query language from here : https://developers.google.com/chart/interactive/docs/querylanguage.
 
 **NOTE**: You can use your column name in the query rather than using column letter such as `A,B,C` etc.
+
+### How to read data ? 📖
 
 #### Step 7 : Reading data from Sheet
 
