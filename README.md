@@ -16,11 +16,11 @@ any significant code change.
 ## Install 🤝 
 
 ```groovy
-    implementation 'com.theapache64:retrosheet:1.2.2'
+    implementation 'com.theapache64:retrosheet:1.2.3'
 ```
 
 ## Usage ⌨️ 
-
+g
 #### Step 1 : Writing Data To Sheet
 
 - [Create a Google Form](https://docs.google.com/forms/u/0/) with some fields
