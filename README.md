@@ -149,9 +149,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:11
  */
-const val ADD_NOTE_ENDPOINT = "add_note"
 fun main() = runBlocking {
-
+  
+    // Building Retrosheet Interceptor
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()
         .setLogging(false)
         // To Read
@@ -161,32 +161,38 @@ fun main() = runBlocking {
         )
         // To write
         .addForm(
-            ADD_NOTE_ENDPOINT,
+            "add_note",
             "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
         )
         .build()
 
+    // Building OkHttpClient 
     val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(retrosheetInterceptor)
+        .addInterceptor(retrosheetInterceptor) // and attaching interceptor
         .build()
 
 
     val moshi = Moshi.Builder().build()
 
+    // Building retrofit client
     val retrofit = Retrofit.Builder()
+        // with baseUrl as sheet's public URL    
         .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/") // Sheet's public URL
+        // and attach previously created OkHttpClient
         .client(okHttpClient)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
 
+    // Now create the API interface
     val notesApi = retrofit.create(NotesApi::class.java)
+  
+    // Reading notes
     println(notesApi.getNotes())
 
-    // Adding sample order
+    // Adding note
     val addNote = notesApi.addNote(
         AddNoteRequest("Dynamic Note 1", "Dynamic Desc 1")
     )
-
     println(addNote)
     Unit
 }
