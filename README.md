@@ -16,9 +16,15 @@ Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
 ## Install 🤝
 
 ```groovy
-    implementation 'com.theapache64:retrosheet:1.2.3'
-```
 
+repositories {
+  maven { url 'https://jitpack.io' } // Add jitpack
+}
+
+dependencies {
+  implementation 'com.github.theapache64:retrosheet:latest.version'
+}
+```
 ## Usage ⌨️
 
 ### How to write data ? ✍️
