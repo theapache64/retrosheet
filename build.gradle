@@ -12,7 +12,7 @@ allprojects {
 }
 
 
-group 'com.theapache64'
+group 'com.github.theapache64'
 version "$versions.retrosheet_version"
 
 

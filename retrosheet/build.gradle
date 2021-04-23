@@ -3,16 +3,14 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
     id 'maven'
     id 'maven-publish'
-    id 'com.jfrog.bintray' version '1.8.5'
     id "org.jetbrains.kotlin.kapt"
 }
 apply from: "${rootProject.projectDir}/dependencies.gradle"
 
-group 'com.theapache64'
+group 'com.github.theapache64'
 version "$versions.retrosheet_version"
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -103,24 +101,4 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_API_KEY')
-    publications = ['mavenPublication']
-
-    pkg {
-        repo = 'maven'
-        name = 'retrosheet'
-        userOrg = 'shifarshifz'
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/theapache64/retrosheet.git'
-        version {
-            name = versions.retrosheet_version
-            desc = versions.retrosheet_version
-            released = new Date()
-        }
-    }
-
 }

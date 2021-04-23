@@ -1,5 +1,6 @@
-package com.theapache64.retrosheet.utils
+package com.github.theapache64.retrosheet.utils
 
+import com.github.theapache64.retrosheet.utils.SheetUtils
 import com.theapache64.expekt.should
 import org.junit.Test
 
