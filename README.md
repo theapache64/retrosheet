@@ -200,12 +200,12 @@ fun main() = runBlocking {
 
 ## Samples 🌠
 
-- [Notes - JVM](https://github.com/theapache64/retrosheet/blob/master/src/main/kotlin/com/theapache64/retrosheet/sample/notes/Notes.kt)
+- [Notes - JVM](https://github.com/theapache64/retrosheet/blob/master/src/main/kotlin/com/github/theapache64/retrosheet/sample/notes/Notes.kt)
   - README Example 👆
 - [Notes - Android](https://github.com/theapache64/notes) - Android App : Simple note taking app, with add and list
   feature
 - [Nemo](https://github.com/theapache64/nemo) - Android App :  E-Commerce App
-- [More JVM Samples](https://github.com/theapache64/retrosheet/tree/master/src/main/kotlin/com/theapache64/retrosheet/sample)
+- [More JVM Samples](https://github.com/theapache64/retrosheet/tree/master/src/main/kotlin/com/github/theapache64/retrosheet/sample)
 
 ## TODO ☑️
 
