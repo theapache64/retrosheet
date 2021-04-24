@@ -11,6 +11,7 @@ group 'com.github.theapache64'
 version "$versions.retrosheet_version"
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
@@ -61,7 +62,7 @@ publishing {
             artifact javadocJar {
                 classifier "javadoc"
             }
-            groupId 'com.theapache64'
+            groupId 'com.github.theapache64'
             artifactId 'retrosheet'
             version "$versions.retrosheet_version"
             pom.withXml {

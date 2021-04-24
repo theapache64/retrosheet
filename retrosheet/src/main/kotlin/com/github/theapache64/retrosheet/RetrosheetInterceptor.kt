@@ -43,18 +43,24 @@ private constructor(
 
         private fun isReturnTypeList(request: Request): Boolean {
             val method = request.tag(Invocation::class.java)?.method()
-            val genericReturnType = method?.genericReturnType?.toString()
-            return if (genericReturnType != null && genericReturnType != TYPE_OBJECT) {
-                genericReturnType.contains(PACKAGE_LIST_CONTAINS)
+            val hasReadAsList = method?.annotations?.indexOfFirst { it is ReadAsList } != -1
+            if (hasReadAsList) {
+                return true
             } else {
-                // go for hard reflection
-                try {
-                    val f = Method::class.java.getDeclaredField("signature")
-                    f.isAccessible = true
-                    val signature = f.get(method).toString()
-                    signature.contains(SIGNATURE_LIST_CONTAINS)
-                } catch (e: NoSuchFieldException) {
-                    false
+                // Trying to find return type using reflection
+                val genericReturnType = method?.genericReturnType?.toString()
+                return if (genericReturnType != null && genericReturnType != TYPE_OBJECT) {
+                    genericReturnType.contains(PACKAGE_LIST_CONTAINS)
+                } else {
+                    // go for hard reflection
+                    try {
+                        val f = Method::class.java.getDeclaredField("signature")
+                        f.isAccessible = true
+                        val signature = f.get(method).toString()
+                        signature.contains(SIGNATURE_LIST_CONTAINS)
+                    } catch (e: NoSuchFieldException) {
+                        false
+                    }
                 }
             }
 
