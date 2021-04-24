@@ -233,7 +233,9 @@ private constructor(
         ).build()
 
         if (isLoggingEnabled) {
-            println("$TAG : GET --> $realUrl")
+            val sanitizedUrl = realUrl.replace(" ", "%20")
+            println("$TAG : GET --> $sanitizedUrl")
+            println("$TAG : GET (html) --> ${sanitizedUrl.replace("tqx=out:csv", "tqx=out:html")}")
         }
         val csvRequest = request.newBuilder()
             .url(realUrl)
