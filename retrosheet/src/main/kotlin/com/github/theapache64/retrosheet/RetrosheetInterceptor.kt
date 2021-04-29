@@ -7,6 +7,7 @@ import retrofit2.Invocation
 import java.lang.reflect.Method
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
+import kotlin.coroutines.Continuation
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:33
@@ -52,6 +53,9 @@ private constructor(
             if (genericReturnType != TYPE_OBJECT) {
                 return genericReturnType.contains(PACKAGE_LIST_CONTAINS)
             }
+            if (isSuspendMethodWithListReturnValue(method)) {
+                return true
+            }
             // go for hard reflection
             return try {
                 val f = Method::class.java.getDeclaredField("signature")
@@ -63,6 +67,28 @@ private constructor(
             }
         }
 
+        /**
+         * Checks if the provided [method] is suspend method and the primary return type is a collection concrete class
+         * or an array.
+         *
+         * This method works based on the last parameter's type of [method]. If the last parameter is [Continuation],
+         * the method is a suspend function after converted into Java.
+         *
+         */
+        private fun isSuspendMethodWithListReturnValue(method: Method): Boolean {
+            val lastParameter = method.genericParameterTypes.lastOrNull() ?: return false
+            val typeName = lastParameter.typeName
+            val continuationClassName = Continuation::class.qualifiedName ?: return false
+            // Need to convert `.` to `\.` to not mix regex's `.` and the `.` character.
+            val continuationClassNameInRegex = continuationClassName.replace(".", "\\.")
+            // Match anything before the second < except space to extract the primary type.
+            val regex = "$continuationClassNameInRegex<.*?([^ ]+?)<".toRegex()
+
+            val matchedValue = regex.find(typeName) ?: return false // Not matched -> not suspend method
+            val suspendFunReturnType = matchedValue.groupValues.last()
+            val clazz = Class.forName(suspendFunReturnType)
+            return clazz.isArray || Collection::class.java.isAssignableFrom(clazz)
+        }
     }
 
     class Builder {
