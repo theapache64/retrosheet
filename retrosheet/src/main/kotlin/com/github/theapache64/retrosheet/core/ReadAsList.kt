@@ -6,4 +6,5 @@ package com.github.theapache64.retrosheet.core
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION)
 @Retention
+@Deprecated("This annotation is no more needed. ")
 annotation class ReadAsList
