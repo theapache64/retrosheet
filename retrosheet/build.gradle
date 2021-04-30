@@ -12,6 +12,7 @@ version "$versions.retrosheet_version"
 
 repositories {
     mavenCentral()
+    maven {url "https://jitpack.io"}
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -61,7 +62,7 @@ publishing {
             artifact javadocJar {
                 classifier "javadoc"
             }
-            groupId 'com.theapache64'
+            groupId 'com.github.theapache64'
             artifactId 'retrosheet'
             version "$versions.retrosheet_version"
             pom.withXml {
@@ -93,7 +94,7 @@ dependencies {
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.3'
 
     // Expekt : An assertion library for Kotlin
-    testImplementation 'com.theapache64:expekt:0.0.1'
+    testImplementation 'com.github.theapache64:expekt:1.0.0'
 }
 
 compileKotlin {
