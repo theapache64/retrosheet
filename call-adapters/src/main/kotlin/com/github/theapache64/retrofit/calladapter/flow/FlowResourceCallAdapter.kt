@@ -43,7 +43,6 @@ class FlowResourceCallAdapter<R>(
             val errorBody = resp.message()
             emit(Error(errorBody))
         }
-
     }.catch { error: Throwable ->
         if (isSelfExceptionHandling) {
             emit(Error(error.message ?: "Something went wrong"))

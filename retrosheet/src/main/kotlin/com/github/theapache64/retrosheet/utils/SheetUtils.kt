@@ -34,5 +34,4 @@ object SheetUtils {
         // Reverse the string and print result
         return columnName.reverse().toString()
     }
-
 }

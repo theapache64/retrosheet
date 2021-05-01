@@ -1,7 +1,7 @@
 package com.github.theapache64.retrosheet.sample.notes
 
-import com.squareup.moshi.Moshi
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -30,7 +30,6 @@ fun main() = runBlocking {
     val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(retrosheetInterceptor)
         .build()
-
 
     val moshi = Moshi.Builder().build()
 

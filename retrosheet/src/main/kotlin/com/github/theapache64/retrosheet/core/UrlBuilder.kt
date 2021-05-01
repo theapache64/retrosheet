@@ -36,7 +36,6 @@ class UrlBuilder(
                     realUrlBuilder.append("&tq=$realQuery")
                     isQueryAdded = true
                 }
-
             }
 
         request.tag(Invocation::class.java)?.method()?.getAnnotation(SheetParams::class.java)
@@ -56,7 +55,6 @@ class UrlBuilder(
                     realUrlBuilder.append("&tq=${URLEncoder.encode(params.rawQuery, "UTF-8")}")
                 }
             }
-
 
         return realUrlBuilder.toString()
     }

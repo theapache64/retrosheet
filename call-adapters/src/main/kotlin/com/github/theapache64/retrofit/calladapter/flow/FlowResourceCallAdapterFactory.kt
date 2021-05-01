@@ -1,6 +1,5 @@
 package com.github.theapache64.retrofit.calladapter.flow
 
-
 import kotlinx.coroutines.flow.Flow
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory

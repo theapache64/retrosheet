@@ -26,7 +26,6 @@ fun main() = runBlocking {
         // .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 
-
     val moshi = Moshi.Builder().build()
 
     val retrofit = Retrofit.Builder()

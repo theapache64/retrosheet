@@ -15,4 +15,3 @@ interface HeadsApi {
         @Query("password") password: String
     ): Flow<Resource<User>>
 }
-

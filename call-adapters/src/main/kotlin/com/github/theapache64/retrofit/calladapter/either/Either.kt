@@ -18,4 +18,3 @@ sealed class Either<out L, out R> {
             Left(value)
     }
 }
-

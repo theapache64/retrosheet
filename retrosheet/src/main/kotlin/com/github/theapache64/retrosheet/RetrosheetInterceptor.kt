@@ -19,7 +19,6 @@ private constructor(
     val forms: Map<String, String>
 ) : Interceptor {
 
-
     companion object {
         private val TAG = RetrosheetInterceptor::class.java.simpleName
         private const val URL_START = "https://docs.google.com/spreadsheets/d"
@@ -40,7 +39,6 @@ private constructor(
         private val apiErrorJsonAdapter by lazy {
             ApiErrorJsonAdapter(MoshiUtils.moshi)
         }
-
 
         private fun isReturnTypeList(request: Request): Boolean {
             val method = request.tag(Invocation::class.java)?.method() ?: return false
@@ -134,7 +132,6 @@ private constructor(
         }
     }
 
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
@@ -155,7 +152,6 @@ private constructor(
         }
     }
 
-
     private fun getRetrosheetResponse(chain: Interceptor.Chain, request: Request): Response {
         val newRequest = getModifiedRequest(request)
         val response = chain.proceed(newRequest.second)
@@ -163,7 +159,6 @@ private constructor(
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
         val jsonRoot: String
         val responseBuilder = response.newBuilder()
-
 
         // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
         if (JsonValidator.isValidJsonObject(responseBody)) {
@@ -281,7 +276,6 @@ private constructor(
         val url = httpUrl.toString()
         return url.startsWith(URL_START)
     }
-
 
     /**
      * To translate google sheet error message to more understandable form.

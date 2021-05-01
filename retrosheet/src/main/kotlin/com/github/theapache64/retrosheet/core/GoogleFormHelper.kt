@@ -9,7 +9,6 @@ import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
 
-
 /**
  * Created by theapache64 : Aug 08 Sat,2020 @ 00:09
  */
@@ -48,7 +47,6 @@ class GoogleFormHelper(
             }
             return isForm
         }
-
     }
 
     fun getFormResponse(): Response {
@@ -56,7 +54,7 @@ class GoogleFormHelper(
         val formUrl = retrosheetInterceptor.forms[formName] ?: throw IllegalArgumentException(
             """
             Couldn't find form with endPoint '$formName'. Are you sure you called 'addSheet('$formName', ...)'
-        """.trimIndent()
+            """.trimIndent()
         )
 
         // Creating a new request
@@ -81,7 +79,7 @@ class GoogleFormHelper(
         val fieldMap = getFieldMapFromUrl(chain, formUrl) ?: throw IllegalArgumentException(
             """
             Failed to get field map
-        """.trimIndent()
+            """.trimIndent()
         )
 
         val args = request.tag(Invocation::class.java)!!.arguments()
@@ -97,7 +95,7 @@ class GoogleFormHelper(
                 val keyId =
                     fieldMap[entry.key]
                         ?: throw IllegalArgumentException("Couldn't find field '${entry.key}' in the form")
-                submitMap["entry.${keyId}"] = entry.value
+                submitMap["entry.$keyId"] = entry.value
             }
             submitMap
         }
@@ -215,7 +213,7 @@ class GoogleFormHelper(
                 throwWrongSplit(FORM_DATA_SPLIT_1)
             }
         } else {
-            throw IOException("Invalid form URL : ${formUrl}.Got $code ")
+            throw IOException("Invalid form URL : $formUrl.Got $code ")
         }
         return null
     }
@@ -227,6 +225,4 @@ class GoogleFormHelper(
     private fun throwWrongSplit(key: String) {
         throw IllegalArgumentException("Wrong split keyword '$key'. $SOLUTION_UPDATE")
     }
-
-
 }
