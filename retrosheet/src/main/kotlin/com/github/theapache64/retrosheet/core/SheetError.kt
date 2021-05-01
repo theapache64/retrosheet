@@ -3,7 +3,6 @@ package com.github.theapache64.retrosheet.core
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-
 /**
  * Created by theapache64 : Jul 25 Sat,2020 @ 14:19
  */

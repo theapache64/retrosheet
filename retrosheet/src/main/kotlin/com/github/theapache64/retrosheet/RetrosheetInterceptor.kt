@@ -1,13 +1,29 @@
 package com.github.theapache64.retrosheet
 
-import com.github.theapache64.retrosheet.core.*
-import com.github.theapache64.retrosheet.utils.*
-import okhttp3.*
-import retrofit2.Invocation
+import com.github.theapache64.retrosheet.core.ApiError
+import com.github.theapache64.retrosheet.core.ApiErrorJsonAdapter
+import com.github.theapache64.retrosheet.core.GoogleFormHelper
+import com.github.theapache64.retrosheet.core.KeyValue
+import com.github.theapache64.retrosheet.core.ReadAsList
+import com.github.theapache64.retrosheet.core.SheetErrorJsonAdapter
+import com.github.theapache64.retrosheet.core.SheetVerifier
+import com.github.theapache64.retrosheet.core.UrlBuilder
+import com.github.theapache64.retrosheet.utils.CsvConverter
+import com.github.theapache64.retrosheet.utils.JsonValidator
+import com.github.theapache64.retrosheet.utils.KeyValueUtils
+import com.github.theapache64.retrosheet.utils.MoshiUtils
+import com.github.theapache64.retrosheet.utils.SheetUtils
 import java.lang.reflect.Method
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
 import kotlin.coroutines.Continuation
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
+import okhttp3.MediaType
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
+import retrofit2.Invocation
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:33
@@ -18,7 +34,6 @@ private constructor(
     private val sheets: Map<String, Map<String, String>>,
     val forms: Map<String, String>
 ) : Interceptor {
-
 
     companion object {
         private val TAG = RetrosheetInterceptor::class.java.simpleName
@@ -40,7 +55,6 @@ private constructor(
         private val apiErrorJsonAdapter by lazy {
             ApiErrorJsonAdapter(MoshiUtils.moshi)
         }
-
 
         private fun isReturnTypeList(request: Request): Boolean {
             val method = request.tag(Invocation::class.java)?.method() ?: return false
@@ -134,7 +148,6 @@ private constructor(
         }
     }
 
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
@@ -155,7 +168,6 @@ private constructor(
         }
     }
 
-
     private fun getRetrosheetResponse(chain: Interceptor.Chain, request: Request): Response {
         val newRequest = getModifiedRequest(request)
         val response = chain.proceed(newRequest.second)
@@ -163,7 +175,6 @@ private constructor(
             ?: throw IllegalArgumentException("Failed to get CSV data from '${request.url()}'")
         val jsonRoot: String
         val responseBuilder = response.newBuilder()
-
 
         // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
         if (JsonValidator.isValidJsonObject(responseBody)) {
@@ -281,7 +292,6 @@ private constructor(
         val url = httpUrl.toString()
         return url.startsWith(URL_START)
     }
-
 
     /**
      * To translate google sheet error message to more understandable form.

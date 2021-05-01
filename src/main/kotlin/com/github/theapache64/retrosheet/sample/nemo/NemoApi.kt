@@ -25,5 +25,4 @@ interface NemoApi {
     @KeyValue
     @GET("config")
     suspend fun getConfig(): Config
-
 }

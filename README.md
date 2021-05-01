@@ -210,6 +210,14 @@ fun main() = runBlocking {
 
 - Create an online tool to generate model class from sheet link
 
+## Contributing
+This project is applying [`ktlint`](https://ktlint.github.io/) (without import ordering since it's conflicted with IDE's 
+format). Before creating a PR, please make sure your code is aligned with `ktlint` (`./gradlew ktlint`).
+We can run auto-format with:
+```shell
+./gradlew ktlintFormat
+```
+
 ## Author ✍️
 
 - theapache64

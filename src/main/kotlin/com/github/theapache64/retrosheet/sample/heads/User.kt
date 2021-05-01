@@ -3,7 +3,6 @@ package com.github.theapache64.retrosheet.sample.heads
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-
 /**
  * Generated using MockAPI (https://github.com/theapache64/Mock-API) : Wed Jan 16 14:49:46 UTC 2019
  */

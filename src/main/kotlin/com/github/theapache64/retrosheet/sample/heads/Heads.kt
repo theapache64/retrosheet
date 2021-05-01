@@ -2,8 +2,8 @@ package com.github.theapache64.retrosheet.sample.heads
 
 import com.github.theapache64.retrofit.calladapter.either.EitherCallAdapterFactory
 import com.github.theapache64.retrofit.calladapter.flow.FlowResourceCallAdapterFactory
-import com.squareup.moshi.Moshi
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
+import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -26,7 +26,6 @@ fun main() = runBlocking {
     val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(retrosheetInterceptor)
         .build()
-
 
     val moshi = Moshi.Builder().build()
 
