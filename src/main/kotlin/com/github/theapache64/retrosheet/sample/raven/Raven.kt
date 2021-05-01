@@ -38,3 +38,10 @@ fun main() = runBlocking {
     val api = retrofit.create(RavenApi::class.java)
     println(api.getQuote(13042021))
 }
+
+
+
+
+
+
+
