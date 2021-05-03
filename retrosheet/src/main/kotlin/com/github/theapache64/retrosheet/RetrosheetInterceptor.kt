@@ -14,6 +14,7 @@ import com.github.theapache64.retrosheet.utils.KeyValueUtils
 import com.github.theapache64.retrosheet.utils.MoshiUtils
 import com.github.theapache64.retrosheet.utils.SheetUtils
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
 import kotlin.coroutines.Continuation
@@ -87,16 +88,22 @@ private constructor(
          *
          * This method works based on the last parameter's type of [method]. If the last parameter is [Continuation],
          * the method is a suspend function after converted into Java.
-         *
          */
         private fun isSuspendMethodWithListReturnValue(method: Method): Boolean {
-            val lastParameter = method.genericParameterTypes.lastOrNull() ?: return false
-            val typeName = lastParameter.typeName
-            val continuationClassName = Continuation::class.qualifiedName ?: return false
-            // Need to convert `.` to `\.` to not mix regex's `.` and the `.` character.
-            val continuationClassNameInRegex = continuationClassName.replace(".", "\\.")
-            // Match anything before the second < except space to extract the primary type.
-            val regex = "$continuationClassNameInRegex<.*?([^ ]+?)<".toRegex()
+            val lastParameter = method.genericParameterTypes.lastOrNull() as? ParameterizedType ?: return false
+            if (!Continuation::class.java.isAssignableFrom(Class.forName(lastParameter.rawType.typeName))) {
+                return false
+            }
+
+            val actualTypeArgument = lastParameter.actualTypeArguments.firstOrNull() ?: return false
+            val typeName = actualTypeArgument.typeName
+            if (typeName.endsWith("[]")) {
+                // Is array
+                return true
+            }
+
+            // Match anything before the second < except space to extract the primary type
+            val regex = ".*?([^ ]+?)<".toRegex()
 
             val matchedValue = regex.find(typeName) ?: return false // Not matched -> not suspend method
             val suspendFunReturnType = matchedValue.groupValues.last()
