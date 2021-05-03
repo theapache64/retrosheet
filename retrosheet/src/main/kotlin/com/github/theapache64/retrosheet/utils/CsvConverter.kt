@@ -11,10 +11,7 @@ import de.siegmar.fastcsv.reader.CsvRow
 object CsvConverter {
     private val csvReader: CsvReader = CsvReader().apply { setContainsHeader(true) }
 
-    fun convertCsvToJson(
-        csvData: String,
-        isReturnTypeList: Boolean
-    ): String? {
+    fun convertCsvToJson(csvData: String, isReturnTypeList: Boolean): String? {
         val items = csvReader.parse(csvData.reader()).use { csvParser ->
             csvParser
                 .asIterator()
@@ -47,15 +44,11 @@ object CsvConverter {
         if (isReturnTypeList) this else take(1)
 
     private fun CsvRow.mapWithHeader(header: List<String>): Map<String, Any?> = header.associateWith { key ->
-        val field = getField(key)
-        @Suppress("IMPLICIT_CAST_TO_ANY")
-        when {
-            field == null -> null
-            TypeIdentifier.isInteger(field) -> field.toLong()
-            TypeIdentifier.isBoolean(field) -> field.toBoolean()
-            TypeIdentifier.isDouble(field) -> field.toDouble()
-            else -> field.takeUnless { it.isBlank() }
-        }
+        val field = getField(key)?.trim().orEmpty()
+        field.toLongOrNull()
+            ?: field.toDoubleOrNull()
+            ?: field.takeIf(TypeIdentifier::isBoolean)?.toBoolean() // toBoolean() return false when text is not `true`
+            ?: field.takeIf(String::isNotEmpty)
     }
 
     private class CsvRowIterator(private val csvParser: CsvParser) : Iterator<CsvRow> {
