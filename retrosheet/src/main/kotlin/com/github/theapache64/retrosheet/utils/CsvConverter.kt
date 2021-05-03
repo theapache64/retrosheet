@@ -19,19 +19,8 @@ object CsvConverter {
             csvParser
                 .asIterator()
                 .asSequence()
-                .map { row ->
-                    csvParser.header.associateWith { key ->
-                        val field = row.getField(key)
-                        @Suppress("IMPLICIT_CAST_TO_ANY")
-                        when {
-                            field == null -> null
-                            TypeIdentifier.isInteger(field) -> field.toLong()
-                            TypeIdentifier.isBoolean(field) -> field.toBoolean()
-                            TypeIdentifier.isDouble(field) -> field.toDouble()
-                            else -> field.takeUnless { it.isBlank() }
-                        }
-                    }
-                }
+                .takeSingleUnless(isReturnTypeList)
+                .map { row -> row.mapWithHeader(csvParser.header) }
                 .toList()
         }
 
@@ -53,6 +42,21 @@ object CsvConverter {
     }
 
     private fun CsvParser.asIterator(): Iterator<CsvRow> = CsvRowIterator(this)
+
+    private fun Sequence<CsvRow>.takeSingleUnless(isReturnTypeList: Boolean): Sequence<CsvRow> =
+        if (isReturnTypeList) this else take(1)
+
+    private fun CsvRow.mapWithHeader(header: List<String>): Map<String, Any?> = header.associateWith { key ->
+        val field = getField(key)
+        @Suppress("IMPLICIT_CAST_TO_ANY")
+        when {
+            field == null -> null
+            TypeIdentifier.isInteger(field) -> field.toLong()
+            TypeIdentifier.isBoolean(field) -> field.toBoolean()
+            TypeIdentifier.isDouble(field) -> field.toDouble()
+            else -> field.takeUnless { it.isBlank() }
+        }
+    }
 
     private class CsvRowIterator(private val csvParser: CsvParser) : Iterator<CsvRow> {
         private var row = csvParser.nextRow()
