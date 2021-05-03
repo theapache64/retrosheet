@@ -100,7 +100,11 @@ private constructor(
 
             val matchedValue = regex.find(typeName) ?: return false // Not matched -> not suspend method
             val suspendFunReturnType = matchedValue.groupValues.last()
-            val clazz = Class.forName(suspendFunReturnType)
+            return isArrayOrCollectionClass(suspendFunReturnType)
+        }
+
+        private fun isArrayOrCollectionClass(classQualifiedName: String): Boolean {
+            val clazz = Class.forName(classQualifiedName)
             return clazz.isArray || Collection::class.java.isAssignableFrom(clazz)
         }
     }
