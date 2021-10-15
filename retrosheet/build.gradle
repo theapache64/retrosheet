@@ -82,7 +82,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     // FastCSV : Ultra fast and simple RFC 4180 compliant CSV library.
-    implementation 'de.siegmar:fastcsv:1.0.3'
+    implementation 'de.siegmar:fastcsv:2.0.0'
 
     // Retrofit : A type-safe HTTP client for Android and Java.
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

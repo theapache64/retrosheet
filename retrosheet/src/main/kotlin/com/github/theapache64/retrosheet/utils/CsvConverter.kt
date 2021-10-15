@@ -1,7 +1,7 @@
 package com.github.theapache64.retrosheet.utils
 
 import com.squareup.moshi.Types
-import de.siegmar.fastcsv.reader.CsvReader
+import de.siegmar.fastcsv.reader.NamedCsvReader
 
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:05
@@ -11,68 +11,65 @@ object CsvConverter {
         csvData: String,
         isReturnTypeList: Boolean
     ): String? {
-        return CsvReader().apply {
-            setContainsHeader(true)
-        }.parse(csvData.reader()).use {
+        val items = mutableListOf<Map<String, Any?>>()
 
-            // Parsing CSV
-            val items = mutableListOf<Map<String, Any?>>().apply {
-                // Loading headers first
-                while (true) {
-                    val row = it.nextRow() ?: break
-                    val item = mutableMapOf<String, Any?>().apply {
-                        for (header in it.header) {
-                            val field = row.getField(header)
-                            when {
-                                TypeIdentifier.isInteger(
-                                    field
-                                ) -> {
-                                    put(header, field.toLong())
-                                }
+        NamedCsvReader.builder()
+            .build(csvData)
+            .forEach { row ->
+                val item = mutableMapOf<String, Any?>().apply {
+                    for ((header, value) in row.fields) {
+                        when {
+                            TypeIdentifier.isInteger(
+                                value
+                            ) -> {
+                                put(header, value.toLong())
+                            }
 
-                                TypeIdentifier.isBoolean(
-                                    field
-                                ) -> {
-                                    put(header, field!!.toBoolean())
-                                }
+                            TypeIdentifier.isBoolean(
+                                value
+                            ) -> {
+                                // TODO : Check why `!!` :O
+                                put(header, value!!.toBoolean())
+                            }
 
-                                TypeIdentifier.isDouble(
-                                    field
-                                ) -> {
-                                    put(header, field.toDouble())
-                                }
+                            TypeIdentifier.isDouble(
+                                value
+                            ) -> {
+                                put(header, value.toDouble())
+                            }
 
-                                else -> {
-                                    val finalValue = if (field.isNullOrBlank()) {
-                                        null
-                                    } else {
-                                        field
-                                    }
-                                    put(header, finalValue)
+                            else -> {
+                                val finalValue = if (value.isNullOrBlank()) {
+                                    null
+                                } else {
+                                    value
                                 }
+                                put(header, finalValue)
                             }
                         }
                     }
-                    add(item)
+
                 }
+                items.add(item)
             }
-            when {
-                isReturnTypeList -> {
-                    val type = Types.newParameterizedType(List::class.java, Map::class.java)
-                    val adapter = MoshiUtils.moshi.adapter<List<Map<String, Any?>>>(type)
-                    adapter.toJson(items)
-                }
 
-                items.isNotEmpty() -> {
-                    val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
-                    val adapter = MoshiUtils.moshi.adapter<Map<String, Any?>>(type)
-                    adapter.toJson(items.first())
-                }
+        return when {
+            isReturnTypeList -> {
+                val type = Types.newParameterizedType(List::class.java, Map::class.java)
+                val adapter = MoshiUtils.moshi.adapter<List<Map<String, Any?>>>(type)
+                adapter.toJson(items)
+            }
 
-                else -> {
-                    null
-                }
+            items.isNotEmpty() -> {
+                val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
+                val adapter = MoshiUtils.moshi.adapter<Map<String, Any?>>(type)
+                adapter.toJson(items.first())
+            }
+
+            else -> {
+                null
             }
         }
     }
+
 }

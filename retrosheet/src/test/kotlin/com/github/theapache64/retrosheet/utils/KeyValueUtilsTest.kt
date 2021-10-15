@@ -1,7 +1,7 @@
 package com.github.theapache64.retrosheet.utils
 
-import com.github.theapache64.retrosheet.exception.InvalidKeyValueFormat
 import com.github.theapache64.expekt.should
+import com.github.theapache64.retrosheet.exception.InvalidKeyValueFormat
 import org.junit.Test
 
 

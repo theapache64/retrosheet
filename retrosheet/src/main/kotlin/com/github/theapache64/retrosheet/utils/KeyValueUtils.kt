@@ -3,37 +3,47 @@ package com.github.theapache64.retrosheet.utils
 import com.github.theapache64.retrosheet.exception.InvalidKeyValueFormat
 import de.siegmar.fastcsv.reader.CsvReader
 import de.siegmar.fastcsv.writer.CsvWriter
+import de.siegmar.fastcsv.writer.LineDelimiter
+import de.siegmar.fastcsv.writer.QuoteStrategy
 import java.io.StringWriter
 
 object KeyValueUtils {
 
+    /**
+     * To transform given CSV's columns to rows
+     *
+     * @param responseBody CSV
+     * @return transformed CSV
+     */
     fun transform(responseBody: String): String {
-        return CsvReader().apply {
-            setContainsHeader(true)
-        }.parse(responseBody.reader()).use {
+        val headers = mutableListOf<String>()
+        val values = mutableListOf<String>()
 
-            val headers = mutableListOf<String>()
-            val values = mutableListOf<String>()
+        CsvReader.builder()
+            .build(responseBody)
+            .forEachIndexed { index, row ->
+                if (index != 0) {
+                    val fieldSize = row.fields.size
+                    if (fieldSize != 2) {
+                        throw InvalidKeyValueFormat("@KeyValue sheet should have 2 columns. Found $fieldSize @ $row")
+                    }
 
-            while (true) {
-                val row = it.nextRow() ?: break
-                if (row.fieldCount < 2) {
-                    throw InvalidKeyValueFormat("@KeyValue sheet should have 2 columns. Found only ${row.fieldCount} @ $row")
+                    headers.add(row.fields[0])
+                    values.add(row.fields[1])
                 }
-                headers.add(row.getField(0))
-                values.add(row.getField(1))
             }
 
-            // Building new CSV
-            val writer = StringWriter()
-            CsvWriter().apply {
-                setAlwaysDelimitText(true)
-            }.append(writer).use { appender ->
-                appender.appendLine(*headers.toTypedArray())
-                appender.appendLine(*values.toTypedArray())
-                appender.endLine()
+        // Building new CSV
+        val writer = StringWriter()
+        CsvWriter.builder()
+            .quoteStrategy(QuoteStrategy.ALWAYS)
+            .lineDelimiter(LineDelimiter.LF)
+            .build(writer)
+            .apply {
+                writeRow(*headers.toTypedArray())
+                writeRow(*values.toTypedArray())
             }
-            writer
-        }.toString().trim()
+
+        return writer.toString().trim()
     }
 }
