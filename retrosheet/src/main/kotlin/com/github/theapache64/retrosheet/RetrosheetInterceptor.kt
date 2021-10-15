@@ -1,6 +1,6 @@
 package com.github.theapache64.retrosheet
 
-import com.github.theapache64.retrosheet.core.ApiError
+import com.github.theapache64.retrosheet.data.ApiError
 import com.github.theapache64.retrosheet.core.ApiErrorJsonAdapter
 import com.github.theapache64.retrosheet.core.GoogleFormHelper
 import com.github.theapache64.retrosheet.core.KeyValue
