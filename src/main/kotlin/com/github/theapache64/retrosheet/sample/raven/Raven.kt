@@ -10,7 +10,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:11
  */
-const val ADD_NOTE_ENDPOINT = "add_note"
 fun main() = runBlocking {
 
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()

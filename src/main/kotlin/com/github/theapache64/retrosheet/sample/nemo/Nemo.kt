@@ -4,6 +4,7 @@ import com.github.theapache64.retrofit.calladapter.either.EitherCallAdapterFacto
 import com.github.theapache64.retrofit.calladapter.flow.FlowResourceCallAdapterFactory
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.squareup.moshi.Moshi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -44,26 +45,26 @@ fun main() = runBlocking {
     val nemoApi = retrofit.create(NemoApi::class.java)
     println(nemoApi.getProducts("Category 2"))
 
-    /*  // Adding sample order
-      val placeOrder = nemoApi.placeOrder(
-          Order(
-              "Shifar",
-              "Shifar's Villa, 677325",
-              """
-                      Product 1 - Quantity : 2 - Price : 200
-                      Product 2 - Quantity : 4 - Price : 400
-                  """.trimIndent(),
-              """
-                      txnId : 7654534834568345
-                      txnFrom : theapache64@ybl
-                  """.trimIndent(),
-              600
-          )
-      )
+    // Adding sample order
+    val placeOrder = nemoApi.placeOrder(
+        Order(
+            name = "Shifar",
+            address = "Shifar's Villa, 677325",
+            products = """
+                                  Product 1 - Quantity : 2 - Price : 200
+                                  Product 2 - Quantity : 4 - Price : 400
+                              """.trimIndent(),
+            txnDetails = """
+                                  txnId : 7654534834568345
+                                  txnFrom : theapache64@ybl
+                              """.trimIndent(),
+            total = 600
+        )
+    )
 
-      placeOrder.collect {
-          println(it)
-      }*/
+    placeOrder.collect {
+        println(it)
+    }
 
     // Key Value Config
     // println("Config-> ${nemoApi.getConfig()}")

@@ -87,11 +87,10 @@ dependencies {
     // Retrofit : A type-safe HTTP client for Android and Java.
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
+    def moshi_version = '1.12.0'
     // Moshi : Moshi
-    implementation 'com.squareup.moshi:moshi:1.9.3'
-
-    // Moshi Kotlin Codegen : Moshi Kotlin Codegen
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.3'
+    implementation "com.squareup.moshi:moshi:$moshi_version"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
     // Expekt : An assertion library for Kotlin
     testImplementation 'com.github.theapache64:expekt:1.0.0'
