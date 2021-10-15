@@ -2,6 +2,7 @@ package com.github.theapache64.retrofit.calladapter.flow
 
 import com.github.theapache64.retrofit.calladapter.flow.Resource.Error
 import com.github.theapache64.retrofit.calladapter.flow.Resource.Success
+import java.lang.reflect.Type
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -9,7 +10,6 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.awaitResponse
-import java.lang.reflect.Type
 
 /**
  * To convert retrofit response to Flow<Resource<T>>.
@@ -23,7 +23,7 @@ class FlowResourceCallAdapter<R>(
     override fun responseType() = responseType
 
     @ExperimentalCoroutinesApi
-    override fun adapt(call: Call<R>): Flow<Resource<R>> = flow {
+    override fun adapt(call: Call<R>) = flow<Resource<R>> {
 
         // Firing loading resource
         emit(Resource.Loading<R>())

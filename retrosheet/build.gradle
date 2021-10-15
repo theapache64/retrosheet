@@ -1,14 +1,12 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm'
-    id 'maven'
     id 'maven-publish'
     id "org.jetbrains.kotlin.kapt"
 }
-apply from: "${rootProject.projectDir}/dependencies.gradle"
 
 group 'com.github.theapache64'
-version "$versions.retrosheet_version"
+version retrosheet_version
 
 repositories {
     mavenCentral()
@@ -64,7 +62,7 @@ publishing {
             }
             groupId 'com.github.theapache64'
             artifactId 'retrosheet'
-            version "$versions.retrosheet_version"
+            version retrosheet_version
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Turn Google Spreadsheet to JSON endpoint (for Android and JVM)')
@@ -78,8 +76,8 @@ publishing {
 
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    testImplementation 'junit:junit:4.13.2'
 
     // FastCSV : Ultra fast and simple RFC 4180 compliant CSV library.
     implementation 'de.siegmar:fastcsv:2.0.0'
