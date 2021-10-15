@@ -38,9 +38,12 @@ fun main() = runBlocking {
         .build()
 
     val headsApi = retrofit.create(HeadsApi::class.java)
-    headsApi.login("john", "12345").run {
-        collect {
-            println(it)
-        }
+    headsApi.login("john", "12345").collect {
+        println(it)
+    }
+
+    // List all users
+    headsApi.getAllUsers().collect {
+        println(it)
     }
 }

@@ -1,13 +1,12 @@
 package com.github.theapache64.retrosheet
 
-import com.github.theapache64.retrosheet.data.ApiError
-import com.github.theapache64.retrosheet.core.ApiErrorJsonAdapter
+import com.github.theapache64.retrosheet.annotations.KeyValue
 import com.github.theapache64.retrosheet.core.GoogleFormHelper
-import com.github.theapache64.retrosheet.core.KeyValue
-import com.github.theapache64.retrosheet.core.ReadAsList
-import com.github.theapache64.retrosheet.core.SheetErrorJsonAdapter
 import com.github.theapache64.retrosheet.core.SheetVerifier
 import com.github.theapache64.retrosheet.core.UrlBuilder
+import com.github.theapache64.retrosheet.data.ApiError
+import com.github.theapache64.retrosheet.data.ApiErrorJsonAdapter
+import com.github.theapache64.retrosheet.data.SheetErrorJsonAdapter
 import com.github.theapache64.retrosheet.utils.CsvConverter
 import com.github.theapache64.retrosheet.utils.JsonValidator
 import com.github.theapache64.retrosheet.utils.KeyValueUtils
@@ -59,10 +58,6 @@ private constructor(
 
         private fun isReturnTypeList(request: Request): Boolean {
             val method = request.tag(Invocation::class.java)?.method() ?: return false
-            val hasReadAsList = method.annotations.any { it is ReadAsList }
-            if (hasReadAsList) {
-                return true
-            }
             // Trying to find return type using reflection
             val genericReturnType = method.genericReturnType.toString()
             if (genericReturnType != TYPE_OBJECT) {
@@ -134,6 +129,7 @@ private constructor(
             return this
         }
 
+        @Suppress("MemberVisibilityCanBePrivate")
         fun addSheet(sheetName: String, columnMap: Map<String, String>): Builder {
             SheetVerifier(columnMap).verify()
             this.sheets[sheetName] = columnMap
@@ -188,7 +184,8 @@ private constructor(
         val responseBuilder = response.newBuilder()
 
         // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
-        if (JsonValidator.isValidJsonObject(responseBody)) {
+        val isSpreadsheetError = JsonValidator.isValidJsonObject(responseBody)
+        if (isSpreadsheetError) {
             // It's the spreadsheet error. let's parse it.
 
             // Adding human understandable error

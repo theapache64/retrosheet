@@ -1,7 +1,7 @@
 package com.github.theapache64.retrosheet.sample.heads
 
 import com.github.theapache64.retrofit.calladapter.flow.Resource
-import com.github.theapache64.retrosheet.core.Read
+import com.github.theapache64.retrosheet.annotations.Read
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,4 +14,8 @@ interface HeadsApi {
         @Query("username") username: String,
         @Query("password") password: String
     ): Flow<Resource<User>>
+
+    @Read("SELECT *")
+    @GET("users")
+    fun getAllUsers() : Flow<Resource<List<User>>>
 }

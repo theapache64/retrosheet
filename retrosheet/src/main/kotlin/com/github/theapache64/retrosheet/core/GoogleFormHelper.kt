@@ -1,9 +1,9 @@
 package com.github.theapache64.retrosheet.core
 
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
+import com.github.theapache64.retrosheet.annotations.Write
 import com.github.theapache64.retrosheet.utils.MoshiUtils
 import com.squareup.moshi.Types
-import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
 import okhttp3.Interceptor
@@ -26,7 +26,6 @@ class GoogleFormHelper(
 
         private const val FORM_DATA_SPLIT_1 = "FB_PUBLIC_LOAD_DATA_"
         private const val FORM_DATA_SPLIT_2 = "</script>"
-        private const val CONTEXT_CLASS = "android.content.Context"
 
         const val SOLUTION_UPDATE = "Please update retrosheet to latest version."
 
@@ -57,34 +56,11 @@ class GoogleFormHelper(
     fun getFormResponse(): Response {
         val formName = request.url().pathSegments().last()
         val formUrl = retrosheetInterceptor.forms[formName] ?: throw IllegalArgumentException(
-            """
-            Couldn't find form with endPoint '$formName'. Are you sure you called 'addSheet('$formName', ...)'
-            """.trimIndent()
+            "Couldn't find form with endPoint '$formName'. Are you sure you called 'addSheet('$formName', ...)'"
         )
 
-        // Creating a new request
-        /*
-        TODO : Caching
-        val localFieldMap = getLocalFieldMap(formName)
-        val finalFieldMap = if (localFieldMap == null) {
-            if (retrosheetInterceptor.isLoggingEnabled) {
-                println("Getting field map from remote")
-            }
-            val fieldMap = getFieldMapFromUrl(chain, formUrl) ?: throw IllegalArgumentException(
-                """
-            Failed to get field map
-        """.trimIndent()
-            )
-            saveFieldMap(formName, fieldMap)
-            fieldMap
-        } else {
-            localFieldMap
-        }*/
-
         val fieldMap = getFieldMapFromUrl(chain, formUrl) ?: throw IllegalArgumentException(
-            """
-            Failed to get field map
-            """.trimIndent()
+            "Failed to get field map"
         )
 
         val args = request.tag(Invocation::class.java)!!.arguments()
@@ -133,35 +109,6 @@ class GoogleFormHelper(
             throw IOException("Failed to submit '$formName' with data '$submitData'")
         }
     }
-
-    private fun saveFieldMap(formName: String, fieldMap: Map<String, String>) {
-        val fieldMapFile = getFieldMapFile(formName)
-        fieldMapFile.parentFile.mkdirs()
-        fieldMapFile.writeText(stringMapAdapter.toJson(fieldMap))
-    }
-
-    private fun getLocalFieldMap(formName: String): Map<String, String>? {
-        val isAndroid = try {
-            Class.forName(CONTEXT_CLASS)
-            true
-        } catch (e: ClassNotFoundException) {
-            false
-        }
-        return if (isAndroid) {
-            TODO("Android support to be implemented")
-        } else {
-            val localFile = getFieldMapFile(formName)
-            if (localFile.exists()) {
-                val fieldMapJson = localFile.readText()
-                stringMapAdapter.fromJson(fieldMapJson)
-            } else {
-                null
-            }
-        }
-    }
-
-    private fun getFieldMapFile(formName: String) =
-        File("${System.getProperty("user.dir")}/gen/field_maps/$formName.json")
 
     private fun getFieldMapFromUrl(chain: Interceptor.Chain, formUrl: String): Map<String, String>? {
 

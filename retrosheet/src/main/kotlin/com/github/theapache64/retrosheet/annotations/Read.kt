@@ -1,4 +1,4 @@
-package com.github.theapache64.retrosheet.core
+package com.github.theapache64.retrosheet.annotations
 
 /**
  * Created by theapache64 : Jul 25 Sat,2020 @ 22:33
@@ -6,4 +6,6 @@ package com.github.theapache64.retrosheet.core
 @MustBeDocumented
 @Target(AnnotationTarget.FUNCTION)
 @Retention
-annotation class Write
+annotation class Read(
+    val query: String
+)

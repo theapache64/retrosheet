@@ -1,4 +1,4 @@
-package com.github.theapache64.retrosheet.core
+package com.github.theapache64.retrosheet.annotations
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 03:08

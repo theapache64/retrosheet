@@ -1,6 +1,6 @@
 package com.github.theapache64.retrosheet.sample.raven
 
-import com.github.theapache64.retrosheet.core.Read
+import com.github.theapache64.retrosheet.annotations.Read
 import retrofit2.http.GET
 import retrofit2.http.Query
 
