@@ -15,7 +15,7 @@ fun main(args: Array<String>) = runBlocking {
         .setLogging(true)
         .addSheet(
             "groups",
-            "id", "group_name", "classes"
+            "id", "group_name", "files", "instructions"
         )
         .build()
 
