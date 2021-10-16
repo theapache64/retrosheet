@@ -44,6 +44,14 @@ object Notes {
         @Read("SELECT *")
         @GET("invalid_sheet") // sheet name
         suspend fun getNotesFromInvalidSheet(): List<Note>
+
+        /**
+         * To test failure scenario.
+         */
+        @Write
+        @POST("invalid_sheet") // form name
+        suspend fun addNoteToInvalidSheet(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
+
     }
 
     fun createApi(): NotesApi {
