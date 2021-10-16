@@ -90,7 +90,7 @@ dependencies {
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
     // Expekt : An assertion library for Kotlin
-    testImplementation 'com.github.theapache64:expekt:1.0.0'
+    testImplementation "com.github.theapache64:expekt:$expekt_version"
 
     // Mockito Core : Mockito mock objects library core API and implementation
     testImplementation 'org.mockito:mockito-inline:4.0.0'
