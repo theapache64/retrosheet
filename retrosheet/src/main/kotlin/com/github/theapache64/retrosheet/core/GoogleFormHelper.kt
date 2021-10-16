@@ -16,7 +16,6 @@ import retrofit2.Invocation
 
 /**
  * Created by theapache64 : Aug 08 Sat,2020 @ 00:09
- * TODO : Write test for this (blocker : Annotation testing)
  */
 class GoogleFormHelper(
     private val chain: Interceptor.Chain,

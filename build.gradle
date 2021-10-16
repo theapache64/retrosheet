@@ -15,7 +15,6 @@ group 'com.github.theapache64'
 version retrosheet_version
 
 
-// TODO: Use gradle.properties to get version from a single source of truth
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testImplementation "junit:junit:$junit_version"

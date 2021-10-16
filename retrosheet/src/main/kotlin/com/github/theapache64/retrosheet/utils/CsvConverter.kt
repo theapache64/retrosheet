@@ -28,8 +28,7 @@ object CsvConverter {
                             TypeIdentifier.isBoolean(
                                 value
                             ) -> {
-                                // TODO : Check why `!!` :O
-                                put(header, value!!.toBoolean())
+                                put(header, value.toBoolean())
                             }
 
                             TypeIdentifier.isDouble(
