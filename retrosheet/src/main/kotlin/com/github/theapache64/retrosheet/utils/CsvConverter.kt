@@ -48,7 +48,6 @@ object CsvConverter {
                             }
                         }
                     }
-
                 }
                 items.add(item)
             }
@@ -71,5 +70,4 @@ object CsvConverter {
             }
         }
     }
-
 }

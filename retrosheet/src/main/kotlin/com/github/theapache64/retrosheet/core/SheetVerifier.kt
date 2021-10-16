@@ -4,7 +4,7 @@ package com.github.theapache64.retrosheet.core
  * Created by theapache64 : Jul 21 Tue,2020 @ 23:01
  */
 class SheetVerifier(
-    private val map: Map<String, String>
+    private val keys: Set<String>
 ) {
     companion object {
         val RESERVED_WORDS = listOf(
@@ -38,16 +38,14 @@ class SheetVerifier(
     @Throws(IllegalArgumentException::class)
     fun verify(): Boolean {
 
-        // Checking if there's any reserved column name
-        for (entry in map) {
-            val isReservedWord = RESERVED_WORDS.contains(entry.key.toLowerCase())
-            require(!isReservedWord) { "'${entry.key}' can't be a column name. It's a reserved word" }
-        }
+        for (key in keys) {
+            // Checking if there's any reserved column name
+            val isReservedWord = RESERVED_WORDS.contains(key.lowercase())
+            require(!isReservedWord) { "'$key' can't be a column name. It's a reserved word" }
 
-        // Checking if there's any reserved chars
-        for (entry in map) {
-            val reservedChar = RESERVED_CHARS.find { entry.key.contains(it) }
-            require(reservedChar == null) { "'${entry.key}' can't contain '$reservedChar'. It's a reserved char" }
+            // Checking if there's any reserved chars
+            val reservedChar = RESERVED_CHARS.find { key.contains(it) }
+            require(reservedChar == null) { "'$key' can't contain '$reservedChar'. It's a reserved char" }
         }
 
         return true

@@ -17,5 +17,5 @@ interface HeadsApi {
 
     @Read("SELECT *")
     @GET("users")
-    fun getAllUsers() : Flow<Resource<List<User>>>
+    fun getAllUsers(): Flow<Resource<List<User>>>
 }

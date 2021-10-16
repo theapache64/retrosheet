@@ -131,7 +131,7 @@ private constructor(
 
         @Suppress("MemberVisibilityCanBePrivate")
         fun addSheet(sheetName: String, columnMap: Map<String, String>): Builder {
-            SheetVerifier(columnMap).verify()
+            SheetVerifier(columnMap.keys).verify()
             this.sheets[sheetName] = columnMap
             return this
         }

@@ -53,11 +53,11 @@ fun main() = runBlocking {
             products = """
                                   Product 1 - Quantity : 2 - Price : 200
                                   Product 2 - Quantity : 4 - Price : 400
-                              """.trimIndent(),
+            """.trimIndent(),
             txnDetails = """
                                   txnId : 7654534834568345
                                   txnFrom : theapache64@ybl
-                              """.trimIndent(),
+            """.trimIndent(),
             total = 600
         )
     )
