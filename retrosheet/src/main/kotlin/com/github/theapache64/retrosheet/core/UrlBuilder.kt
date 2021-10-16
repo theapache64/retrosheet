@@ -2,9 +2,9 @@ package com.github.theapache64.retrosheet.core
 
 import com.github.theapache64.retrosheet.annotations.Read
 import com.github.theapache64.retrosheet.annotations.SheetParams
+import java.net.URLEncoder
 import okhttp3.Request
 import retrofit2.Invocation
-import java.net.URLEncoder
 
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:06
@@ -14,7 +14,7 @@ class UrlBuilder(
     private val docId: String,
     private val sheetName: String,
     private val params: String,
-    private val sheets: Map<String, Map<String, String>>
+    private val queryMap: Map<String, String>
 ) {
     fun build(): String {
 
@@ -24,15 +24,13 @@ class UrlBuilder(
             StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
         var isQueryAdded = false
         request.tag(Invocation::class.java)?.method()?.getAnnotation(Read::class.java)
-            ?.let { params ->
+            ?.let { params: Read ->
 
                 if (params.query.isNotBlank()) {
                     // has smart query
-                    val page = sheets[sheetName]
-                        ?: throw IllegalArgumentException("Couldn't find smartQueryMap for pageName '$sheetName'")
                     val realQuery = QueryConverter(
                         params.query,
-                        page,
+                        queryMap,
                         paramMap
                     ).convert()
                     realUrlBuilder.append("&tq=$realQuery")
