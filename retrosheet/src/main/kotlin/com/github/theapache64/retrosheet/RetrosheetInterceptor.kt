@@ -1,8 +1,8 @@
 package com.github.theapache64.retrosheet
 
 import com.github.theapache64.retrosheet.annotations.KeyValue
+import com.github.theapache64.retrosheet.core.ColumnNameVerifier
 import com.github.theapache64.retrosheet.core.GoogleFormHelper
-import com.github.theapache64.retrosheet.core.SheetVerifier
 import com.github.theapache64.retrosheet.core.UrlBuilder
 import com.github.theapache64.retrosheet.data.ApiError
 import com.github.theapache64.retrosheet.data.ApiErrorJsonAdapter
@@ -131,7 +131,7 @@ private constructor(
 
         @Suppress("MemberVisibilityCanBePrivate")
         fun addSheet(sheetName: String, columnMap: Map<String, String>): Builder {
-            SheetVerifier(columnMap.keys).verify()
+            ColumnNameVerifier(columnMap.keys).verify()
             this.sheets[sheetName] = columnMap
             return this
         }
@@ -277,7 +277,7 @@ private constructor(
             docId,
             sheetName,
             params,
-            sheets
+            sheets[sheetName] ?: error("Couldn't find smartQueryMap for pageName '$sheetName'")
         ).build()
 
         if (isLoggingEnabled) {

@@ -3,7 +3,7 @@ package com.github.theapache64.retrosheet.core
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 23:01
  */
-class SheetVerifier(
+class ColumnNameVerifier(
     private val keys: Set<String>
 ) {
     companion object {

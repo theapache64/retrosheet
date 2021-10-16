@@ -7,5 +7,5 @@ package com.github.theapache64.retrosheet.annotations
 @Target(AnnotationTarget.FUNCTION)
 @Retention
 annotation class Read(
-    val query: String
+    val query: String = ""
 )

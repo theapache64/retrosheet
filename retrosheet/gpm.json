@@ -28,6 +28,20 @@
     "name": "Truth Core",
     "description": "Truth Core"
    }
+  },
+  {
+   "id": 3,
+   "type": "testImplementation",
+   "installed_name": "mockito",
+   "gpm_dep": {
+    "artifact_id": "mockito-core",
+    "default_type": "implementation",
+    "docs": "https://mvnrepository.com/artifact/org.mockito/mockito-core",
+    "get_from": "Central",
+    "group_id": "org.mockito",
+    "name": "Mockito Core",
+    "description": "Mockito mock objects library core API and implementation"
+   }
   }
  ]
 }
