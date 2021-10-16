@@ -77,15 +77,14 @@ publishing {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation "junit:junit:$junit_version"
 
     // FastCSV : Ultra fast and simple RFC 4180 compliant CSV library.
     implementation 'de.siegmar:fastcsv:2.0.0'
 
     // Retrofit : A type-safe HTTP client for Android and Java.
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
 
-    def moshi_version = '1.12.0'
     // Moshi : Moshi
     implementation "com.squareup.moshi:moshi:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"

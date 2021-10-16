@@ -18,32 +18,28 @@ version retrosheet_version
 // TODO: Use gradle.properties to get version from a single source of truth
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation "junit:junit:$junit_version"
 
     // Retrofit : A type-safe HTTP client for Android and Java.
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
 
     // Converter: Moshi : A Retrofit Converter which uses Moshi for serialization.
-    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
 
     // Kotlinx Coroutines Core : Coroutines support libraries for Kotlin
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8'
-
-    // Moshi Kotlin Codegen : Moshi Kotlin Codegen
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.12.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
     // Moshi : Moshi
-    implementation 'com.squareup.moshi:moshi:1.12.0'
-
-    // Converter: Scalars : A Retrofit Converter for Java's scalar value types.
-    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+    implementation "com.squareup.moshi:moshi:$moshi_version"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
     implementation project(':retrosheet')
     implementation project(':call-adapters')
 
 
     // OkHttp Logging Interceptor : Square’s meticulous HTTP client for Java and Kotlin.
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.8.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.2'
 }
 
 compileKotlin {
