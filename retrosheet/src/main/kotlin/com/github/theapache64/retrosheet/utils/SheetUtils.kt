@@ -4,7 +4,6 @@ package com.github.theapache64.retrosheet.utils
  * Created by theapache64 : Aug 01 Sat,2020 @ 10:10
  */
 object SheetUtils {
-    private const val ALPHABETS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     fun toLetterMap(vararg columns: String): Map<String, String> {
         return columns.mapIndexed { index, columnName ->
@@ -14,7 +13,6 @@ object SheetUtils {
 
     fun getLetterAt(_columnNumber: Int): String {
         var columnNumber = _columnNumber
-        // To store result (Excel column name)
         // To store result (Excel column name)
         val columnName = StringBuilder()
 
@@ -28,8 +26,6 @@ object SheetUtils {
                 columnNumber /= 26
             }
         }
-
-        // Reverse the string and print result
 
         // Reverse the string and print result
         return columnName.reverse().toString()

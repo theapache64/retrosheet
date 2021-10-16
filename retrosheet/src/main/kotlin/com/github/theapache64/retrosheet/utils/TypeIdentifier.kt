@@ -5,6 +5,10 @@ package com.github.theapache64.retrosheet.utils
  */
 object TypeIdentifier {
     fun isDouble(field: String): Boolean {
+        if (!field.contains(".")) {
+            return false
+        }
+
         return try {
             field.toDouble()
             true
