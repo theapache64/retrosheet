@@ -32,11 +32,9 @@ object Notes {
         @GET(SHEET_NAME) // sheet name
         suspend fun getNotes(): List<Note>
 
-
         @Write
         @POST(ADD_NOTE_ENDPOINT) // form name
         suspend fun addNote(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
-
 
         /**
          * To test failure scenario.
@@ -51,7 +49,6 @@ object Notes {
         @Write
         @POST("invalid_sheet") // form name
         suspend fun addNoteToInvalidSheet(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
-
     }
 
     fun createApi(): NotesApi {
