@@ -210,7 +210,7 @@ fun main() = runBlocking {
 
 ## TODO ☑️
 
-- Create an online tool to generate model class from sheet link
+- [ ] Add `git` hook instruction (ktlint)
 
 ## Contributing
 This project is applying [`ktlint`](https://ktlint.github.io/) (without import ordering since it's conflicted with IDE's 
