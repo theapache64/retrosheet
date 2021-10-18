@@ -42,4 +42,17 @@ class QueryConverterTest {
         val actualOutput = QueryConverter(input, emptyMap(), paramMap).convert()
         actualOutput.should.equal("SELECT * WHERE foo = 'a' AND bar = 'b'")
     }
+
+    @Test
+    fun `Strings are surrounded by single quotes and numbers are surrounded by nothing`() {
+        val input =
+            "SELECT * WHERE my_string = :my_string AND my_int = :my_int AND my_double = :my_double"
+        val paramMap = mapOf(
+            "my_string" to "com.truecaller",
+            "my_int" to "3",
+            "my_double" to "3.14"
+        )
+        val actualOutput = QueryConverter(input, emptyMap(), paramMap).convert()
+        actualOutput.should.equal("SELECT * WHERE my_string = 'com.truecaller' AND my_int = 3 AND my_double = 3.14")
+    }
 }

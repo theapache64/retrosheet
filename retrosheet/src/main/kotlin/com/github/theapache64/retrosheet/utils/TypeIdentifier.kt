@@ -31,6 +31,6 @@ object TypeIdentifier {
     }
 
     fun isNumber(value: String): Boolean {
-        return isDouble(value)
+        return isDouble(value) || isInteger(value)
     }
 }

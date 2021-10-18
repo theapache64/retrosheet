@@ -15,7 +15,7 @@ class ReadTest {
 
     @Test
     fun `Reads data`() = runBlockingTest {
-        notesApi.getNote("Do not delete this row")?.description.should
+        notesApi.getNote("Do not delete this row").description.should
             .equal("This is custom desc")
         Unit
     }
