@@ -39,7 +39,7 @@ dependencies {
 
 
     // OkHttp Logging Interceptor : Square’s meticulous HTTP client for Java and Kotlin.
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
 
     //Expekt
     testImplementation "com.github.theapache64:expekt:$expekt_version"
