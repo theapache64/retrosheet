@@ -2,14 +2,13 @@ package com.github.theapache64.retrosheet.sample.boil
 
 import com.github.theapache64.retrofit.calladapter.flow.FlowResourceCallAdapterFactory
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
-fun main(args: Array<String>) = runBlocking {
+fun main() = runBlocking {
 
     val retrosheetInterceptor = RetrosheetInterceptor.Builder()
         .setLogging(true)
