@@ -208,10 +208,6 @@ fun main() = runBlocking {
 - [Nemo](https://github.com/theapache64/nemo) - Android App :  E-Commerce App
 - [More JVM Samples](https://github.com/theapache64/retrosheet/tree/master/src/main/kotlin/com/github/theapache64/retrosheet/sample)
 
-## TODO ☑️
-
-- [ ] Add `git` hook instruction (ktlint)
-
 ## Contributing
 This project is applying [`ktlint`](https://ktlint.github.io/) (without import ordering since it's conflicted with IDE's 
 format). Before creating a PR, please make sure your code is aligned with `ktlint` (`./gradlew ktlint`).
