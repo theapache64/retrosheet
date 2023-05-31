@@ -6,11 +6,11 @@ Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
 
 ## Benefits 🤗
 
-- No worries about server health (because you're using Google's server 😋)
-- Rapid response and unlimited bandwidth
-- You can easily migrate to your REST API without any significant code change.
-- You don't have to create an admin panel/dashboard to control the data. You can simply use Google Spreadsheet app (web/mobile).
-- You can use this library to create POC/MVP instantly
+- No worries about server health because you're using Google's server 😋
+- Enjoy rapid response times and unlimited bandwidth.
+- Easily migrate to your REST API without significant code changes.
+- No need to create an admin panel or dashboard to control the data; simply use the Google Spreadsheet app on the web or mobile.
+- Accelerate your Proof of Concept (POC) or Minimum Viable Product (MVP) development with this library.
 
 ## Install 🤝
 
