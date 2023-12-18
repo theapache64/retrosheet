@@ -6,11 +6,11 @@ Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
 
 ## Benefits 🤗
 
-- No worries about server health because you're using Google's server 😋
-- Enjoy rapid response times and unlimited bandwidth.
-- Easily migrate to your REST API without significant code changes.
-- No need to create an admin panel or dashboard to control the data; simply use the Google Spreadsheet app on the web or mobile.
-- Accelerate your Proof of Concept (POC) or Minimum Viable Product (MVP) development with this library.
+- 🚀 Use Google's server for reliable performance.
+- ⚡ Benefit from fast responses and no bandwidth limits.
+- 🔄 Migrate to your REST API with minimal code changes.
+- 📊 Manage data directly through the Google Spreadsheet app.
+- 🏃‍♂️ Speed up development of your POC or MVP with this library.
 
 ## Install 🤝
 
@@ -23,119 +23,80 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.github.theapache64:retrosheet:latest.version'
+  implementation 'com.github.theapache64:retrosheet:<latest.version>'
 }
 ```
+
 ## Usage ⌨️
 
-### How to write data ? ✍️
+### Writing Data ✍️
 
-#### Step 1 : Writing Data To Sheet
+#### Step 1: Create a Google Form 📝
+Create a form with required fields.
+![Google Form](https://i.imgur.com/9PeK2EQ.png)
 
-- [Create a Google Form](https://docs.google.com/forms/u/0/) with some fields
-  ![](https://i.imgur.com/9PeK2EQ.png)
+#### Step 2: Set Response Destination 🎯
+Choose a Google Sheet to save responses.
+![Response Destination](https://i.imgur.com/fIzWiN5.png)
+![Sheet Selection](https://i.imgur.com/7ASAB55.png)
 
-#### Step 2
+#### Step 3: Customize Sheet 📊
+Rename sheet and columns (optional).
+![Before](https://i.imgur.com/keT8P1o.png)
+![After](https://i.imgur.com/N6xfuZK.png)
 
-- Select response destination and select/create a Google sheet to store the responses.
-  ![](https://i.imgur.com/fIzWiN5.png)
-  ![](https://i.imgur.com/7ASAB55.png)
+#### Step 4: Get Form Link 🔗
+Press `Send` and copy the link.
+![Form Link](https://i.imgur.com/veATAn5.png)
 
-#### Step 3
-
-- Now you can open the sheet and change sheet name and column names if you want. This is just to make the Google sheet
-  table look like a real database table (optional)
-
-I've changed
-![](https://i.imgur.com/keT8P1o.png)
-to
-![](https://i.imgur.com/N6xfuZK.png)
-
-#### Step 4
-
-- Next, Press the `Send` button and copy the form link
-
-![](https://i.imgur.com/veATAn5.png)
-
-#### Step 5
-
-- Now let's go to our code and create our `RetrosheetInterceptor`
-
+#### Step 5: Create `RetrosheetInterceptor` 🔧
 ```kotlin
 val retrosheetInterceptor = RetrosheetInterceptor.Builder()
     .setLogging(false)
-    // To Read
-    .addSheet(
-        "notes", // sheet name
-        "created_at", "title", "description" // columns in same order
-    )
-    // To write
-    .addForm(
-        ADD_NOTE_ENDPOINT,
-        "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
-    )
+    .addSheet("notes", "created_at", "title", "description")
+    .addForm(ADD_NOTE_ENDPOINT, "Form Link")
+    .build()
+
+val okHttpClient = OkHttpClient.Builder()
+    .addInterceptor(retrosheetInterceptor) // and attach the interceptor
     .build()
 ```
 
-#### Step 6
-
-- Next, let's create a normal Retrofit API interface
-
+#### Step 6: Create API Interface 🌐
 ```kotlin
 interface NotesApi {
-
     @Read("SELECT *") 
-    @GET("notes") // sheet name
+    @GET("notes")
     suspend fun getNotes(): List<Note>
 
     @Write
-    @POST(ADD_NOTE_ENDPOINT) // form name
+    @POST(ADD_NOTE_ENDPOINT)
     suspend fun addNote(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
 }
 ```
 
-- **@Write** : To write data to a sheet
 
-- **@Read** : To read data from a sheet.
+> **@Write** is used for writing data and **@Read**: for reading data
 
-You can lean more about query language from here : https://developers.google.com/chart/interactive/docs/querylanguage.
+[Query Language Guide](https://developers.google.com/chart/interactive/docs/querylanguage)
 
-**NOTE**: You can use your column name in the query rather than using column letter such as `A,B,C` etc.
+### Reading Data 📖
 
-### How to read data ? 📖
+#### Step 7: Share Sheet 🔄
+Open a sheet and copy its shareable link.
+![Copy Link](https://i.imgur.com/MNYD7mg.png)
 
-#### Step 7 : Reading data from Sheet
+### Step 8: Edit Link ✂️
+Trim the link after the last '/'.
 
-- We're done configuring the writing part. Now let's finish the reading part. Create/open a google sheet, (it can be
-  either form connected, or a simple Google sheet).
+`https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ`~~/edit?usp=sharing~~
 
-- Press **Share** and copy the link
 
-![copy-link](https://i.imgur.com/MNYD7mg.png)
+### Step 9: Set Base URL 🔗
+Use the trimmed link as `baseUrl` in `Retrofit` or `OkHttp`.
+![Set Base URL](https://i.imgur.com/tFMNEC4.png)
 
-### Step 8
-
-- Remove contents after the last forward slash from the copied link.
-
-For example, this
-
-```
-https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/edit?usp=sharing
-```
-
-would become this
-
-```
-https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/
-```
-
-### Step 9
-
-- Finally, Set the `Retrofit` or `OkHttp`'s `baseUrl` with the above link.
-
-![baseUrl](https://i.imgur.com/tFMNEC4.png)
-
-Done 👍
+**Done 👍**
 
 ## Full Example 🌟
 
