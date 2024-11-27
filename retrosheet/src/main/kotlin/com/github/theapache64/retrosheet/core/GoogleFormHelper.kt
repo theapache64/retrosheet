@@ -2,7 +2,7 @@ package com.github.theapache64.retrosheet.core
 
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.github.theapache64.retrosheet.annotations.Write
-import com.github.theapache64.retrosheet.utils.MoshiUtils
+import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -20,8 +20,24 @@ import retrofit2.Invocation
 class GoogleFormHelper(
     private val chain: Interceptor.Chain,
     private val request: Request,
-    private val retrosheetInterceptor: RetrosheetInterceptor
+    private val retrosheetInterceptor: RetrosheetInterceptor,
 ) {
+
+
+    private val stringMapAdapter by lazy {
+        val mapType = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
+        retrosheetInterceptor.moshi.adapter<Map<String, String>>(mapType)
+    }
+
+    private val listAdapter by lazy {
+        val type = Types.newParameterizedType(List::class.java, Object::class.java)
+        retrosheetInterceptor.moshi.adapter<List<Any>>(type)
+    }
+
+    private val anyAdapter by lazy {
+        retrosheetInterceptor.moshi.adapter(Any::class.java)
+    }
+
     companion object {
 
         private const val FORM_DATA_SPLIT_1 = "FB_PUBLIC_LOAD_DATA_"
@@ -29,19 +45,6 @@ class GoogleFormHelper(
 
         const val SOLUTION_UPDATE = "Please update retrosheet to latest version."
 
-        private val stringMapAdapter by lazy {
-            val mapType = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
-            MoshiUtils.moshi.adapter<Map<String, String>>(mapType)
-        }
-
-        private val listAdapter by lazy {
-            val type = Types.newParameterizedType(List::class.java, Object::class.java)
-            MoshiUtils.moshi.adapter<List<Any>>(type)
-        }
-
-        private val anyAdapter by lazy {
-            MoshiUtils.moshi.adapter(Any::class.java)
-        }
 
         fun isGoogleFormSubmit(request: Request): Boolean {
             val isForm = (request.tag(Invocation::class.java)?.method()?.getAnnotation(Write::class.java) != null)

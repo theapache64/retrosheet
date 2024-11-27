@@ -10,8 +10,8 @@ import com.github.theapache64.retrosheet.data.SheetErrorJsonAdapter
 import com.github.theapache64.retrosheet.utils.CsvConverter
 import com.github.theapache64.retrosheet.utils.JsonValidator
 import com.github.theapache64.retrosheet.utils.KeyValueUtils
-import com.github.theapache64.retrosheet.utils.MoshiUtils
 import com.github.theapache64.retrosheet.utils.SheetUtils
+import com.squareup.moshi.Moshi
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import java.net.HttpURLConnection
@@ -32,8 +32,17 @@ class RetrosheetInterceptor
 private constructor(
     val isLoggingEnabled: Boolean = false,
     private val sheets: Map<String, Map<String, String>>,
-    val forms: Map<String, String>
+    val forms: Map<String, String>,
+    internal val moshi: Moshi
 ) : Interceptor {
+
+    private val sheetErrorJsonAdapter by lazy {
+        SheetErrorJsonAdapter(moshi)
+    }
+
+    private val apiErrorJsonAdapter by lazy {
+        ApiErrorJsonAdapter(moshi)
+    }
 
     companion object {
         private val TAG = RetrosheetInterceptor::class.java.simpleName
@@ -46,14 +55,6 @@ private constructor(
 
         private val URL_REGEX by lazy {
             "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<params>.+)".toRegex()
-        }
-
-        private val sheetErrorJsonAdapter by lazy {
-            SheetErrorJsonAdapter(MoshiUtils.moshi)
-        }
-
-        private val apiErrorJsonAdapter by lazy {
-            ApiErrorJsonAdapter(MoshiUtils.moshi)
         }
 
         private fun isReturnTypeList(request: Request): Boolean {
@@ -115,17 +116,24 @@ private constructor(
         private val sheets = mutableMapOf<String, Map<String, String>>()
         private val forms = mutableMapOf<String, String>()
         private var isLoggingEnabled: Boolean = false
+        private var moshi = Moshi.Builder().build()
 
         fun build(): RetrosheetInterceptor {
             return RetrosheetInterceptor(
                 isLoggingEnabled,
                 sheets,
-                forms
+                forms,
+                moshi
             )
         }
 
         fun setLogging(isLoggingEnabled: Boolean): Builder {
             this.isLoggingEnabled = isLoggingEnabled
+            return this
+        }
+
+        fun setMoshi(moshi: Moshi): Builder {
+            this.moshi = moshi
             return this
         }
 
@@ -184,7 +192,7 @@ private constructor(
         val responseBuilder = response.newBuilder()
 
         // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
-        val isSpreadsheetError = JsonValidator.isValidJsonObject(responseBody)
+        val isSpreadsheetError = JsonValidator.isValidJsonObject(responseBody, moshi)
         if (isSpreadsheetError) {
             // It's the spreadsheet error. let's parse it.
 
@@ -222,7 +230,7 @@ private constructor(
                 responseBody = KeyValueUtils.transform(responseBody)
             }
 
-            val csvJson = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request))
+            val csvJson = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request), moshi)
             if (csvJson != null) {
                 jsonRoot = csvJson
                 if (isLoggingEnabled) {

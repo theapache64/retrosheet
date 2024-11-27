@@ -1,5 +1,6 @@
 package com.github.theapache64.retrosheet.utils
 
+import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import de.siegmar.fastcsv.reader.NamedCsvReader
 
@@ -9,7 +10,8 @@ import de.siegmar.fastcsv.reader.NamedCsvReader
 object CsvConverter {
     fun convertCsvToJson(
         csvData: String,
-        isReturnTypeList: Boolean
+        isReturnTypeList: Boolean,
+        moshi: Moshi
     ): String? {
         val items = mutableListOf<Map<String, Any?>>()
 
@@ -54,13 +56,13 @@ object CsvConverter {
         return when {
             isReturnTypeList -> {
                 val type = Types.newParameterizedType(List::class.java, Map::class.java)
-                val adapter = MoshiUtils.moshi.adapter<List<Map<String, Any?>>>(type)
+                val adapter = moshi.adapter<List<Map<String, Any?>>>(type)
                 adapter.toJson(items)
             }
 
             items.isNotEmpty() -> {
                 val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
-                val adapter = MoshiUtils.moshi.adapter<Map<String, Any?>>(type)
+                val adapter = moshi.adapter<Map<String, Any?>>(type)
                 adapter.toJson(items.first())
             }
 
