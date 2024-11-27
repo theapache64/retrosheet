@@ -2,7 +2,6 @@ package com.github.theapache64.retrosheet.core
 
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.github.theapache64.retrosheet.annotations.Write
-import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -22,7 +21,6 @@ class GoogleFormHelper(
     private val request: Request,
     private val retrosheetInterceptor: RetrosheetInterceptor,
 ) {
-
 
     private val stringMapAdapter by lazy {
         val mapType = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
@@ -44,7 +42,6 @@ class GoogleFormHelper(
         private const val FORM_DATA_SPLIT_2 = "</script>"
 
         const val SOLUTION_UPDATE = "Please update retrosheet to latest version."
-
 
         fun isGoogleFormSubmit(request: Request): Boolean {
             val isForm = (request.tag(Invocation::class.java)?.method()?.getAnnotation(Write::class.java) != null)

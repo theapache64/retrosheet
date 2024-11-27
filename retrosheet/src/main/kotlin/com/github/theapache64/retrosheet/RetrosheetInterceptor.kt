@@ -132,6 +132,7 @@ private constructor(
             return this
         }
 
+        @Suppress("unused")
         fun setMoshi(moshi: Moshi): Builder {
             this.moshi = moshi
             return this
