@@ -15,13 +15,14 @@ class WriteTest {
     @Test
     fun `Writes data`() = runBlockingTest {
         //Write data
-        val noteTitle = "Title - ${java.util.UUID.randomUUID()}"
-        notesApi.addNote(
-            AddNoteRequest(noteTitle, "Dynamic Desc 1: ${Date()}")
-        )
+        val request = AddNoteRequest("Titlé - ${java.util.UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
+        notesApi.addNote(request)
 
         // Read data
-        notesApi.getNote(noteTitle).should.not.`null`
+        val remoteNote = notesApi.getNote(request.title)
+        remoteNote.should.not.`null`
+        remoteNote.title.should.equal(request.title)
+        remoteNote.description.should.equal(request.description)
     }
 
     @Test(expected = IOException::class)

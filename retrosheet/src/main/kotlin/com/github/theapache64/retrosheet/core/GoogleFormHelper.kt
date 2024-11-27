@@ -6,10 +6,10 @@ import com.github.theapache64.retrosheet.utils.MoshiUtils
 import com.squareup.moshi.Types
 import java.io.IOException
 import java.net.HttpURLConnection
+import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Invocation
@@ -84,18 +84,16 @@ class GoogleFormHelper(
         // Sending post to google forms
         val lastSlashIndex = formUrl.lastIndexOf('/')
         val submitUrl = formUrl.substring(0, lastSlashIndex) + "/formResponse"
-
-        val mediaType: MediaType? = MediaType.parse("application/x-www-form-urlencoded")
-        val submitData = submitMap.map { it.key + "=" + it.value }.joinToString("&")
-
-        val body = RequestBody.create(
-            mediaType,
-            submitData
-        )
+        val formBody = FormBody.Builder()
+            .apply {
+                for ((key, value) in submitMap) {
+                    add(key, value)
+                }
+            }.build()
         val formSubmitRequest = Request.Builder()
             .url(submitUrl)
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
-            .method("POST", body)
+            .method("POST", formBody)
             .build()
 
         val formResp = chain.proceed(formSubmitRequest)
@@ -106,7 +104,8 @@ class GoogleFormHelper(
                 .body(ResponseBody.create(respType, requestJson))
                 .build()
         } else {
-            throw IOException("Failed to submit '$formName' with data '$submitData'")
+            val debugData = submitMap.map { it.key + "=" + it.value }.joinToString("&")
+            throw IOException("Failed to submit '$formName' with data '$debugData'")
         }
     }
 

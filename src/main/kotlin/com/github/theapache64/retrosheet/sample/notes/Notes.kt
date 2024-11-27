@@ -88,7 +88,7 @@ fun main() = runBlocking {
 
     // Adding sample order
     val addNote = notesApi.addNote(
-        AddNoteRequest("Dynamic Note 1", "Dynamic Desc 1: ${java.util.Date()}")
+        AddNoteRequest("Dynamic Note 1", "Dynámic Desc 1: ${java.util.Date()}")
     )
 
     println(addNote)
