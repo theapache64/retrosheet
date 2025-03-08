@@ -2,13 +2,20 @@ import org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDepen
 
 plugins {
     alias(libs.plugins.multiplatform)
-    kotlin("kapt") version "1.9.25"
+    alias(libs.plugins.kapt)
 }
 
 kotlin {
-    jvm()
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+        withJava()
+    }
 
-    js {
+/*    js {
         browser()
         binaries.executable()
     }
@@ -22,7 +29,7 @@ kotlin {
             baseName = "Retrosheet Sample"
             isStatic = true
         }
-    }
+    }*/
 
     sourceSets {
         commonMain.dependencies {
@@ -38,6 +45,8 @@ kotlin {
         }
 
         jvmMain.dependencies {
+            implementation(project(":retrosheet"))
+
             implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.25")
 
             // Retrofit : A type-safe HTTP client for Android and Java.
@@ -51,21 +60,20 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
             // Moshi : Moshi
-            implementation("com.squareup.moshi:moshi:1.15.0")
-            configurations["kapt"]?.dependencies?.add(project.dependencies.create("com.squareup.moshi:moshi-kotlin-codegen:1.15.0"))
+            implementation("com.squareup.moshi:moshi:1.15.2")
+            configurations["kapt"]?.dependencies?.add(project.dependencies.create("com.squareup.moshi:moshi-kotlin-codegen:1.15.2"))
 
-            implementation(project(":retrosheet"))
 
 
             // OkHttp Logging Interceptor : Square’s meticulous HTTP client for Java and Kotlin.
             implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
         }
 
-        jsMain.dependencies {
+        /*jsMain.dependencies {
         }
 
         iosMain.dependencies {
-        }
+        }*/
 
     }
 }

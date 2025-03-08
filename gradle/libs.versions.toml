@@ -4,7 +4,7 @@ kotlin = "1.9.25"
 publish = "0.25.3"
 
 [libraries]
-moshiCodegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version = "1.15.0" }
+moshiCodegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version = "1.15.2" }
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

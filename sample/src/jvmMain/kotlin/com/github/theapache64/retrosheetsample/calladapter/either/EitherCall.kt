@@ -1,5 +1,7 @@
-package com.github.theapache64.retrofit.calladapter.either
+package com.github.theapache64.retrosheetsample.calladapter.either
 
+import com.github.theapache64.retrofit.calladapter.either.CallDelegate
+import com.github.theapache64.retrofit.calladapter.either.Either
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okio.Timeout

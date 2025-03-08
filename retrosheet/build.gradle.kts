@@ -1,15 +1,20 @@
-import org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDependency
-
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.publish)
-    kotlin("kapt") version "1.9.25"
+    alias(libs.plugins.kapt)
 }
 
 kotlin {
-    jvm()
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+        }
+        withJava()
+    }
 
-    js {
+    /*js {
         browser()
         binaries.executable()
     }
@@ -23,7 +28,7 @@ kotlin {
             baseName = "retrosheet"
             isStatic = true
         }
-    }
+    }*/
 
     sourceSets {
         commonMain.dependencies {
@@ -39,8 +44,8 @@ kotlin {
             implementation("de.siegmar:fastcsv:2.1.0")
             implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
-            implementation("com.squareup.moshi:moshi:1.15.0")
-            configurations["kapt"]?.dependencies?.add(project.dependencies.create("com.squareup.moshi:moshi-kotlin-codegen:1.15.0"))
+            implementation("com.squareup.moshi:moshi:1.15.2")
+            configurations["kapt"]?.dependencies?.add(project.dependencies.create("com.squareup.moshi:moshi-kotlin-codegen:1.15.2"))
         }
 
         jvmTest.dependencies {
@@ -49,11 +54,11 @@ kotlin {
             implementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
         }
 
-        jsMain.dependencies {
+        /*jsMain.dependencies {
         }
 
         iosMain.dependencies {
-        }
+        }*/
 
     }
 }

@@ -1,5 +1,6 @@
 package com.github.theapache64.retrofit.calladapter.either
 
+import com.github.theapache64.retrosheetsample.calladapter.either.EitherCall
 import retrofit2.Call
 import retrofit2.CallAdapter
 import java.lang.reflect.Type
