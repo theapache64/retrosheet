@@ -1,4 +1,0 @@
-rootProject.name = 'retrosheet-library'
-include 'retrosheet'
-include 'call-adapters'
-
