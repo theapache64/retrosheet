@@ -1,6 +1,5 @@
-rootProject.name = "retrosheet-library"
-include(":retrosheet")
-include(":call-adapters")
+rootProject.name = "retrosheet"
+include(":library")
 include(":sample")
 
 pluginManagement {

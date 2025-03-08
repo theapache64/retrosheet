@@ -2,8 +2,15 @@
 
 kotlin = "2.1.10"
 publish = "0.25.3"
+expekt = "1.0.0"
+retrofit = "2.11.0"
 
 [libraries]
+expekt = { group = "com.github.theapache64", name = "expekt", version.ref="expekt" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref="retrofit" }
+retrofit-scalar = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref="retrofit" }
+retrofit-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref="retrofit" }
+
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

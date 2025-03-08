@@ -2,7 +2,7 @@
   <artifact type="jar" name="sample-jvm">
     <output-path>$PROJECT_DIR$/sample/build/libs</output-path>
     <root id="archive" name="sample-jvm.jar">
-      <element id="module-output" name="retrosheet-library.sample.jvmMain" />
+      <element id="module-output" name="retrosheet.sample.jvmMain" />
     </root>
   </artifact>
 </component>

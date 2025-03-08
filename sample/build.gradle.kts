@@ -37,16 +37,16 @@ kotlin {
         jvmTest.dependencies {
             implementation("junit:junit:4.13.2")
 
-            implementation("com.github.theapache64:expekt:1.0.0")
+            implementation(libs.expekt)
         }
 
         jvmMain.dependencies {
-            implementation(project(":retrosheet"))
+            implementation(project(":library"))
 
             // Retrofit : A type-safe HTTP client for Android and Java.
-            implementation("com.squareup.retrofit2:retrofit:2.11.0")
-            implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
-            implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
+            implementation(libs.retrofit)
+            implementation(libs.retrofit.scalar)
+            implementation(libs.retrofit.serialization)
 
             // Kotlinx Coroutines Core : Coroutines support libraries for Kotlin
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
