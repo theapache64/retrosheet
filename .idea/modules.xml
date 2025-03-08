@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/retrosheet.iml" filepath="$PROJECT_DIR$/.idea/retrosheet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/retrosheet-library.sample.jvmTest.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/retrosheet-library.sample.jvmTest.iml" />
     </modules>
   </component>
 </project>

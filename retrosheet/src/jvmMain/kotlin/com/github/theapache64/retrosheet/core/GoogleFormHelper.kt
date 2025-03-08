@@ -4,6 +4,14 @@ import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.github.theapache64.retrosheet.annotations.Write
 import java.io.IOException
 import java.net.HttpURLConnection
+import javax.swing.UIManager.put
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.serializer
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MediaType
@@ -15,7 +23,7 @@ import retrofit2.Invocation
 /**
  * Created by theapache64 : Aug 08 Sat,2020 @ 00:09
  */
-class GoogleFormHelper(
+internal class GoogleFormHelper(
     private val chain: Interceptor.Chain,
     private val request: Request,
     private val retrosheetInterceptor: RetrosheetInterceptor,
@@ -54,7 +62,9 @@ class GoogleFormHelper(
             throw IllegalArgumentException("No argument passed. Param with @Body must be passed")
         }
         val arg = args.first()!!
-        val requestJson = json.encodeToString(arg)
+        // Convert arg to a JsonElement first
+        val serializer = serializer(arg::class.java)
+        val requestJson = json.encodeToString(serializer, arg)
         val submitMap = requestJson.run {
             val keyValues = json.decodeFromString<Map<String, String>>(this)
             val submitMap = mutableMapOf<String, String>()
@@ -116,18 +126,22 @@ class GoogleFormHelper(
                     val lsb = s3.lastIndexOf(']')
                     val pageDataJson = s3.substring(fsb, lsb + 1).trim()
                     val pageData = kotlin.runCatching {
-                        json.decodeFromString<List<Any>>(pageDataJson)
+                        json.parseToJsonElement(pageDataJson)
                     }.getOrElse { error ->
                         throw IOException("Failed to decode google form data: ${error.message}")
                     }
-                    val formInfo = pageData[1]
-                    if (formInfo is List<*>) {
+                    val formInfo = if (pageData is JsonArray) {
+                        pageData[1]
+                    } else {
+                        null
+                    }
+                    if (formInfo is JsonArray) {
                         val columns = formInfo[1] ?: throwDataExpectationFailure()
-                        if (columns is List<*>) {
+                        if (columns is JsonArray) {
                             val fields = mutableMapOf<String, String>()
                             columns.forEach { _column ->
                                 val column = _column as List<*>
-                                val columnName = column[1] as String
+                                val columnName = (column[1] as JsonElement).jsonPrimitive.content
                                 // 400
                                 val columnIdInDouble = (((column[4] as List<*>)[0] as List<*>)[0]).toString().toDouble()
                                 val columnId = String.format("%.0f", columnIdInDouble)

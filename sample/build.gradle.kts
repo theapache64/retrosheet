@@ -6,11 +6,6 @@ plugins {
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
-        }
         withJava()
     }
 
@@ -41,6 +36,8 @@ kotlin {
         }
         jvmTest.dependencies {
             implementation("junit:junit:4.13.2")
+
+            implementation("com.github.theapache64:expekt:1.0.0")
         }
 
         jvmMain.dependencies {
