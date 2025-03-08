@@ -2,6 +2,7 @@ package com.github.theapache64.retrosheet.utils
 
 import com.github.theapache64.expekt.should
 import de.siegmar.fastcsv.reader.MalformedCsvException
+import kotlinx.serialization.json.Json
 import org.junit.Test
 
 class CsvConverterTest {
@@ -14,7 +15,10 @@ class CsvConverterTest {
             bob,20
         """.trimIndent()
 
-        val actualOutput = CsvConverter.convertCsvToJson(fakeCsvData, true)
+        val actualOutput = CsvConverter.convertCsvToJson(fakeCsvData, true, Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        })
         val expectedOutput = """[{"user":"jake","age":31},{"user":"adam","age":30},{"user":"bob","age":20}]"""
         actualOutput.should.equal(expectedOutput)
     }
@@ -26,6 +30,9 @@ class CsvConverterTest {
             jake
         """.trimIndent()
 
-        CsvConverter.convertCsvToJson(fakeCsvData, true)
+        CsvConverter.convertCsvToJson(fakeCsvData, true, Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        })
     }
 }

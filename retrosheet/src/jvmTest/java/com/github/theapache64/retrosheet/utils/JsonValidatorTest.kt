@@ -1,13 +1,18 @@
 package com.github.theapache64.retrosheet.utils
 
 import com.github.theapache64.expekt.should
+import kotlinx.serialization.json.Json
 import org.junit.Test
 
 class JsonValidatorTest {
     @Test
     fun `Valid simple JSON`() {
         JsonValidator.isValidJsonObject(
-            """{ "name": "Jake", "age" : 31 }"""
+            """{ "name": "Jake", "age" : 31 }""",
+            Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            }
         ).should.`true`
     }
 
@@ -41,13 +46,20 @@ class JsonValidatorTest {
               ]
             } 
         """.trimIndent()
-        JsonValidator.isValidJsonObject(complexJson).should.`true`
+        JsonValidator.isValidJsonObject(complexJson, Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }).should.`true`
     }
 
     @Test
     fun `Invalid JSON`() {
         JsonValidator.isValidJsonObject(
-            """{ "age : 31 }"""
+            """{ "age : 31 }""",
+            Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            }
         ).should.`false`
     }
 }
