@@ -60,7 +60,7 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
             // Moshi : Moshi
-            implementation("com.squareup.moshi:moshi:1.15.2")
+            implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
             configurations["kapt"]?.dependencies?.add(project.dependencies.create("com.squareup.moshi:moshi-kotlin-codegen:1.15.2"))
 
 
