@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="retrosheet-jvm">
+    <output-path>$PROJECT_DIR$/retrosheet/build/libs</output-path>
+    <root id="archive" name="retrosheet-jvm.jar">
+      <element id="module-output" name="retrosheet-library.retrosheet.jvmMain" />
+    </root>
+  </artifact>
+</component>
