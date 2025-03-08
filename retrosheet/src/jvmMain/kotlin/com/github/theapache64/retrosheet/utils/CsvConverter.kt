@@ -5,6 +5,9 @@ package com.github.theapache64.retrosheet.utils
 import de.siegmar.fastcsv.reader.NamedCsvReader
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:05
@@ -16,39 +19,31 @@ internal object CsvConverter {
         isReturnTypeList: Boolean,
         json: Json
     ): String? {
-        val items = mutableListOf<Map<String, Any?>>()
+        val items = mutableListOf<JsonObject>()
 
         NamedCsvReader.builder()
             .build(csvData)
             .forEach { row ->
-                val item = mutableMapOf<String, Any?>().apply {
+                val item = buildJsonObject {
                     for ((header, value) in row.fields) {
                         when {
-                            TypeIdentifier.isInteger(
-                                value
-                            ) -> {
-                                put(header, value.toLong())
+                            TypeIdentifier.isInteger(value) -> {
+                                put(header, JsonPrimitive(value.toLong()))
                             }
 
-                            TypeIdentifier.isBoolean(
-                                value
-                            ) -> {
-                                put(header, value.toBoolean())
+                            TypeIdentifier.isBoolean(value) -> {
+                                put(header, JsonPrimitive(value.toBoolean()))
                             }
 
-                            TypeIdentifier.isDouble(
-                                value
-                            ) -> {
-                                put(header, value.toDouble())
+                            TypeIdentifier.isDouble(value) -> {
+                                put(header, JsonPrimitive(value.toDouble()))
                             }
-
                             else -> {
-                                val finalValue = if (value.isNullOrBlank()) {
-                                    null
+                                if (value.isNullOrBlank()) {
+                                    put(header, JsonPrimitive(null))
                                 } else {
-                                    value
+                                    put(header, JsonPrimitive(value))
                                 }
-                                put(header, finalValue)
                             }
                         }
                     }
