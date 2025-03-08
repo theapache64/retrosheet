@@ -1,11 +1,11 @@
-package com.github.theapache64.retrofit.calladapter.flow
+package com.github.theapache64.retrosheetsample.calladapter.flow
 
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 import kotlinx.coroutines.flow.Flow
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory
 import retrofit2.Retrofit
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
 
 class FlowResourceCallAdapterFactory(
     private val isSelfExceptionHandling: Boolean = true

@@ -1,18 +1,18 @@
 package com.github.theapache64.retrosheet.utils
 
-import com.squareup.moshi.JsonClass
-import com.squareup.moshi.Moshi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 /**
  * Created by theapache64 : Jul 25 Sat,2020 @ 22:00
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 class Empty
 
 object JsonValidator {
-    fun isValidJsonObject(input: String, moshi: Moshi): Boolean {
+    fun isValidJsonObject(input: String, json: Json): Boolean {
         return try {
-            EmptyJsonAdapter(moshi).apply { fromJson(input) }
+            json.decodeFromString<Empty>(input)
             true
         } catch (e: Exception) {
             false

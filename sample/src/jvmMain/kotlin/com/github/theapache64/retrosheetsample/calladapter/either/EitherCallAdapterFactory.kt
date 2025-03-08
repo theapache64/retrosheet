@@ -1,12 +1,15 @@
-package com.github.theapache64.retrofit.calladapter.either
+package com.github.theapache64.retrosheetsample.calladapter.either
 
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import kotlinx.serialization.json.Json
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
 
-open class EitherCallAdapterFactory : CallAdapter.Factory() {
+open class EitherCallAdapterFactory(
+    private val json : Json
+) : CallAdapter.Factory() {
     override fun get(
         returnType: Type,
         annotations: Array<Annotation>,
@@ -18,7 +21,7 @@ open class EitherCallAdapterFactory : CallAdapter.Factory() {
                 Either::class.java -> {
                     val errorType = getParameterUpperBound(0, callType as ParameterizedType)
                     val resultType = getParameterUpperBound(1, callType)
-                    EitherAdapter(errorType, resultType)
+                    EitherAdapter(errorType, resultType, json)
                 }
                 else -> null
             }

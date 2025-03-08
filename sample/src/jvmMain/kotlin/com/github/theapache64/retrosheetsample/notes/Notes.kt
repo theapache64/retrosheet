@@ -3,11 +3,10 @@ package com.github.theapache64.retrosheetsample.notes
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.github.theapache64.retrosheet.annotations.Read
 import com.github.theapache64.retrosheet.annotations.Write
-import com.squareup.moshi.Moshi
+import com.github.theapache64.retrosheetsample.jsonConverter
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -70,12 +69,11 @@ object Notes {
             .addInterceptor(retrosheetInterceptor)
             .build()
 
-        val moshi = Moshi.Builder().build()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/") // Sheet's public URL
             .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addConverterFactory(jsonConverter)
             .build()
 
         return retrofit.create(NotesApi::class.java)

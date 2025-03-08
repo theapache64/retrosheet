@@ -1,23 +1,17 @@
 package com.github.theapache64.retrosheetsample.calladapter.either
 
-import com.github.theapache64.retrofit.calladapter.either.CallDelegate
-import com.github.theapache64.retrofit.calladapter.either.Either
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import java.lang.reflect.Type
+import kotlinx.serialization.json.Json
 import okio.Timeout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.reflect.Type
 
 class EitherCall<T>(
     private val errorType: Type,
-    proxy: Call<T>
+    proxy: Call<T>,
+    private val json: Json,
 ) : CallDelegate<T, Either<*, T>>(proxy) {
-
-    private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
 
     override fun enqueueImpl(callback: Callback<Either<*, T>>) = proxy.enqueue(object : Callback<T> {
 
@@ -28,8 +22,7 @@ class EitherCall<T>(
                 Either.right(body)
             } else {
                 val errorJson = response.errorBody()?.string()!!
-                val error = moshi.adapter<Any>(errorType)
-                    .fromJson(errorJson)
+                val error = json.decodeFromString<Any>(errorJson)
                 Either.left(error)
             }
 
@@ -45,6 +38,6 @@ class EitherCall<T>(
         }
     })
 
-    override fun cloneImpl() = EitherCall<T>(errorType, proxy.clone())
+    override fun cloneImpl() = EitherCall<T>(errorType, proxy.clone(), json)
     override fun timeout(): Timeout = proxy.timeout()
 }

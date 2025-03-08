@@ -1,14 +1,14 @@
 package com.github.theapache64.retrosheet.data
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class ApiError(
-    @Json(name = "error_code")
+    @SerialName("error_code")
     val errorCode: Int,
-    @Json(name = "message")
+    @SerialName("message")
     val message: String,
-    @Json(name = "sheet_error")
+    @SerialName("sheet_error")
     val error: SheetError?
 )

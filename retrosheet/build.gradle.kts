@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.publish)
     alias(libs.plugins.kapt)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -42,10 +43,9 @@ kotlin {
 
         jvmMain.dependencies {
             implementation("de.siegmar:fastcsv:2.1.0")
-            implementation("com.squareup.retrofit2:retrofit:2.9.0")
+            implementation("com.squareup.retrofit2:retrofit:2.11.0")
 
-            implementation("com.squareup.moshi:moshi:1.15.2")
-            configurations["kapt"]?.dependencies?.add(project.dependencies.create("com.squareup.moshi:moshi-kotlin-codegen:1.15.2"))
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
         }
 
         jvmTest.dependencies {

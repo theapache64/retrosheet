@@ -1,7 +1,7 @@
 package com.github.theapache64.retrosheetsample.heads
 
-import com.github.theapache64.retrofit.calladapter.flow.Resource
 import com.github.theapache64.retrosheet.annotations.Read
+import com.github.theapache64.retrosheetsample.calladapter.flow.Resource
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET
 import retrofit2.http.Query

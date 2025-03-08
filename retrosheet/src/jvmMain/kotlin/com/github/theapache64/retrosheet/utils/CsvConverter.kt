@@ -1,17 +1,20 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package com.github.theapache64.retrosheet.utils
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import de.siegmar.fastcsv.reader.NamedCsvReader
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:05
  */
-object CsvConverter {
+internal object CsvConverter {
+    @OptIn(ExperimentalSerializationApi::class)
     fun convertCsvToJson(
         csvData: String,
         isReturnTypeList: Boolean,
-        moshi: Moshi
+        json: Json
     ): String? {
         val items = mutableListOf<Map<String, Any?>>()
 
@@ -55,15 +58,11 @@ object CsvConverter {
 
         return when {
             isReturnTypeList -> {
-                val type = Types.newParameterizedType(List::class.java, Map::class.java)
-                val adapter = moshi.adapter<List<Map<String, Any?>>>(type)
-                adapter.toJson(items)
+                json.encodeToString(items)
             }
 
             items.isNotEmpty() -> {
-                val type = Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java)
-                val adapter = moshi.adapter<Map<String, Any?>>(type)
-                adapter.toJson(items.first())
+                json.encodeToString(items.first())
             }
 
             else -> {

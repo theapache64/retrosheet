@@ -1,20 +1,21 @@
 package com.github.theapache64.retrosheetsample.boil
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 /**
  * Created by theapache64 : Aug 09 Sun,2020 @ 11:14
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Group(
-    @Json(name = "instructions")
+    @SerialName("instructions")
     val instructions: String,
-    @Json(name = "files")
+    @SerialName("files")
     val classes: String, // SingleLiveEvent.kt
-    @Json(name = "group_name")
+    @SerialName("group_name")
     val groupName: String, // Group Name
-    @Json(name = "id")
+    @SerialName("id")
     val id: Int // 1
 ) {
     @Transient

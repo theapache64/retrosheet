@@ -1,12 +1,12 @@
 [versions]
 
-kotlin = "1.9.25"
+kotlin = "2.1.10"
 publish = "0.25.3"
 
 [libraries]
-moshiCodegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version = "1.15.2" }
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

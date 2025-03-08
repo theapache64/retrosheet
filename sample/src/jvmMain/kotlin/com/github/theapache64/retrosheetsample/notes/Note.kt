@@ -1,17 +1,18 @@
 package com.github.theapache64.retrosheetsample.notes
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 /**
  * Created by theapache64 : Aug 29 Sat,2020 @ 10:13
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Note(
-    @Json(name = "created_at")
+    @SerialName("created_at")
     val createdAt: String,
-    @Json(name = "title")
+    @SerialName("title")
     val title: String,
-    @Json(name = "description")
+    @SerialName("description")
     val description: String
 )

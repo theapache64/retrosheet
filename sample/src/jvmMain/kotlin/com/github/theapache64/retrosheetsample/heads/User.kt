@@ -1,14 +1,15 @@
 package com.github.theapache64.retrosheetsample.heads
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 /**
  * Generated using MockAPI (https://github.com/theapache64/Mock-API) : Wed Jan 16 14:49:46 UTC 2019
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class User(
-    @Json(name = "id") val id: String,
-    @Json(name = "username") val username: String,
-    @Json(name = "api_key") val apiKey: String
+    @SerialName("id") val id: String,
+    @SerialName("username") val username: String,
+    @SerialName("api_key") val apiKey: String
 )

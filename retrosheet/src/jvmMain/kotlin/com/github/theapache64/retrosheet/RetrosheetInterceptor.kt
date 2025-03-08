@@ -5,18 +5,18 @@ import com.github.theapache64.retrosheet.core.ColumnNameVerifier
 import com.github.theapache64.retrosheet.core.GoogleFormHelper
 import com.github.theapache64.retrosheet.core.UrlBuilder
 import com.github.theapache64.retrosheet.data.ApiError
-import com.github.theapache64.retrosheet.data.ApiErrorJsonAdapter
-import com.github.theapache64.retrosheet.data.SheetErrorJsonAdapter
+import com.github.theapache64.retrosheet.data.SheetError
 import com.github.theapache64.retrosheet.utils.CsvConverter
 import com.github.theapache64.retrosheet.utils.JsonValidator
 import com.github.theapache64.retrosheet.utils.KeyValueUtils
 import com.github.theapache64.retrosheet.utils.SheetUtils
-import com.squareup.moshi.Moshi
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
 import kotlin.coroutines.Continuation
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.MediaType
@@ -33,16 +33,8 @@ private constructor(
     val isLoggingEnabled: Boolean = false,
     private val sheets: Map<String, Map<String, String>>,
     val forms: Map<String, String>,
-    internal val moshi: Moshi
+    internal val json: Json
 ) : Interceptor {
-
-    private val sheetErrorJsonAdapter by lazy {
-        SheetErrorJsonAdapter(moshi)
-    }
-
-    private val apiErrorJsonAdapter by lazy {
-        ApiErrorJsonAdapter(moshi)
-    }
 
     companion object {
         private val TAG = RetrosheetInterceptor::class.java.simpleName
@@ -116,14 +108,17 @@ private constructor(
         private val sheets = mutableMapOf<String, Map<String, String>>()
         private val forms = mutableMapOf<String, String>()
         private var isLoggingEnabled: Boolean = false
-        private var moshi = Moshi.Builder().build()
+        private var json = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
 
         fun build(): RetrosheetInterceptor {
             return RetrosheetInterceptor(
                 isLoggingEnabled,
                 sheets,
                 forms,
-                moshi
+                json
             )
         }
 
@@ -133,8 +128,8 @@ private constructor(
         }
 
         @Suppress("unused")
-        fun setMoshi(moshi: Moshi): Builder {
-            this.moshi = moshi
+        fun setJsonSerializer(json: Json): Builder {
+            this.json = json
             return this
         }
 
@@ -193,12 +188,12 @@ private constructor(
         val responseBuilder = response.newBuilder()
 
         // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
-        val isSpreadsheetError = JsonValidator.isValidJsonObject(responseBody, moshi)
+        val isSpreadsheetError = JsonValidator.isValidJsonObject(responseBody, json)
         if (isSpreadsheetError) {
             // It's the spreadsheet error. let's parse it.
 
             // Adding human understandable error
-            val sheetError = sheetErrorJsonAdapter.fromJson(responseBody)?.apply {
+            val sheetError = json.decodeFromString<SheetError>(responseBody).apply {
                 this.sheetName = newRequest.first
                 for (error in errors) {
                     error.humanMessage = translateErrorMessage(this.sheetName!!, error.detailedMessage)
@@ -208,11 +203,11 @@ private constructor(
             // Converting back to JSON
             val apiError = ApiError(
                 HttpURLConnection.HTTP_BAD_REQUEST,
-                sheetError?.errors?.firstOrNull()?.humanMessage ?: ERROR_UNKNOWN,
+                sheetError.errors.firstOrNull()?.humanMessage ?: ERROR_UNKNOWN,
                 sheetError
             )
 
-            jsonRoot = apiErrorJsonAdapter.toJson(apiError)
+            jsonRoot = json.encodeToString<ApiError>(apiError)
 
             // Telling it's an error
             responseBuilder
@@ -231,7 +226,7 @@ private constructor(
                 responseBody = KeyValueUtils.transform(responseBody)
             }
 
-            val csvJson = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request), moshi)
+            val csvJson = CsvConverter.convertCsvToJson(responseBody, isReturnTypeList(request), json)
             if (csvJson != null) {
                 jsonRoot = csvJson
                 if (isLoggingEnabled) {
@@ -240,7 +235,7 @@ private constructor(
                 responseBuilder.code(HttpsURLConnection.HTTP_OK)
             } else {
                 // no data
-                jsonRoot = apiErrorJsonAdapter.toJson(
+                jsonRoot = json.encodeToString<ApiError>(
                     ApiError(
                         HttpURLConnection.HTTP_NOT_FOUND,
                         "No data found",
@@ -315,9 +310,9 @@ private constructor(
      */
     private fun translateErrorMessage(
         sheetName: String,
-        _detailedMessage: String
+        detailedMessage: String
     ): String {
-        var humanMessage = _detailedMessage
+        var humanMessage = detailedMessage
         if (humanMessage.startsWith(ERROR_NO_COLUMN_START)) {
             // It's a wrong column problem. Now find the column name and
             val errorPart = humanMessage.substring(ERROR_NO_COLUMN_START.length)

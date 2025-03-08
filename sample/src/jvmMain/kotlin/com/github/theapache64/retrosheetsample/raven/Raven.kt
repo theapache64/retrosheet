@@ -1,11 +1,11 @@
 package com.github.theapache64.retrosheetsample.raven
 
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
-import com.squareup.moshi.Moshi
+import com.github.theapache64.retrosheetsample.jsonConverter
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:11
@@ -25,12 +25,11 @@ fun main() = runBlocking {
         // .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 
-    val moshi = Moshi.Builder().build()
 
     val retrofit = Retrofit.Builder()
         .baseUrl("https://docs.google.com/spreadsheets/d/1eDOjClNJGgrROftn9zW69WKNOnQVor_zrF8yo0v5KGs/")
         .client(okHttpClient)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addConverterFactory(jsonConverter)
         .build()
 
     val api = retrofit.create(RavenApi::class.java)

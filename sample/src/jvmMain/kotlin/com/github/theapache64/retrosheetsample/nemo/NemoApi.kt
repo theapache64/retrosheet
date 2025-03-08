@@ -1,9 +1,9 @@
 package com.github.theapache64.retrosheetsample.nemo
 
-import com.github.theapache64.retrofit.calladapter.flow.Resource
 import com.github.theapache64.retrosheet.annotations.KeyValue
 import com.github.theapache64.retrosheet.annotations.Read
 import com.github.theapache64.retrosheet.annotations.Write
+import com.github.theapache64.retrosheetsample.calladapter.flow.Resource
 import kotlinx.coroutines.flow.Flow
 import retrofit2.http.Body
 import retrofit2.http.GET

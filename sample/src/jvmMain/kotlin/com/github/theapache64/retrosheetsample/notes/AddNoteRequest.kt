@@ -1,15 +1,15 @@
 package com.github.theapache64.retrosheetsample.notes
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Created by theapache64 : Aug 29 Sat,2020 @ 10:13
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class AddNoteRequest(
-    @Json(name = "Title")
+    @SerialName("Title")
     val title: String,
-    @Json(name = "Description")
+    @SerialName("Description")
     val description: String
 )

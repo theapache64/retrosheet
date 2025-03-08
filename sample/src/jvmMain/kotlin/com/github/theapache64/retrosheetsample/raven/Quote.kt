@@ -1,15 +1,15 @@
 package com.github.theapache64.retrosheetsample.raven
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Created by theapache64 : Sep 09 Wed,2020 @ 22:09
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Quote(
-    @Json(name = "readable_date")
+    @SerialName("readable_date")
     val date: String,
-    @Json(name = "quote")
+    @SerialName("quote")
     val quote: String
 )

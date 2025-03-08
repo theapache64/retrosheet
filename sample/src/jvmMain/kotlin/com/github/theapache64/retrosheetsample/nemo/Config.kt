@@ -1,21 +1,21 @@
 package com.github.theapache64.retrosheetsample.nemo
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Created by theapache64 : Aug 02 Sun,2020 @ 16:32
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Config(
-    @Json(name = "total_products")
+    @SerialName("total_products")
     val totalProducts: Int, // 34
-    @Json(name = "products_per_page")
+    @SerialName("products_per_page")
     val productsPerPage: Int, // 10
-    @Json(name = "currency")
+    @SerialName("currency")
     val currency: String,
-    @Json(name = "delivery_charge")
+    @SerialName("delivery_charge")
     val deliveryCharge: Int,
-    @Json(name = "total_pages")
+    @SerialName("total_pages")
     val totalPages: Int // 4
 )

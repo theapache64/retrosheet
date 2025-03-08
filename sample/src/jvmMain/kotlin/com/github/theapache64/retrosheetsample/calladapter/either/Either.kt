@@ -1,4 +1,4 @@
-package com.github.theapache64.retrofit.calladapter.either
+package com.github.theapache64.retrosheetsample.calladapter.either
 
 sealed class Either<out L, out R> {
 

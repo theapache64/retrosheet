@@ -1,7 +1,7 @@
-package com.github.theapache64.retrofit.calladapter.flow
+package com.github.theapache64.retrosheetsample.calladapter.flow
 
-import com.github.theapache64.retrofit.calladapter.flow.Resource.Error
-import com.github.theapache64.retrofit.calladapter.flow.Resource.Success
+import com.github.theapache64.retrosheetsample.calladapter.flow.Resource.Error
+import com.github.theapache64.retrosheetsample.calladapter.flow.Resource.Success
 import java.lang.reflect.Type
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

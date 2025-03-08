@@ -2,7 +2,6 @@ package com.github.theapache64.retrosheet.core
 
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.github.theapache64.retrosheet.annotations.Write
-import com.squareup.moshi.Types
 import java.io.IOException
 import java.net.HttpURLConnection
 import okhttp3.FormBody
@@ -21,20 +20,7 @@ class GoogleFormHelper(
     private val request: Request,
     private val retrosheetInterceptor: RetrosheetInterceptor,
 ) {
-
-    private val stringMapAdapter by lazy {
-        val mapType = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
-        retrosheetInterceptor.moshi.adapter<Map<String, String>>(mapType)
-    }
-
-    private val listAdapter by lazy {
-        val type = Types.newParameterizedType(List::class.java, Object::class.java)
-        retrosheetInterceptor.moshi.adapter<List<Any>>(type)
-    }
-
-    private val anyAdapter by lazy {
-        retrosheetInterceptor.moshi.adapter(Any::class.java)
-    }
+    private val json = retrosheetInterceptor.json
 
     companion object {
 
@@ -68,9 +54,9 @@ class GoogleFormHelper(
             throw IllegalArgumentException("No argument passed. Param with @Body must be passed")
         }
         val arg = args.first()!!
-        val requestJson = anyAdapter.toJson(arg)
+        val requestJson = json.encodeToString(arg)
         val submitMap = requestJson.run {
-            val keyValues = stringMapAdapter.fromJson(this)!!
+            val keyValues = json.decodeFromString<Map<String, String>>(this)
             val submitMap = mutableMapOf<String, String>()
             for (entry in keyValues.entries) {
                 val keyId =
@@ -129,8 +115,11 @@ class GoogleFormHelper(
                     val fsb = s3.indexOf('[')
                     val lsb = s3.lastIndexOf(']')
                     val pageDataJson = s3.substring(fsb, lsb + 1).trim()
-                    val pageData = listAdapter.fromJson(pageDataJson)
-                        ?: throw IOException("Failed to decode google form data")
+                    val pageData = kotlin.runCatching {
+                        json.decodeFromString<List<Any>>(pageDataJson)
+                    }.getOrElse { error ->
+                        throw IOException("Failed to decode google form data: ${error.message}")
+                    }
                     val formInfo = pageData[1]
                     if (formInfo is List<*>) {
                         val columns = formInfo[1] ?: throwDataExpectationFailure()

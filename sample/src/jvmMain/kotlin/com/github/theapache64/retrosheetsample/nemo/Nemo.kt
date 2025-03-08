@@ -1,13 +1,13 @@
 package com.github.theapache64.retrosheetsample.nemo
 
-import com.github.theapache64.retrofit.calladapter.either.EitherCallAdapterFactory
-import com.github.theapache64.retrofit.calladapter.flow.FlowResourceCallAdapterFactory
 import com.github.theapache64.retrosheet.RetrosheetInterceptor
-import com.squareup.moshi.Moshi
+import com.github.theapache64.retrosheetsample.calladapter.either.EitherCallAdapterFactory
+import com.github.theapache64.retrosheetsample.calladapter.flow.FlowResourceCallAdapterFactory
+import com.github.theapache64.retrosheetsample.jsonConverter
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 /**
  * Created by theapache64 : Jul 21 Tue,2020 @ 02:11
@@ -31,14 +31,17 @@ fun main() = runBlocking {
         .addInterceptor(retrosheetInterceptor)
         .build()
 
-    val moshi = Moshi.Builder().build()
+    val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
 
     val retrofit = Retrofit.Builder()
         .baseUrl("https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ/")
         .client(okHttpClient)
-        .addCallAdapterFactory(EitherCallAdapterFactory())
+        .addCallAdapterFactory(EitherCallAdapterFactory(json))
         .addCallAdapterFactory(FlowResourceCallAdapterFactory())
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addConverterFactory(jsonConverter)
         .build()
 
     val nemoApi = retrofit.create(NemoApi::class.java)

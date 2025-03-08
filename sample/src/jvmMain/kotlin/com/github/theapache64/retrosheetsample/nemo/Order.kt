@@ -1,21 +1,21 @@
 package com.github.theapache64.retrosheetsample.nemo
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Created by theapache64 : Aug 06 Thu,2020 @ 22:05
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Order(
-    @Json(name = "name")
+    @SerialName("name")
     val name: String,
-    @Json(name = "address")
+    @SerialName("address")
     val address: String,
-    @Json(name = "products")
+    @SerialName("products")
     val products: String,
-    @Json(name = "txn_details")
+    @SerialName("txn_details")
     val txnDetails: String,
-    @Json(name = "total")
+    @SerialName("total")
     val total: Long
 )
