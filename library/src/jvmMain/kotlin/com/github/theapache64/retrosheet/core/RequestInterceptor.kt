@@ -4,6 +4,7 @@ import com.github.theapache64.retrosheet.annotations.Write
 import com.github.theapache64.retrosheet.utils.SheetUtils
 import de.jensklingenberg.ktorfit.annotations
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.forms.formData
@@ -14,6 +15,7 @@ import io.ktor.client.request.url
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.utils.EmptyContent
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.headers
 import io.ktor.util.AttributeKey
 import java.io.IOException
@@ -22,20 +24,23 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.serializer
-import sun.jvm.hotspot.debugger.win32.coff.DebugVC50X86RegisterEnums.TAG
 
-val RequestInterceptor = createClientPlugin("RetrosheetRequestInterceptor", ::RequestInterceptorConfig) {
-    onRequest { request, content ->
-        val config: RequestInterceptorConfig = this@createClientPlugin.pluginConfig
-        when {
-            isGoogleFormSubmit(request.annotations, request.method.value) -> {
-                modRequestForWrite(
-                    request,
-                    config
-                )
+private const val TAG = "Retrosheet"
+
+fun createRequestInterceptorPlugin(config: RequestInterceptorConfig): ClientPlugin<Unit> {
+    return createClientPlugin("RetrosheetRequestInterceptor") {
+        onRequest { request, content ->
+            val config: RequestInterceptorConfig = config
+            when {
+                isGoogleFormSubmit(request.annotations, request.method.value) -> {
+                    modRequestForWrite(
+                        request,
+                        config
+                    )
+                }
+
+                isRetrosheetUrl(request.url.toString()) -> modRequestForRead(request, config)
             }
-
-            isRetrosheetUrl(request.url.toString()) -> modRequestForRead(request, config)
         }
     }
 }
@@ -89,15 +94,16 @@ private fun modRequestForRead(request: HttpRequestBuilder, config: RequestInterc
     ).build()
 
     if (config.isLoggingEnabled) {
-        val sanitizedUrl = realUrl.replace(" ", "%20")
+        val sanitizedUrl = realUrl
+            .replace(" ", "%20")
+            .replace("*", "%2A")
+            .replace("'", "%27")
         println("$TAG : GET --> $sanitizedUrl")
         println("$TAG : GET (html) --> ${sanitizedUrl.replace("tqx=out:csv", "tqx=out:html")}")
     }
 
-    request {
-        url(realUrl)
-        attributes.put(sheetNameKey, sheetName)
-    }
+    request.url(realUrl)
+    request.attributes.put(sheetNameKey, sheetName)
 }
 
 private fun parseSheetName(params: String): String {

@@ -2,15 +2,15 @@ package com.github.theapache64.retrosheet.core
 
 import com.github.theapache64.retrosheet.annotations.Read
 import com.github.theapache64.retrosheet.annotations.SheetParams
+import de.jensklingenberg.ktorfit.annotations
+import io.ktor.client.request.HttpRequestBuilder
 import java.net.URLEncoder
-import okhttp3.Request
-import retrofit2.Invocation
 
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:06
  */
 class UrlBuilder(
-    private val request: Request,
+    private val request: HttpRequestBuilder,
     private val docId: String,
     private val sheetName: String,
     private val params: String,
@@ -23,9 +23,7 @@ class UrlBuilder(
         val realUrlBuilder =
             StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
         var isQueryAdded = false
-        request.tag(Invocation::class.java)?.method()?.getAnnotation(Read::class.java)
-            ?.let { params: Read ->
-
+        (request.annotations.find { it is Read } as Read?)?.let { params: Read ->
                 if (params.query.isNotBlank()) {
                     // has smart query
                     val realQuery = QueryConverter(
@@ -33,14 +31,12 @@ class UrlBuilder(
                         queryMap,
                         paramMap
                     ).convert()
-                    realUrlBuilder.append("&tq=$realQuery")
+                    realUrlBuilder.append("&tq=${URLEncoder.encode(realQuery, "UTF-8")}")
                     isQueryAdded = true
                 }
             }
 
-        request.tag(Invocation::class.java)?.method()?.getAnnotation(SheetParams::class.java)
-            ?.let { params ->
-
+        (request.annotations.find { it is SheetParams } as? SheetParams)?.let { params: SheetParams ->
                 if (params.range.isNotBlank()) {
                     realUrlBuilder.append("&range=${params.range}")
                 }
@@ -55,6 +51,7 @@ class UrlBuilder(
                     realUrlBuilder.append("&tq=${URLEncoder.encode(params.rawQuery, "UTF-8")}")
                 }
             }
+
 
         return realUrlBuilder.toString()
     }

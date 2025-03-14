@@ -39,7 +39,7 @@ class RetrosheetConverter(
                         val response = result.response
                         val request = response.request
                         when {
-                            GoogleFormHelper.isGoogleFormSubmit(request.annotations, request.method.value) -> {
+                            isGoogleFormSubmit(request.annotations, request.method.value) -> {
                                 val formResp = result
                                 if (formResp.response.status == HttpStatusCode.OK) {
                                     val requestJson = request.attributes[requestJsonKey]
