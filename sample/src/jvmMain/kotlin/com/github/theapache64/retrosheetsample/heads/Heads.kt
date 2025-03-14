@@ -1,6 +1,5 @@
 package com.github.theapache64.retrosheetsample.heads
 
-import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.github.theapache64.retrosheetsample.calladapter.either.EitherCallAdapterFactory
 import com.github.theapache64.retrosheetsample.calladapter.flow.FlowResourceCallAdapterFactory
 import com.github.theapache64.retrosheetsample.jsonConverter

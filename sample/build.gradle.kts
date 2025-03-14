@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.kapt)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
 }
 
 kotlin {
@@ -42,17 +43,13 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(project(":library"))
-
-            // Retrofit : A type-safe HTTP client for Android and Java.
-            implementation(libs.retrofit)
-            implementation(libs.retrofit.scalar)
-            implementation(libs.retrofit.serialization)
+            implementation(libs.ktorfit)
+            implementation("io.ktor:ktor-client-content-negotiation:3.1.1")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.1")
 
             // Kotlinx Coroutines Core : Coroutines support libraries for Kotlin
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
-            // OkHttp Logging Interceptor : Square’s meticulous HTTP client for Java and Kotlin.
-            implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
         }

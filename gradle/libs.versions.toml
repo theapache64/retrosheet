@@ -3,17 +3,17 @@
 kotlin = "2.1.10"
 publish = "0.25.3"
 expekt = "1.0.0"
-retrofit = "2.11.0"
+ksp = "2.1.10-1.0.31"
+ktorfit = "2.4.0"
 
 [libraries]
 expekt = { group = "com.github.theapache64", name = "expekt", version.ref="expekt" }
-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref="retrofit" }
-retrofit-scalar = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref="retrofit" }
-retrofit-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref="retrofit" }
+ktorfit = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref="ktorfit" }
 
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }

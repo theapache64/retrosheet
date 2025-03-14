@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.publish)
-    alias(libs.plugins.kapt)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
 }
 
 kotlin {
@@ -43,7 +44,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation("de.siegmar:fastcsv:2.1.0")
-            implementation("com.squareup.retrofit2:retrofit:2.11.0")
+            implementation(libs.ktorfit)
 
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
         }

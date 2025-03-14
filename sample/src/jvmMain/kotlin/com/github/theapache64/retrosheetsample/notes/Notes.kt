@@ -1,6 +1,5 @@
 package com.github.theapache64.retrosheetsample.notes
 
-import com.github.theapache64.retrosheet.RetrosheetInterceptor
 import com.github.theapache64.retrosheet.annotations.Read
 import com.github.theapache64.retrosheet.annotations.Write
 import com.github.theapache64.retrosheetsample.jsonConverter
