@@ -2,19 +2,20 @@ package com.github.theapache64.retrosheet.integration
 
 import com.github.theapache64.expekt.should
 import com.github.theapache64.retrosheet.util.runBlockingTest
-import com.github.theapache64.retrosheetsample.notes.AddNoteRequest
-import com.github.theapache64.retrosheetsample.notes.Notes
+import com.github.theapache64.retrosheetsample.AddNoteRequest
+import com.github.theapache64.retrosheetsample.createNotesApi
 import java.util.Date
+import java.util.UUID
 import org.junit.Test
 
 class WriteTest {
 
-    private val notesApi = Notes.createApi()
+    private val notesApi = createNotesApi()
 
     @Test
     fun `Writes data`() = runBlockingTest {
         //Write data
-        val request = AddNoteRequest("Titlé - ${java.util.UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
+        val request = AddNoteRequest("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
         notesApi.addNote(request)
 
         // Read data

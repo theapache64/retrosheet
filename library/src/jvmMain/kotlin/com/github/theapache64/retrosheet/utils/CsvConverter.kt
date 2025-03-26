@@ -20,7 +20,6 @@ internal object CsvConverter {
         json: Json
     ): String? {
         val items = mutableListOf<JsonObject>()
-        println("QuickTag: CsvConverter:convertCsvToJson: '$csvData'")
         NamedCsvReader.builder()
             .build(csvData)
             .forEach { row ->

@@ -1,12 +1,8 @@
-package com.github.theapache64.retrosheetsample.notes
+package com.github.theapache64.retrosheetsample
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
-/**
- * Created by theapache64 : Aug 29 Sat,2020 @ 10:13
- */
 @Serializable
 data class Note(
     @SerialName("created_at")
@@ -14,5 +10,13 @@ data class Note(
     @SerialName("title")
     val title: String,
     @SerialName("description")
+    val description: String
+)
+
+@Serializable
+data class AddNoteRequest(
+    @SerialName("Title")
+    val title: String,
+    @SerialName("Description")
     val description: String
 )

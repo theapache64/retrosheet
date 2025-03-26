@@ -2,7 +2,7 @@ package com.github.theapache64.retrosheet.integration
 
 import com.github.theapache64.expekt.should
 import com.github.theapache64.retrosheet.util.runBlockingTest
-import com.github.theapache64.retrosheetsample.notes.Notes
+import com.github.theapache64.retrosheetsample.createNotesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -10,7 +10,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class ReadTest {
 
-    private val notesApi = Notes.createApi()
+    private val notesApi = createNotesApi()
 
     @Test
     fun `Reads data`() = runBlockingTest {

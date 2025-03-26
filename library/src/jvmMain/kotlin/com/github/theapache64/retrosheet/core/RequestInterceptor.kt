@@ -31,7 +31,6 @@ fun createRequestInterceptorPlugin(config: RetrosheetInterceptor): ClientPlugin<
     return createClientPlugin("RetrosheetRequestInterceptor") {
         transformRequestBody { request, y, typeInfo ->
             val config: RetrosheetInterceptor = config
-            println("QuickTag: :createRequestInterceptorPlugin: $content")
             when {
                 isGoogleFormSubmit(request.annotations, request.method.value) -> {
                     modRequestForWrite(
@@ -47,10 +46,6 @@ fun createRequestInterceptorPlugin(config: RetrosheetInterceptor): ClientPlugin<
 }
 
 const val SOLUTION_UPDATE = "Please update retrosheet to latest version."
-
-private val URL_REGEX by lazy {
-    "https://docs\\.google\\.com/spreadsheets/d/(?<docId>.+)/(?<params>.+)".toRegex()
-}
 
 fun isGoogleFormSubmit(
     annotations: List<Any>,
@@ -147,11 +142,6 @@ private suspend fun getFieldMapFromUrl(formUrl: String, config: RetrosheetInterc
                             // 400
                             val columnIdInDouble = (((column[4] as List<*>)[0] as List<*>)[0]).toString().toDouble()
                             val columnId = String.format("%.0f", columnIdInDouble)
-
-                            if (config.isLoggingEnabled) {
-                                println("Getting form fields")
-                                println("$columnName -> $columnId")
-                            }
                             fields[columnName] = columnId
                         }
 
