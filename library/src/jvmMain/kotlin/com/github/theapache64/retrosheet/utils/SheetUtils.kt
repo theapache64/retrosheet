@@ -11,7 +11,7 @@ internal object SheetUtils {
         }.toMap()
     }
 
-    private fun getLetterAt(_columnNumber: Int): String {
+    internal fun getLetterAt(_columnNumber: Int): String {
         var columnNumber = _columnNumber
         // To store result (Excel column name)
         val columnName = StringBuilder()
