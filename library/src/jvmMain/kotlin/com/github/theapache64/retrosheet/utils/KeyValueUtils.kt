@@ -7,7 +7,7 @@ import de.siegmar.fastcsv.writer.LineDelimiter
 import de.siegmar.fastcsv.writer.QuoteStrategy
 import java.io.StringWriter
 
-object KeyValueUtils {
+internal object KeyValueUtils {
 
     /**
      * To transform given CSV's columns to rows

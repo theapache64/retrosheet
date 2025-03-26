@@ -19,8 +19,11 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import kotlinx.serialization.serializer
 
+/**
+ * Converts CSV
+ */
 class RetrosheetConverter(
-    private val config: RetrosheetInterceptor
+    private val config: RetrosheetConfig
 ) : Converter.Factory {
 
     companion object {
@@ -152,7 +155,7 @@ private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
  * To translate google sheet error message to more understandable form.
  */
 private fun translateErrorMessage(
-    config: RetrosheetInterceptor,
+    config: RetrosheetConfig,
     sheetName: String,
     detailedMessage: String
 ): String {

@@ -3,7 +3,7 @@ package com.github.theapache64.retrosheet.utils
 /**
  * Created by theapache64 : Aug 01 Sat,2020 @ 10:10
  */
-object SheetUtils {
+internal object SheetUtils {
 
     fun toLetterMap(vararg columns: String): Map<String, String> {
         return columns.mapIndexed { index, columnName ->
@@ -11,7 +11,7 @@ object SheetUtils {
         }.toMap()
     }
 
-    fun getLetterAt(_columnNumber: Int): String {
+    private fun getLetterAt(_columnNumber: Int): String {
         var columnNumber = _columnNumber
         // To store result (Excel column name)
         val columnName = StringBuilder()

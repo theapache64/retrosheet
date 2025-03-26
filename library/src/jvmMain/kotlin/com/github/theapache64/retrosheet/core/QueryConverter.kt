@@ -10,7 +10,7 @@ import io.ktor.http.Parameters
  * @property smartQueryMap field map
  * @property paramMap value map
  */
-class QueryConverter(
+internal class QueryConverter(
     private val smartQuery: String,
     private val smartQueryMap: Map<String, String>,
     private val paramMap: Parameters?

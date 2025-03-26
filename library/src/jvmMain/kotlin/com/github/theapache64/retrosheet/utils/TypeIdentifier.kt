@@ -3,7 +3,7 @@ package com.github.theapache64.retrosheet.utils
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:04
  */
-object TypeIdentifier {
+internal object TypeIdentifier {
     fun isDouble(field: String): Boolean {
         if (!field.contains(".")) {
             return false

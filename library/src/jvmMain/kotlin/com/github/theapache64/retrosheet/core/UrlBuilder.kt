@@ -10,7 +10,7 @@ import java.net.URLEncoder
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:06
  */
-class UrlBuilder(
+internal class UrlBuilder(
     private val request: HttpRequestBuilder,
     private val docId: String,
     private val sheetName: String,
@@ -18,8 +18,6 @@ class UrlBuilder(
     private val queryMap: Map<String, String>
 ) {
     fun build(): String {
-
-
         val realUrlBuilder =
             StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
 
@@ -49,30 +47,12 @@ class UrlBuilder(
                 if (params.rawQuery.isNotBlank()) {
                     require(!isQueryAdded) { "Both rawQuery and @Query cannot work together" }
 
-                    realUrlBuilder.append("&tq=${params.rawQuery}")
+                    realUrlBuilder.append("&tq=${URLEncoder.encode(params.rawQuery, Charsets.UTF_8)}")
                 }
             }
 
 
 
         return realUrlBuilder.toString()
-    }
-
-    private fun convertToMap(params: String): Map<String, String>? {
-        return if (params.contains("?")) {
-            val x = params.substring(params.indexOf('?') + 1)
-            val paramMap = mutableMapOf<String, String>()
-            for (paramPair in x.split("&")) {
-                val paramSplit = paramPair.split("=")
-                if (paramSplit.size >= 2) {
-                    val key = paramSplit[0]
-                    val value = paramPair.substring(key.length + 1)
-                    paramMap[key] = value
-                }
-            }
-            paramMap
-        } else {
-            null
-        }
     }
 }
