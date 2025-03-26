@@ -1,6 +1,6 @@
 package com.github.theapache64.retrosheetsample.raven
 
-import com.github.theapache64.retrosheet.core.RequestInterceptorConfig
+import com.github.theapache64.retrosheet.core.RetrosheetInterceptor
 import com.github.theapache64.retrosheet.core.RetrosheetConverter
 import com.github.theapache64.retrosheet.core.createRequestInterceptorPlugin
 import com.github.theapache64.retrosheetsample.jsonConfig
@@ -8,6 +8,8 @@ import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
+import kotlin.apply
+import sun.java2d.marlin.MarlinProperties.isLoggingEnabled
 
 
 /**
@@ -15,13 +17,12 @@ import io.ktor.serialization.kotlinx.json.json
  */
 suspend fun main() {
 
-    val config = RequestInterceptorConfig().apply {
-        isLoggingEnabled = true
-        addSheet(
+    val config = RetrosheetInterceptor.Builder()
+        .setLogging(true)
+        .addSheet(
             "quotes",
             "readable_date", "quote_id", "category", "quote"
-        )
-    }
+        ).build()
 
     val ktorClient = HttpClient {
         install(createRequestInterceptorPlugin(config)) {}

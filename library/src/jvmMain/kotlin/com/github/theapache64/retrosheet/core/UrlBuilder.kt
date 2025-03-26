@@ -4,6 +4,7 @@ import com.github.theapache64.retrosheet.annotations.Read
 import com.github.theapache64.retrosheet.annotations.SheetParams
 import de.jensklingenberg.ktorfit.annotations
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.http.Parameters
 import java.net.URLEncoder
 
 /**
@@ -13,15 +14,15 @@ class UrlBuilder(
     private val request: HttpRequestBuilder,
     private val docId: String,
     private val sheetName: String,
-    private val params: String,
+    private val queryParams: Parameters,
     private val queryMap: Map<String, String>
 ) {
     fun build(): String {
 
-        val paramMap = convertToMap(params)
 
         val realUrlBuilder =
             StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
+
         var isQueryAdded = false
         (request.annotations.find { it is Read } as Read?)?.let { params: Read ->
                 if (params.query.isNotBlank()) {
@@ -29,9 +30,9 @@ class UrlBuilder(
                     val realQuery = QueryConverter(
                         params.query,
                         queryMap,
-                        paramMap
+                        queryParams
                     ).convert()
-                    realUrlBuilder.append("&tq=${URLEncoder.encode(realQuery, "UTF-8")}")
+                    realUrlBuilder.append("&tq=${URLEncoder.encode(realQuery, Charsets.UTF_8)}")
                     isQueryAdded = true
                 }
             }
@@ -48,9 +49,10 @@ class UrlBuilder(
                 if (params.rawQuery.isNotBlank()) {
                     require(!isQueryAdded) { "Both rawQuery and @Query cannot work together" }
 
-                    realUrlBuilder.append("&tq=${URLEncoder.encode(params.rawQuery, "UTF-8")}")
+                    realUrlBuilder.append("&tq=${params.rawQuery}")
                 }
             }
+
 
 
         return realUrlBuilder.toString()

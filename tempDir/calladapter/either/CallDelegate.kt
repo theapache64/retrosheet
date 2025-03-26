@@ -1,9 +1,6 @@
 package com.github.theapache64.retrosheetsample.calladapter.either
 
-import okhttp3.Request
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 abstract class CallDelegate<TIn, TOut>(
     protected val proxy: Call<TIn>

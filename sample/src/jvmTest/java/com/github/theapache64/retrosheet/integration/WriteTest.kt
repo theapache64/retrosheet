@@ -1,11 +1,10 @@
 package com.github.theapache64.retrosheet.integration
 
 import com.github.theapache64.expekt.should
+import com.github.theapache64.retrosheet.util.runBlockingTest
 import com.github.theapache64.retrosheetsample.notes.AddNoteRequest
 import com.github.theapache64.retrosheetsample.notes.Notes
-import com.github.theapache64.retrosheet.util.runBlockingTest
 import java.util.Date
-import okio.IOException
 import org.junit.Test
 
 class WriteTest {
@@ -25,7 +24,7 @@ class WriteTest {
         remoteNote.description.should.equal(request.description)
     }
 
-    @Test(expected = IOException::class)
+    @Test(expected = IllegalArgumentException::class)
     fun `Fails to write into a invalid sheet`() = runBlockingTest {
         notesApi.addNoteToInvalidSheet(
             AddNoteRequest("some title", "Dynamic Desc 1: ${Date()}")

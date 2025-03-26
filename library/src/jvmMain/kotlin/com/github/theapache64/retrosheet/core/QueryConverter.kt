@@ -1,6 +1,7 @@
 package com.github.theapache64.retrosheet.core
 
 import com.github.theapache64.retrosheet.utils.TypeIdentifier
+import io.ktor.http.Parameters
 
 /**
  * To create final query needed for the public sheet API.
@@ -12,7 +13,7 @@ import com.github.theapache64.retrosheet.utils.TypeIdentifier
 class QueryConverter(
     private val smartQuery: String,
     private val smartQueryMap: Map<String, String>,
-    private val paramMap: Map<String, String>?
+    private val paramMap: Parameters?
 ) {
     /**
      * To generate final query.
@@ -22,8 +23,8 @@ class QueryConverter(
         var outputQuery = smartQuery
         // Replacing values
         paramMap?.let {
-            for (entry in paramMap.entries) {
-                val value = sanitizeValue(entry.value)
+            for (entry in paramMap.entries()) {
+                val value = sanitizeValue(entry.value.firstOrNull() ?: "")
                 outputQuery = outputQuery.replace(":${entry.key}", value)
             }
         }

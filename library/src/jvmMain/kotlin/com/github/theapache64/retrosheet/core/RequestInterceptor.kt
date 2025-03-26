@@ -7,30 +7,31 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.formData
+import io.ktor.client.request.forms.FormDataContent
 import io.ktor.client.request.get
-import io.ktor.client.request.request
-import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.utils.EmptyContent
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.Url
+import io.ktor.http.ParametersBuilder
+import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headers
 import io.ktor.util.AttributeKey
 import java.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull.content
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.serializer
 
 private const val TAG = "Retrosheet"
 
-fun createRequestInterceptorPlugin(config: RequestInterceptorConfig): ClientPlugin<Unit> {
+fun createRequestInterceptorPlugin(config: RetrosheetInterceptor): ClientPlugin<Unit> {
     return createClientPlugin("RetrosheetRequestInterceptor") {
-        onRequest { request, content ->
-            val config: RequestInterceptorConfig = config
+        transformRequestBody { request, y, typeInfo ->
+            val config: RetrosheetInterceptor = config
+            println("QuickTag: :createRequestInterceptorPlugin: $content")
             when {
                 isGoogleFormSubmit(request.annotations, request.method.value) -> {
                     modRequestForWrite(
@@ -38,8 +39,8 @@ fun createRequestInterceptorPlugin(config: RequestInterceptorConfig): ClientPlug
                         config
                     )
                 }
-
                 isRetrosheetUrl(request.url.toString()) -> modRequestForRead(request, config)
+                else -> null
             }
         }
     }
@@ -69,27 +70,22 @@ val sheetNameKey = AttributeKey<String>("sheetName")
 /**
  * To modify request with proper URL
  */
-private fun modRequestForRead(request: HttpRequestBuilder, config: RequestInterceptorConfig) {
+private fun modRequestForRead(request: HttpRequestBuilder, config: RetrosheetInterceptor): OutgoingContent? {
     val url = request.url.buildString()
-    val matcher =
-        URL_REGEX.find(url) ?: throw IllegalArgumentException("URL '$url' doesn't match with expected RegEx")
-
+    val pathSegments = request.url.pathSegments
     // Getting docId from URL
-    val docId = matcher.groups[1]?.value
+    val docId = pathSegments.getOrNull(pathSegments.lastIndex - 1)
         ?: throw IllegalArgumentException("Couldn't find docId from URL '$url'")
 
-    // Getting page name from URL
-    val params = matcher.groups[2]?.value
+    val sheetName = pathSegments.lastOrNull()
         ?: throw IllegalArgumentException("Couldn't find params from URL '$url'. You must specify the page name")
-
-    val sheetName = parseSheetName(params)
 
     // Creating realUrl
     val realUrl = UrlBuilder(
         request,
         docId,
         sheetName,
-        params,
+        request.url.parameters.build(),
         config.sheets[sheetName] ?: error("Couldn't find smartQueryMap for pageName '$sheetName'")
     ).build()
 
@@ -104,11 +100,9 @@ private fun modRequestForRead(request: HttpRequestBuilder, config: RequestInterc
 
     request.url(realUrl)
     request.attributes.put(sheetNameKey, sheetName)
+    return null
 }
 
-private fun parseSheetName(params: String): String {
-    return params.split("?")[0]
-}
 
 internal val ktorClient = HttpClient()
 private const val FORM_DATA_SPLIT_1 = "FB_PUBLIC_LOAD_DATA_"
@@ -119,7 +113,7 @@ fun isRetrosheetUrl(url : String): Boolean {
     return url.startsWith(URL_START)
 }
 
-private suspend fun getFieldMapFromUrl(formUrl: String, config: RequestInterceptorConfig): Map<String, String>? {
+private suspend fun getFieldMapFromUrl(formUrl: String, config: RetrosheetInterceptor): Map<String, String>? {
     val resp = ktorClient.get(formUrl)
     val code = resp.status
     if (code == HttpStatusCode.OK) {
@@ -191,9 +185,9 @@ private fun throwWrongSplit(key: String) {
 
 val requestJsonKey = AttributeKey<String>("requestJson")
 val formNameKey = AttributeKey<String>("formName")
-val submitMapKey = AttributeKey<Map<String, String>>("submitMap")
+val paramBuilderKey = AttributeKey<ParametersBuilder>("submitMap")
 
-private suspend fun modRequestForWrite(request: HttpRequestBuilder, config: RequestInterceptorConfig) {
+private suspend fun modRequestForWrite(request: HttpRequestBuilder, config: RetrosheetInterceptor): OutgoingContent {
     val formName = request.url.pathSegments.last()
     val formUrl = config.forms[formName] ?: throw IllegalArgumentException(
         "Couldn't find form with endPoint '$formName'. Are you sure you called 'addSheet('$formName', ...)'"
@@ -202,8 +196,6 @@ private suspend fun modRequestForWrite(request: HttpRequestBuilder, config: Requ
     val fieldMap = getFieldMapFromUrl(formUrl, config) ?: throw IllegalArgumentException(
         "Failed to get field map"
     )
-
-
     val body = request.body
     if (body is EmptyContent) {
         throw IllegalArgumentException("No argument passed. Param with @Body must be passed")
@@ -211,76 +203,97 @@ private suspend fun modRequestForWrite(request: HttpRequestBuilder, config: Requ
     // Convert arg to a JsonElement first
     val serializer = serializer(body::class.java)
     val requestJson = config.json.encodeToString(serializer, body)
-    val submitMap = requestJson.run {
+    val paramBuilder = requestJson.run {
         val keyValues = config.json.decodeFromString<Map<String, String>>(this)
-        val submitMap = mutableMapOf<String, String>()
+        val params = ParametersBuilder(size = keyValues.size)
         for (entry in keyValues.entries) {
             val keyId =
                 fieldMap[entry.key]
                     ?: throw IllegalArgumentException("Couldn't find field '${entry.key}' in the form")
-            submitMap["entry.$keyId"] = entry.value
+            params.append("entry.$keyId", entry.value)
         }
-        submitMap
+        params
     }
 
     // Sending post to google forms
     val lastSlashIndex = formUrl.lastIndexOf('/')
     val submitUrl = formUrl.substring(0, lastSlashIndex) + "/formResponse"
 
-    val formBody = formData {
-        for ((key, value) in submitMap) {
-            append(key, value)
-        }
-    }
-
-    request {
+    request.apply {
         url(submitUrl)
         method = io.ktor.http.HttpMethod.Post
         headers {
             append("Content-Type", "application/x-www-form-urlencoded")
         }
-        setBody(formBody)
         this.attributes.put(requestJsonKey,requestJson)
-        this.attributes.put(submitMapKey,submitMap)
+        this.attributes.put(paramBuilderKey, paramBuilder)
         this.attributes.put(formNameKey, formName)
     }
+
+    return FormDataContent(paramBuilder.build())
 }
 
 
-class RequestInterceptorConfig {
-    private val _forms = mutableMapOf<String, String>()
-    val forms: Map<String, String> = _forms
+class RetrosheetInterceptor
+private constructor(
+    val isLoggingEnabled: Boolean = false,
+    val sheets: Map<String, Map<String, String>>,
+    val forms: Map<String, String>,
+    val json: Json
+) {
 
-    private val _sheets = mutableMapOf<String, Map<String, String>>()
-    val sheets: Map<String, Map<String, String>> = _sheets
-
-    var json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-    }
-    var isLoggingEnabled = false
-
-
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun addSheet(sheetName: String, columnMap: Map<String, String>) {
-        ColumnNameVerifier(columnMap.keys).verify()
-        _sheets[sheetName] = columnMap
-    }
-
-    /**
-     * Columns should be in order
-     */
-    fun addSheet(sheetName: String, vararg columns: String) {
-        return addSheet(
-            sheetName,
-            SheetUtils.toLetterMap(*columns)
-        )
-    }
-
-    fun addForm(endPoint: String, formLink: String) {
-        if (endPoint.contains('/')) {
-            throw java.lang.IllegalArgumentException("Form endPoint name cannot contains '/'. Found '$endPoint'")
+    class Builder {
+        private val sheets = mutableMapOf<String, Map<String, String>>()
+        private val forms = mutableMapOf<String, String>()
+        private var isLoggingEnabled: Boolean = false
+        private var json = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
         }
-        _forms[endPoint] = formLink
+
+        fun build(): RetrosheetInterceptor {
+            return RetrosheetInterceptor(
+                isLoggingEnabled,
+                sheets,
+                forms,
+                json
+            )
+        }
+
+        fun setLogging(isLoggingEnabled: Boolean): Builder {
+            this.isLoggingEnabled = isLoggingEnabled
+            return this
+        }
+
+        @Suppress("unused")
+        fun setJson(json: Json): Builder {
+            this.json = json
+            return this
+        }
+
+        @Suppress("MemberVisibilityCanBePrivate")
+        fun addSheet(sheetName: String, columnMap: Map<String, String>): Builder {
+            ColumnNameVerifier(columnMap.keys).verify()
+            this.sheets[sheetName] = columnMap
+            return this
+        }
+
+        /**
+         * Columns should be in order
+         */
+        fun addSheet(sheetName: String, vararg columns: String): Builder {
+            return addSheet(
+                sheetName,
+                SheetUtils.toLetterMap(*columns)
+            )
+        }
+
+        fun addForm(endPoint: String, formLink: String): Builder {
+            if (endPoint.contains('/')) {
+                throw java.lang.IllegalArgumentException("Form endPoint name cannot contains '/'. Found '$endPoint'")
+            }
+            forms[endPoint] = formLink
+            return this
+        }
     }
 }

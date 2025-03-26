@@ -1,11 +1,10 @@
 package com.github.theapache64.retrosheet.integration
 
 import com.github.theapache64.expekt.should
-import com.github.theapache64.retrosheetsample.notes.Notes
 import com.github.theapache64.retrosheet.util.runBlockingTest
+import com.github.theapache64.retrosheetsample.notes.Notes
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import okio.IOException
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
@@ -26,7 +25,7 @@ class ReadTest {
         Unit
     }
 
-    @Test(expected = IOException::class)
+    @Test(expected = IllegalStateException::class)
     fun `Fails to read from an invalid sheet`() = runBlocking {
         notesApi.getNotesFromInvalidSheet()
         Unit

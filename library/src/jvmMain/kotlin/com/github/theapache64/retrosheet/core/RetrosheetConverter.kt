@@ -20,13 +20,12 @@ import java.net.HttpURLConnection
 import kotlinx.serialization.serializer
 
 class RetrosheetConverter(
-    private val config: RequestInterceptorConfig
+    private val config: RetrosheetInterceptor
 ) : Converter.Factory {
 
     companion object {
         private val TAG = RetrosheetConverter::class.java.simpleName
     }
-
     override fun suspendResponseConverter(
         typeData: TypeData,
         ktorfit: Ktorfit
@@ -34,7 +33,10 @@ class RetrosheetConverter(
         return object : Converter.SuspendResponseConverter<HttpResponse, Any> {
             override suspend fun convert(result: KtorfitResult): Any {
                 return when (result) {
-                    is KtorfitResult.Failure -> TODO()
+                    is KtorfitResult.Failure -> {
+                        println("QuickTag: RetrosheetConverter:convert: $result")
+                        throw result.throwable
+                    }
                     is KtorfitResult.Success -> {
                         val response = result.response
                         val request = response.request
@@ -49,9 +51,10 @@ class RetrosheetConverter(
 
                                 } else {
                                     val formName = request.attributes[formNameKey]
-                                    val submitMap = request.attributes[submitMapKey]
-                                    val debugData = submitMap.map { it.key + "=" + it.value }.joinToString("&")
-                                    throw IOException("Failed to submit '$formName' with data '$debugData'")
+                                    val submitMap = request.attributes[paramBuilderKey]
+                                    val debugData = submitMap
+                                        .entries().joinToString("&") { it.key + "=" + it.value.firstOrNull() }
+                                    throw IOException("Failed to submit '$formName' with data '$debugData' (code: ${formResp.response.status})")
                                 }
                             }
 
@@ -149,7 +152,7 @@ private const val ERROR_NO_COLUMN_START = "Invalid query: NO_COLUMN"
  * To translate google sheet error message to more understandable form.
  */
 private fun translateErrorMessage(
-    config: RequestInterceptorConfig,
+    config: RetrosheetInterceptor,
     sheetName: String,
     detailedMessage: String
 ): String {
