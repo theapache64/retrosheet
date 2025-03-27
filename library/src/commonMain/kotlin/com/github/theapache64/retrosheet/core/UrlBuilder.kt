@@ -5,7 +5,7 @@ import com.github.theapache64.retrosheet.annotations.SheetParams
 import de.jensklingenberg.ktorfit.annotations
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.Parameters
-import java.net.URLEncoder
+import io.ktor.http.encodeURLParameter
 
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:06
@@ -21,6 +21,7 @@ internal class UrlBuilder(
         val realUrlBuilder =
             StringBuilder("https://docs.google.com/spreadsheets/d/$docId/gviz/tq?tqx=out:csv&sheet=$sheetName")
 
+
         var isQueryAdded = false
         (request.annotations.find { it is Read } as Read?)?.let { params: Read ->
                 if (params.query.isNotBlank()) {
@@ -30,7 +31,7 @@ internal class UrlBuilder(
                         queryMap,
                         queryParams
                     ).convert()
-                    realUrlBuilder.append("&tq=${URLEncoder.encode(realQuery, Charsets.UTF_8)}")
+                    realUrlBuilder.append("&tq=${realQuery.encodeURLParameter()}")
                     isQueryAdded = true
                 }
             }
@@ -47,7 +48,7 @@ internal class UrlBuilder(
                 if (params.rawQuery.isNotBlank()) {
                     require(!isQueryAdded) { "Both rawQuery and @Query cannot work together" }
 
-                    realUrlBuilder.append("&tq=${URLEncoder.encode(params.rawQuery, Charsets.UTF_8)}")
+                    realUrlBuilder.append("&tq=${params.rawQuery.encodeURLParameter()}")
                 }
             }
 

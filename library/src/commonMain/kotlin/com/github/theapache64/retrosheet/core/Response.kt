@@ -15,8 +15,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
-import java.io.IOException
-import java.net.HttpURLConnection
+import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.serializer
 
@@ -86,7 +85,7 @@ class RetrosheetConverter(
 
                                     // Converting back to JSON
                                     val apiError = ApiError(
-                                        HttpURLConnection.HTTP_BAD_REQUEST,
+                                        HttpStatusCode.BadRequest.value,
                                         sheetError.errors.firstOrNull()?.humanMessage ?: ERROR_UNKNOWN,
                                         sheetError
                                     )
@@ -115,7 +114,7 @@ class RetrosheetConverter(
                                     } else {
                                         // no data
                                         response = ApiError(
-                                            HttpURLConnection.HTTP_NOT_FOUND,
+                                            HttpStatusCode.NotFound.value,
                                             "No data found",
                                             null
                                         )

@@ -16,10 +16,12 @@ kotlin {
         withJava()
     }
 
-    /*js {
+    js {
         browser()
         binaries.executable()
     }
+
+    /*
 
     listOf(
         iosX64(),
@@ -41,7 +43,6 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
-
         }
 
         jvmMain.dependencies {
