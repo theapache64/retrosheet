@@ -26,7 +26,6 @@ import org.jetbrains.compose.web.dom.Tr
 import org.jetbrains.compose.web.renderComposable
 
 fun main() {
-
     val api = createNotesApi()
 
     renderComposable(rootElementId = "root") {
@@ -48,7 +47,8 @@ fun main() {
                         }
                     }
                 ) {
-                    var noteText by remember { mutableStateOf("") }
+                    var noteTitle by remember { mutableStateOf("") }
+                    var noteDescription by remember { mutableStateOf("") }
                     var notes by remember { mutableStateOf<List<Note>>(emptyList()) }
                     var isLoading by remember { mutableStateOf(false) }
                     val scope = rememberCoroutineScope()
@@ -59,19 +59,30 @@ fun main() {
                             type = InputType.Text,
                             attrs = {
                                 classes("form-control")
-                                value(noteText)
-                                onInput { noteText = it.value }
-                                placeholder("Enter note")
+                                value(noteTitle)
+                                onInput { noteTitle = it.value }
+                                placeholder("Enter title")
                             }
                         )
+
+                        Input(
+                            type = InputType.Text,
+                            attrs = {
+                                classes("form-control")
+                                value(noteDescription)
+                                onInput { noteDescription = it.value }
+                                placeholder("Enter description")
+                            }
+                        )
+
                         Button(
                             attrs = {
                                 classes("btn", "btn-primary")
                                 onClick {
-                                    if (noteText.isNotBlank()) {
+                                    if (noteTitle.isNotBlank()) {
                                         scope.launch {
-                                            api.addNote(AddNoteRequest(noteText, ""))
-                                            noteText = ""
+                                            api.addNote(AddNoteRequest(noteTitle, noteDescription))
+                                            noteTitle = ""
                                             notes = api.getNotes()
                                         }
                                     }
@@ -95,8 +106,8 @@ fun main() {
                     ) {
                         Thead {
                             Tr {
-                                Th { Text("Created At") }
                                 Th { Text("Title") }
+                                Th { Text("Description") }
                             }
                         }
                         Tbody {
@@ -115,8 +126,8 @@ fun main() {
                             } else {
                                 notes.forEach { note ->
                                     Tr {
-                                        Td { Text(note.createdAt) }
                                         Td { Text(note.title) }
+                                        Td { Text(note.description) }
                                     }
                                 }
                             }
@@ -138,7 +149,6 @@ fun main() {
                             attr("frameborder", "0")
                         }
                     )
-
                 }
             }
         }

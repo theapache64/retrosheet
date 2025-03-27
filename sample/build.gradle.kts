@@ -51,6 +51,8 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.1")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+
+            implementation(compose.runtime)
         }
 
         commonTest.dependencies {
@@ -68,7 +70,6 @@ kotlin {
 
         jsMain.dependencies {
             implementation(compose.html.core)
-            implementation(compose.runtime)
         }
 
         /*jsMain.dependencies {

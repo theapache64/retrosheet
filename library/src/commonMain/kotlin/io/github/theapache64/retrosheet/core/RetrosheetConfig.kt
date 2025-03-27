@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 class RetrosheetConfig
 private constructor(
     val isLoggingEnabled: Boolean = false,
+    val useProxyForWrite: Boolean,
     val sheets: Map<String, Map<String, String>>,
     val forms: Map<String, String>,
     val json: Json
@@ -16,6 +17,7 @@ private constructor(
         private val sheets = mutableMapOf<String, Map<String, String>>()
         private val forms = mutableMapOf<String, String>()
         private var isLoggingEnabled: Boolean = false
+        private var useProxyForWrite: Boolean = false
         private var json = Json {
             ignoreUnknownKeys = true
             isLenient = true
@@ -24,6 +26,7 @@ private constructor(
         fun build(): RetrosheetConfig {
             return RetrosheetConfig(
                 isLoggingEnabled,
+                useProxyForWrite,
                 sheets,
                 forms,
                 json
@@ -32,6 +35,11 @@ private constructor(
 
         fun setLogging(isLoggingEnabled: Boolean): Builder {
             this.isLoggingEnabled = isLoggingEnabled
+            return this
+        }
+
+        fun setUseProxyForWrite(useProxyForWrite: Boolean): Builder {
+            this.useProxyForWrite = useProxyForWrite
             return this
         }
 

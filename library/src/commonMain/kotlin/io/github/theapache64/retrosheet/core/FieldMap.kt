@@ -1,13 +1,9 @@
 package io.github.theapache64.retrosheet.core
 
-import de.jensklingenberg.ktorfit.http.GET
-import de.jensklingenberg.ktorfit.http.PUT
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.headers
 import kotlinx.io.IOException
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -20,12 +16,7 @@ private const val FORM_DATA_SPLIT_2 = "</script>"
 private const val SOLUTION_UPDATE = "Please update retrosheet to latest version."
 
 internal suspend fun getFieldMapFromUrl(formUrl: String, config: RetrosheetConfig): Map<String, String>? {
-    val resp = ktorClient.get(formUrl) {
-        headers {
-            header("Access-Control-Allow-Origin", "*")
-            header("Access-Control-Allow-Methods","GET, PUT, POST, DELETE, HEAD, OPTIONS")
-        }
-    }
+    val resp = ktorClient.get(formUrl)
     val code = resp.status
     if (code == HttpStatusCode.OK) {
         val htmlBody = resp.bodyAsText()

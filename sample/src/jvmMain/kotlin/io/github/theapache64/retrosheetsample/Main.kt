@@ -1,10 +1,5 @@
 package io.github.theapache64.retrosheetsample
 
-import io.github.theapache64.retrosheet.core.RetrosheetConfig
-import io.github.theapache64.retrosheet.core.RetrosheetConverter
-import io.github.theapache64.retrosheet.core.createRetrosheetPlugin
-import de.jensklingenberg.ktorfit.Ktorfit
-import io.ktor.client.HttpClient
 import java.util.Date
 import kotlinx.coroutines.runBlocking
 

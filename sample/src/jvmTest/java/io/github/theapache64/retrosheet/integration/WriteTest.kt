@@ -10,10 +10,12 @@ import org.junit.Test
 
 class WriteTest {
 
-    private val notesApi = createNotesApi()
 
     @Test
     fun `Writes data`() = runBlockingTest {
+
+        val notesApi = createNotesApi()
+
         //Write data
         val request = AddNoteRequest("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
         notesApi.addNote(request)
@@ -25,8 +27,26 @@ class WriteTest {
         remoteNote.description.should.equal(request.description)
     }
 
+    @Test
+    fun `Writes data (proxy)`() = runBlockingTest {
+        val notesApi = createNotesApi(useProxyForWrite = true)
+        //Write data
+        val request = AddNoteRequest("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
+        notesApi.addNote(request)
+
+        // Read data
+        val remoteNote = notesApi.getNote(request.title)
+        remoteNote.should.not.`null`
+        remoteNote.title.should.equal(request.title)
+        remoteNote.description.should.equal(request.description)
+    }
+
+
+
+
     @Test(expected = IllegalArgumentException::class)
     fun `Fails to write into a invalid sheet`() = runBlockingTest {
+        val notesApi = createNotesApi()
         notesApi.addNoteToInvalidSheet(
             AddNoteRequest("some title", "Dynamic Desc 1: ${Date()}")
         )

@@ -1,16 +1,18 @@
 package io.github.theapache64.retrosheetsample
 
 import de.jensklingenberg.ktorfit.Ktorfit
-import io.github.theapache64.retrosheet.annotations.Read
-import io.github.theapache64.retrosheet.annotations.Write
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Query
+import io.github.theapache64.retrosheet.annotations.Read
+import io.github.theapache64.retrosheet.annotations.Write
 import io.github.theapache64.retrosheet.core.RetrosheetConfig
 import io.github.theapache64.retrosheet.core.RetrosheetConverter
 import io.github.theapache64.retrosheet.core.createRetrosheetPlugin
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 
 
 internal const val SHEET_NAME = "notes"
@@ -51,9 +53,10 @@ interface NotesApi {
 
 const val GOOGLE_SHEET_PUBLIC_URL = "https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/"
 
-fun createNotesApi(): NotesApi {
+fun createNotesApi(useProxyForWrite: Boolean = false): NotesApi {
     val config = RetrosheetConfig.Builder()
         .setLogging(true)
+        .setUseProxyForWrite(useProxyForWrite)
         // To Read
         .addSheet(
             SHEET_NAME, // sheet name
@@ -68,6 +71,9 @@ fun createNotesApi(): NotesApi {
 
     val ktorClient = HttpClient {
         install(createRetrosheetPlugin(config)) {}
+        install(ContentNegotiation) {
+            json()
+        }
     }
 
     val retrofit = Ktorfit.Builder()
