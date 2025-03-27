@@ -44,6 +44,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation("de.siegmar:fastcsv:2.1.0")
+            implementation("de.brudaswen.kotlinx.serialization:kotlinx-serialization-csv:2.1.0")
             implementation(libs.ktorfit)
 
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")

@@ -3,16 +3,28 @@
 package com.github.theapache64.retrosheet.utils
 
 import de.siegmar.fastcsv.reader.NamedCsvReader
+import kotlin.reflect.KType
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.csv.Csv
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.serializer
 
 /**
  * Created by theapache64 : Jul 22 Wed,2020 @ 00:05
  */
 internal object CsvConverter {
+
+    private val csv = Csv {
+        hasHeaderRecord = true
+    }
+
+    fun convertCsvToModel(kType: KType, csvData: String): Any? {
+        return csv.decodeFromString(serializer(kType), csvData)
+    }
+
     @OptIn(ExperimentalSerializationApi::class)
     fun convertCsvToJson(
         csvData: String,

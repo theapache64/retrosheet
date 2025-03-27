@@ -17,6 +17,7 @@ import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
 import java.io.IOException
 import java.net.HttpURLConnection
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.serializer
 
 /**
@@ -29,6 +30,8 @@ class RetrosheetConverter(
     companion object {
         private val TAG = RetrosheetConverter::class.java.simpleName
     }
+
+    @OptIn(ExperimentalSerializationApi::class)
     override fun suspendResponseConverter(
         typeData: TypeData,
         ktorfit: Ktorfit
@@ -63,7 +66,7 @@ class RetrosheetConverter(
 
                             isRetrosheetUrl(request.url.toString()) -> {
                                 var responseBody = response.bodyAsText()
-                                val jsonRoot: String
+                                val response: Any
 
                                 // Checking if it's a JSON response. If yes, it's an error else, it's the CSV.
                                 val isSpreadsheetError = JsonValidator.isValidJsonObject(responseBody, config.json)
@@ -88,7 +91,7 @@ class RetrosheetConverter(
                                         sheetError
                                     )
 
-                                    jsonRoot = config.json.encodeToString<ApiError>(apiError)
+                                    response = apiError
                                 } else {
 
                                     // It's the CSV.
@@ -102,31 +105,24 @@ class RetrosheetConverter(
                                         responseBody = KeyValueUtils.transform(responseBody)
                                     }
 
-                                    val csvJson = CsvConverter.convertCsvToJson(
-                                        responseBody,
-                                        isReturnTypeList(typeData),
-                                        config.json
-                                    )
-                                    if (csvJson != null) {
-                                        jsonRoot = csvJson
+                                    val type = typeData.typeInfo.kotlinType ?: error("Type not found")
+                                    val csvModel = CsvConverter.convertCsvToModel(type, responseBody)
+                                    if (csvModel != null) {
                                         if (config.isLoggingEnabled) {
-                                            println("$TAG : GET <--- $jsonRoot")
+                                            println("$TAG : GET <--- $csvModel")
                                         }
-
+                                        response = csvModel
                                     } else {
                                         // no data
-                                        jsonRoot = config.json.encodeToString<ApiError>(
-                                            ApiError(
-                                                HttpURLConnection.HTTP_NOT_FOUND,
-                                                "No data found",
-                                                null
-                                            )
+                                        response = ApiError(
+                                            HttpURLConnection.HTTP_NOT_FOUND,
+                                            "No data found",
+                                            null
                                         )
                                     }
                                 }
 
-                                val serializer = serializer(typeData.typeInfo.kotlinType ?: error("Type not found"))
-                                return config.json.decodeFromString(serializer, jsonRoot) ?: error("Failed to decode")
+                                return response
                             }
 
                             else -> {
