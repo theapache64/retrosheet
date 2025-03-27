@@ -1,11 +1,10 @@
 package com.github.theapache64.retrosheet.utils
 
 import com.github.theapache64.expekt.should
-import de.siegmar.fastcsv.reader.MalformedCsvException
 import kotlin.reflect.typeOf
+import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import org.junit.Test
 
 @Serializable
@@ -25,23 +24,7 @@ data class Note(
 )
 
 class CsvConverterTest {
-    @Test
-    fun `Converts valid CSV to JSON`() {
-        val fakeCsvData = """
-            username,age
-            jake,31
-            adam,30
-            bob,20
-        """.trimIndent()
 
-        val actualOutput = CsvConverter.convertCsvToJson(fakeCsvData, true, Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-        })
-        val expectedOutput =
-            """[{"username":"jake","age":31},{"username":"adam","age":30},{"username":"bob","age":20}]"""
-        actualOutput.should.equal(expectedOutput)
-    }
 
     @Test
     fun `Converts valid CSV to model`() {
@@ -93,16 +76,13 @@ class CsvConverterTest {
     }
 
 
-    @Test(expected = MalformedCsvException::class)
+    @Test(expected = MissingFieldException::class)
     fun `Fails to convert invalid CSV`() {
         val fakeCsvData = """
             username,age
             jake
         """.trimIndent()
 
-        CsvConverter.convertCsvToJson(fakeCsvData, true, Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-        })
+        CsvConverter.convertCsvToModel(typeOf<Person>(), fakeCsvData)
     }
 }

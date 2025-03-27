@@ -46,11 +46,7 @@ kotlin {
             implementation(libs.ktorfit)
             implementation("io.ktor:ktor-client-content-negotiation:3.1.1")
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.1")
-
-            // Kotlinx Coroutines Core : Coroutines support libraries for Kotlin
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-
-
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
         }
 

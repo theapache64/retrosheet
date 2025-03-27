@@ -1,11 +1,7 @@
 package com.github.theapache64.retrosheet.utils
 
 import com.github.theapache64.retrosheet.exception.InvalidKeyValueFormat
-import de.siegmar.fastcsv.reader.CsvReader
-import de.siegmar.fastcsv.writer.CsvWriter
-import de.siegmar.fastcsv.writer.LineDelimiter
-import de.siegmar.fastcsv.writer.QuoteStrategy
-import java.io.StringWriter
+
 
 internal object KeyValueUtils {
 
@@ -16,34 +12,22 @@ internal object KeyValueUtils {
      * @return transformed CSV
      */
     fun transform(responseBody: String): String {
-        val headers = mutableListOf<String>()
-        val values = mutableListOf<String>()
-
-        CsvReader.builder()
-            .build(responseBody)
-            .forEachIndexed { index, row ->
-                if (index != 0) {
-                    val fieldSize = row.fields.size
-                    if (fieldSize != 2) {
-                        throw InvalidKeyValueFormat("@KeyValue sheet should have 2 columns. Found $fieldSize @ $row")
-                    }
-
-                    headers.add(row.fields[0])
-                    values.add(row.fields[1])
+        try {
+            val keyValueList = responseBody
+                .trim()
+                .split("\n")
+                .drop(1) // header
+                .map { it.split(",") }
+                .map {
+                    Pair(it[0].trim(), it[1].trim())
                 }
-            }
 
-        // Building new CSV
-        val writer = StringWriter()
-        CsvWriter.builder()
-            .quoteStrategy(QuoteStrategy.ALWAYS)
-            .lineDelimiter(LineDelimiter.LF)
-            .build(writer)
-            .apply {
-                writeRow(*headers.toTypedArray())
-                writeRow(*values.toTypedArray())
-            }
+            val keys = keyValueList.map { it.first }
+            val values = keyValueList.map { it.second }
 
-        return writer.toString().trim()
+            return keys.joinToString(",") + "\n" + values.joinToString(",")
+        } catch (e: IndexOutOfBoundsException) {
+            throw InvalidKeyValueFormat("Invalid key-value format: $responseBody - cause: ${e.message}")
+        }
     }
 }
