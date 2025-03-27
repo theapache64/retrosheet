@@ -2,9 +2,9 @@
 
 package com.github.theapache64.retrosheet.utils
 
+import app.softwork.serialization.csv.CSVFormat
 import kotlin.reflect.KType
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.csv.Csv
 import kotlinx.serialization.serializer
 
 /**
@@ -12,12 +12,8 @@ import kotlinx.serialization.serializer
  */
 internal object CsvConverter {
 
-    internal val csv = Csv {
-        hasHeaderRecord = true
-    }
-
     fun convertCsvToModel(kType: KType, csvData: String): Any? {
-        return csv.decodeFromString(serializer(kType), csvData)
+        return CSVFormat.decodeFromString(serializer(kType), csvData)
     }
 
 }

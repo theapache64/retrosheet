@@ -7,12 +7,9 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(17)
+
     jvm {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
-        }
         withJava()
     }
 
@@ -21,7 +18,6 @@ kotlin {
         binaries.executable()
     }
 
-    /*
 
     listOf(
         iosX64(),
@@ -32,33 +28,20 @@ kotlin {
             baseName = "retrosheet"
             isStatic = true
         }
-    }*/
+    }
 
     sourceSets {
         commonMain.dependencies {
-            implementation("de.brudaswen.kotlinx.serialization:kotlinx-serialization-csv:2.1.0")
             implementation(libs.ktorfit)
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-        }
-
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-        }
-
-        jvmMain.dependencies {
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.serialization.csv)
         }
 
         jvmTest.dependencies {
-            implementation("com.github.theapache64:expekt:1.0.0")
-            implementation("org.mockito:mockito-inline:4.5.1")
-            implementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+            implementation(kotlin("test"))
+            implementation(libs.expekt)
+            implementation(libs.mockito.inline)
+            implementation(libs.mockito.kotlin)
         }
-
-        /*jsMain.dependencies {
-        }
-
-        iosMain.dependencies {
-        }*/
-
     }
 }

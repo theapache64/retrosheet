@@ -2,7 +2,6 @@ package com.github.theapache64.retrosheet.utils
 
 import com.github.theapache64.expekt.should
 import kotlin.reflect.typeOf
-import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.junit.Test
@@ -76,7 +75,7 @@ class CsvConverterTest {
     }
 
 
-    @Test(expected = MissingFieldException::class)
+    @Test(expected = NoSuchElementException::class)
     fun `Fails to convert invalid CSV`() {
         val fakeCsvData = """
             username,age
