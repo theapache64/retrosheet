@@ -102,7 +102,7 @@ Use the trimmed link as `baseUrl` in `Retrofit` or `OkHttp`.
 
 ```kotlin
 import com.squareup.moshi.Moshi
-import com.github.theapache64.retrosheet.RetrosheetInterceptor
+import io.github.theapache64.retrosheet.RetrosheetInterceptor
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
