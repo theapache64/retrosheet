@@ -25,31 +25,3 @@ fun main() = runBlocking {
     val addedNote = notesApi.getNote(title = addNoteRequest.title)
     println(addedNote)
 }
-
-fun createNotesApi(): NotesApi {
-    val config = RetrosheetConfig.Builder()
-        .setLogging(true)
-        // To Read
-        .addSheet(
-            SHEET_NAME, // sheet name
-            "created_at", "title", "description" // columns in same order
-        )
-        // To write
-        .addForm(
-            ADD_NOTE_ENDPOINT,
-            "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
-        )
-        .build()
-
-    val ktorClient = HttpClient {
-        install(createRetrosheetPlugin(config)) {}
-    }
-
-    val retrofit = Ktorfit.Builder()
-        .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/") // Sheet's public URL
-        .httpClient(ktorClient)
-        .converterFactories(RetrosheetConverter(config))
-        .build()
-
-    return retrofit.createNotesApi()
-}

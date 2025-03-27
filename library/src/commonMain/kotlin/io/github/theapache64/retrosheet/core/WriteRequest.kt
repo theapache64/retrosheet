@@ -49,6 +49,8 @@ internal suspend fun modRequestForWrite(request: HttpRequestBuilder, config: Ret
         method = io.ktor.http.HttpMethod.Post
         headers {
             append("Content-Type", "application/x-www-form-urlencoded")
+            // enable CORS
+            append("Access-Control-Allow-Origin", "*")
         }
         this.attributes.put(requestJsonKey, requestJson)
         this.attributes.put(paramBuilderKey, paramBuilder)
