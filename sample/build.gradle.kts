@@ -1,15 +1,16 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.1.10"
-    id("org.jetbrains.compose") version "1.7.0-alpha03"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
+    id("org.jetbrains.compose") version "1.7.3"
 }
 
 kotlin {
     jvm {
-        withJava()
     }
 
     js(IR) {
@@ -53,6 +54,9 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
             implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+
         }
 
         commonTest.dependencies {
@@ -65,7 +69,7 @@ kotlin {
         }
 
         jvmMain.dependencies {
-
+            implementation(compose.desktop.macos_arm64)
         }
 
         jsMain.dependencies {
@@ -78,6 +82,18 @@ kotlin {
         iosMain.dependencies {
         }*/
 
+    }
+    jvmToolchain(17)
+}
+
+compose.desktop {
+    application {
+        mainClass = "io.github.theapache64.retrosheetsample.Main_jvmKt"
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "retrosheet"
+            packageVersion = "1.0.0"
+        }
     }
 }
 
