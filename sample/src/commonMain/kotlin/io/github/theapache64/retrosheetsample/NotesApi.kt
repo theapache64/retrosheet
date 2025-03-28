@@ -26,9 +26,9 @@ interface NotesApi {
         @Query("title") title: String
     ): Note
 
-    @Read("SELECT *")
+    @Read("SELECT *  ORDER BY A DESC LIMIT 5")
     @GET(SHEET_NAME) // sheet name
-    suspend fun getNotes(): List<Note>
+    suspend fun getLastFiveItems(): List<Note>
 
     @Write
     @POST(ADD_NOTE_ENDPOINT) // form name

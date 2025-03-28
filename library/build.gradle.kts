@@ -47,7 +47,6 @@ kotlin {
     }
 }
 
-
 tasks.named("sourcesJar") {
     dependsOn("kspCommonMainKotlinMetadata")
 }

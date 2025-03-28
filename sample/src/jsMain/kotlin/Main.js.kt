@@ -1,8 +1,13 @@
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.CanvasBasedWindow
 import io.github.theapache64.retrosheetsample.AppUi
-import org.jetbrains.compose.web.renderComposable
+import org.jetbrains.skiko.wasm.onWasmReady
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    renderComposable(rootElementId = "root") {
-        AppUi()
+    onWasmReady {
+        CanvasBasedWindow(title = "Retrosheet Web Sample") {
+            AppUi()
+        }
     }
 }
