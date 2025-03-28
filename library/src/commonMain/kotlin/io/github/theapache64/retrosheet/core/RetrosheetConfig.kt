@@ -3,11 +3,12 @@ package io.github.theapache64.retrosheet.core
 import io.github.theapache64.retrosheet.utils.SheetUtils
 import kotlinx.serialization.json.Json
 
+expect fun shouldUseProxyForWrite(): Boolean
 
 class RetrosheetConfig
 private constructor(
     val isLoggingEnabled: Boolean = false,
-    val useProxyForWrite: Boolean,
+    internal val useProxyForWrite: Boolean,
     val sheets: Map<String, Map<String, String>>,
     val forms: Map<String, String>,
     val json: Json
@@ -17,7 +18,7 @@ private constructor(
         private val sheets = mutableMapOf<String, Map<String, String>>()
         private val forms = mutableMapOf<String, String>()
         private var isLoggingEnabled: Boolean = false
-        private var useProxyForWrite: Boolean = false
+        private var useProxyForWrite: Boolean = shouldUseProxyForWrite()
         private var json = Json {
             ignoreUnknownKeys = true
             isLenient = true
@@ -38,7 +39,7 @@ private constructor(
             return this
         }
 
-        fun setUseProxyForWrite(useProxyForWrite: Boolean): Builder {
+        internal fun setUseProxyForWrite(useProxyForWrite: Boolean): Builder {
             this.useProxyForWrite = useProxyForWrite
             return this
         }

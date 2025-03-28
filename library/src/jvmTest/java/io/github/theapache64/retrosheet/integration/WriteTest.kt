@@ -29,7 +29,9 @@ class WriteTest {
 
     @Test
     fun `Writes data (proxy)`() = runBlockingTest {
-        val notesApi = createNotesApi(useProxyForWrite = true)
+        val notesApi = createNotesApi(){
+            setUseProxyForWrite(true)
+        }
         //Write data
         val request = AddNoteRequest("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
         notesApi.addNote(request)

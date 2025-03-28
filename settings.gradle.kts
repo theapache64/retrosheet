@@ -4,18 +4,15 @@ include(":sample")
 
 pluginManagement {
     repositories {
+        mavenCentral()
         google()
         gradlePluginPortal()
-        mavenCentral()
-        // jitpack
-        maven("https://jitpack.io")
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        google()
         mavenCentral()
-        maven("https://jitpack.io")
+        google()
     }
 }

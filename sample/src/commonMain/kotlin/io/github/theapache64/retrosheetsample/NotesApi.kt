@@ -53,10 +53,12 @@ interface NotesApi {
 
 const val GOOGLE_SHEET_PUBLIC_URL = "https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/"
 
-fun createNotesApi(useProxyForWrite: Boolean = false): NotesApi {
+fun createNotesApi(
+    configBuilder: RetrosheetConfig.Builder.() -> Unit = {}
+): NotesApi {
     val config = RetrosheetConfig.Builder()
+        .apply { this.configBuilder() }
         .setLogging(true)
-        .setUseProxyForWrite(useProxyForWrite)
         // To Read
         .addSheet(
             SHEET_NAME, // sheet name

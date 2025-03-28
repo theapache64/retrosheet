@@ -39,6 +39,7 @@ kotlin {
 
         jvmTest.dependencies {
             implementation(kotlin("test"))
+            implementation(project(":sample"))
             implementation(libs.expekt)
             implementation(libs.mockito.inline)
             implementation(libs.mockito.kotlin)

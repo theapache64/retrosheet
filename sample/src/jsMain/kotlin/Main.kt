@@ -127,7 +127,7 @@ fun main() {
                                 notes.forEach { note ->
                                     Tr {
                                         Td { Text(note.title) }
-                                        Td { Text(note.description) }
+                                        Td { Text(note.description ?: "") }
                                     }
                                 }
                             }

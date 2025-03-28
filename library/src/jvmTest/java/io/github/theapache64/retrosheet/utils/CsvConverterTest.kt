@@ -1,6 +1,7 @@
 package io.github.theapache64.retrosheet.utils
 
 import com.github.theapache64.expekt.should
+import io.github.theapache64.retrosheet.core.RetrosheetConfig
 import kotlin.reflect.typeOf
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
