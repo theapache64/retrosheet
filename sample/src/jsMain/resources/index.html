@@ -10,7 +10,7 @@
     <script src="skiko.js"> </script>
 </head>
 <body>
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         <div class="col-md-12 text-center" style="margin-bottom: 20px;">
             <h1 >
@@ -31,12 +31,14 @@
 <script type="text/javascript">
     // Load iFrame after page and 5 second into iFrameContainer
     $(document).ready(function() {
-        var iFrame = document.createElement('iframe');
-        iFrame.src = "https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/edit?gid=651712402#gid=651712402";
-        iFrame.style.width = "100%";
-        iFrame.style.height = "100%";
-        iFrame.style.border = "none";
-        document.getElementById('iFrameContainer').appendChild(iFrame);
+        setTimeout(function () {
+            var iFrame = document.createElement('iframe');
+            iFrame.src = "https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/edit?gid=651712402#gid=651712402";
+            iFrame.style.width = "100%";
+            iFrame.style.height = "100%";
+            iFrame.style.border = "none";
+            document.getElementById('iFrameContainer').appendChild(iFrame);
+        }, 2000)
     });
 </script>
 </body>
