@@ -29,7 +29,7 @@ class WriteTest {
 
     @Test
     fun `Writes data (proxy)`() = runBlockingTest {
-        val notesApi = createNotesApi(){
+        val notesApi = createNotesApi {
             setUseProxyForWrite(true)
         }
         //Write data

@@ -28,3 +28,12 @@ internal val sheetNameKey = AttributeKey<String>("sheetName")
 internal val requestJsonKey = AttributeKey<String>("requestJson")
 internal val formNameKey = AttributeKey<String>("formName")
 internal val paramBuilderKey = AttributeKey<ParametersBuilder>("submitMap")
+
+
+internal fun String.proxify(shouldProxy: Boolean): String {
+    return if(shouldProxy){
+        "https://api.a64.in/retrosheet?url=$this"
+    }else{
+        this
+    }
+}

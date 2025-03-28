@@ -16,7 +16,7 @@ private const val FORM_DATA_SPLIT_2 = "</script>"
 private const val SOLUTION_UPDATE = "Please update retrosheet to latest version."
 
 internal suspend fun getFieldMapFromUrl(formUrl: String, config: RetrosheetConfig): Map<String, String>? {
-    val resp = ktorClient.get(formUrl)
+    val resp = ktorClient.get(formUrl.proxify(config.useProxyForWrite))
     val code = resp.status
     if (code == HttpStatusCode.OK) {
         val htmlBody = resp.bodyAsText()
@@ -70,6 +70,7 @@ internal suspend fun getFieldMapFromUrl(formUrl: String, config: RetrosheetConfi
     }
     return null
 }
+
 
 
 private fun throwDataExpectationFailure() {
