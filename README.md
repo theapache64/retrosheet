@@ -1,7 +1,5 @@
 # 📝 retrosheet
-
-Turn Google Spreadsheet to JSON endpoint.  
-Supported Platforms: Android, iOS, JVM, and JS
+Turn Google Spreadsheet to JSON endpoint.
 
 ![https://github.com/theapache64/notes](demo.png)
 
@@ -11,17 +9,22 @@ Supported Platforms: Android, iOS, JVM, and JS
 - 📊 Manage data directly through the Google Spreadsheet app.
 - 🏃‍♂️ Speed up development of your POC or MVP with this library.
 
+## 🚀 Platform Supported
+
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white) ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+
+
 ## 🤝 Install
 
 ![latestVersion](https://img.shields.io/github/v/release/theapache64/retrosheet)
 
 ```kotlin
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-  implementation("io.github.theapache64:retrosheet:<latest.version>")
+    implementation("io.github.theapache64:retrosheet:<latest.version>")
 }
 ```
 
@@ -50,22 +53,22 @@ Press `Send` and copy the link.
 #### 🔧 Step 5: Create `RetrosheetConfig` and attach it to the client
 ```kotlin
 val config = RetrosheetConfig.Builder()
-  .setLogging(true)
-  // For reading from sheet
-  .addSheet(
-    "notes", // sheet name
-    "created_at", "title", "description" // columns in same order
-  )
-  // For writing to sheet
-  .addForm(
-    "add_note",
-    "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
-  )
-  .build()
+    .setLogging(true)
+    // For reading from sheet
+    .addSheet(
+        "notes", // sheet name
+        "created_at", "title", "description" // columns in same order
+    )
+    // For writing to sheet
+    .addForm(
+        "add_note",
+        "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
+    )
+    .build()
 
 val ktorClient = HttpClient {
-  install(createRetrosheetPlugin(config)) {}
-  ...
+    install(createRetrosheetPlugin(config)) {}
+    ...
 }
 ```
 
@@ -102,11 +105,11 @@ Use the trimmed link as `baseUrl` in `Ktorfit`.
 
 ```kotlin
 val retrofit = Ktorfit.Builder()
-         // Like this 👇🏼
-        .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
-        .httpClient(ktorClient)
-        .converterFactories(RetrosheetConverter(config))
-        .build()
+    // Like this 👇🏼
+    .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
+    .httpClient(ktorClient)
+    .converterFactories(RetrosheetConverter(config))
+    .build()
 ```
 
 **Done 👍**
@@ -115,56 +118,56 @@ val retrofit = Ktorfit.Builder()
 
 ```kotlin
 suspend fun main() {
-  val notesApi = buildNotesApi()
-  println(notesApi.getNotes())
+    val notesApi = buildNotesApi()
+    println(notesApi.getNotes())
 
-  // Adding sample order
-  val newNote = notesApi.addNote(
-    Note(
-      createdAt = null,
-      title = "Dynamic Note 1",
-      description = "Dynámic Desc 1: ${Date()}"
+    // Adding sample order
+    val newNote = notesApi.addNote(
+        Note(
+            createdAt = null,
+            title = "Dynamic Note 1",
+            description = "Dynámic Desc 1: ${Date()}"
+        )
     )
-  )
 
-  println(newNote)
+    println(newNote)
 }
 
 
 fun createNotesApi(
-  configBuilder: RetrosheetConfig.Builder.() -> Unit = {}
+    configBuilder: RetrosheetConfig.Builder.() -> Unit = {}
 ): NotesApi {
-  val config = RetrosheetConfig.Builder()
-    .apply { this.configBuilder() }
-    .setLogging(true)
-    // To Read
-    .addSheet(
-      "notes", // sheet name
-      "created_at", "title", "description" // columns in same order
-    )
-    // To write
-    .addForm(
-      "add_note",
-      // Google form name
-      "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link"
-    )
-    .build()
+    val config = RetrosheetConfig.Builder()
+        .apply { this.configBuilder() }
+        .setLogging(true)
+        // To Read
+        .addSheet(
+            "notes", // sheet name
+            "created_at", "title", "description" // columns in same order
+        )
+        // To write
+        .addForm(
+            "add_note",
+            // Google form name
+            "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link"
+        )
+        .build()
 
-  val ktorClient = HttpClient {
-    install(createRetrosheetPlugin(config)) {}
-    install(ContentNegotiation) {
-      json()
+    val ktorClient = HttpClient {
+        install(createRetrosheetPlugin(config)) {}
+        install(ContentNegotiation) {
+            json()
+        }
     }
-  }
 
-  val retrofit = Ktorfit.Builder()
-    // GoogleSheet Public URL
-    .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
-    .httpClient(ktorClient)
-    .converterFactories(RetrosheetConverter(config))
-    .build()
+    val retrofit = Ktorfit.Builder()
+        // GoogleSheet Public URL
+        .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
+        .httpClient(ktorClient)
+        .converterFactories(RetrosheetConverter(config))
+        .build()
 
-  return retrofit.createNotesApi()
+    return retrofit.createNotesApi()
 }
 ```
 - Source: https://github.com/theapache64/retrosheet-jvm-sample. Check `sample` directory for more samples
