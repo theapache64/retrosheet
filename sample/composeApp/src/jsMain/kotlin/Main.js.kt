@@ -7,7 +7,7 @@ import org.jetbrains.skiko.wasm.onWasmReady
 fun main() {
     onWasmReady {
         CanvasBasedWindow(title = "Retrosheet Web Sample") {
-            AppUi()
+            AppUi(isWeb = true)
         }
     }
 }

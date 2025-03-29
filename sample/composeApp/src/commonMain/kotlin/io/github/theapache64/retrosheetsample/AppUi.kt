@@ -1,26 +1,11 @@
 package io.github.theapache64.retrosheetsample
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.io.IOException
 
 @Composable
-fun AppUi() {
+fun AppUi(
+    isWeb: Boolean = false
+) {
     MaterialTheme {
         val api = remember { createNotesApi() }
         var notes = remember { mutableStateListOf<Note>() }
@@ -56,7 +43,8 @@ fun AppUi() {
 
         // Control and Tables
         Column(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.safeDrawingPadding()
+                .padding(10.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -67,7 +55,11 @@ fun AppUi() {
                     onValueChange = { title = it },
                     label = { Text("Title*") },
                     enabled = !isAdding,
-                    modifier = Modifier.weight(0.5f)
+                    modifier = Modifier.apply {
+                        if (!isWeb) {
+                            weight(0.5f)
+                        }
+                    }
                 )
 
                 OutlinedTextField(
@@ -75,7 +67,11 @@ fun AppUi() {
                     onValueChange = { description = it },
                     label = { Text("Description") },
                     enabled = !isAdding,
-                    modifier = Modifier.weight(0.5f)
+                    modifier = Modifier.apply {
+                        if (!isWeb) {
+                            weight(0.5f)
+                        }
+                    }
                 )
             }
 
@@ -111,7 +107,7 @@ fun AppUi() {
                                 statusMsg = "Adding new item..."
                                 isAdding = true
                                 api.addNote(
-                                    AddNoteRequest(
+                                    Note(
                                         title = title,
                                         description = description
                                     )
@@ -155,7 +151,7 @@ fun AppUi() {
                             Text(item.title, fontWeight = FontWeight.Bold)
                             Text(item.description ?: "-")
                             Text(
-                                item.createdAt,
+                                item.createdAt ?: "-",
                                 fontWeight = FontWeight.Thin,
                                 fontStyle = FontStyle.Italic,
                                 fontSize = 12.sp,
