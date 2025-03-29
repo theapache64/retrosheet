@@ -50,123 +50,118 @@ fun AppUi() {
             setLoaded()
         }
 
-        Row(
-            modifier = Modifier.padding(10.dp)
-        ) {
-            var title by remember { mutableStateOf("") }
-            var description by remember { mutableStateOf("") }
-            var isAdding by remember { mutableStateOf(false) }
+        var title by remember { mutableStateOf("") }
+        var description by remember { mutableStateOf("") }
+        var isAdding by remember { mutableStateOf(false) }
 
-            // Control and Tables
-            Column {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+        // Control and Tables
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title*") },
+                    enabled = !isAdding
+                )
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description") },
+                    enabled = !isAdding
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val scope = rememberCoroutineScope()
+                OutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            statusMsg = "Refreshing..."
+                            notes.clear()
+                            notes.addAll(api.getLastFiveItems())
+                            setLoaded()
+                        }
+                    },
+                    shape = RoundedCornerShape(4.dp),
+                    enabled = notes.isNotEmpty()
                 ) {
-                    OutlinedTextField(
-                        value = title,
-                        onValueChange = { title = it },
-                        label = { Text("Title*") },
-                        enabled = !isAdding
-                    )
-
-                    OutlinedTextField(
-                        value = description,
-                        onValueChange = { description = it },
-                        label = { Text("Description") },
-                        enabled = !isAdding
-                    )
+                    Text("REFRESH")
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    val scope = rememberCoroutineScope()
-                    OutlinedButton(
-                        onClick = {
-                            scope.launch {
+                OutlinedButton(
+                    onClick = {
+                        scope.launch {
+                            if (title.isEmpty()) {
+                                statusMsg = "ERROR: Title can't be empty"
+                                return@launch
+                            }
+
+                            try {
+                                statusMsg = "Adding new item..."
+                                isAdding = true
+                                api.addNote(
+                                    AddNoteRequest(
+                                        title = title,
+                                        description = description
+                                    )
+                                )
+                                isAdding = false
+                                statusMsg = ""
+                                title = ""
+                                description = ""
+                                delay(1000)
                                 statusMsg = "Refreshing..."
                                 notes.clear()
                                 notes.addAll(api.getLastFiveItems())
                                 setLoaded()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                                isAdding = false
+                                statusMsg = "ERROR: ${e.message}"
                             }
-                        },
-                        shape = RoundedCornerShape(4.dp),
-                        enabled = notes.isNotEmpty()
-                    ) {
-                        Text("REFRESH")
-                    }
-
-                    OutlinedButton(
-                        onClick = {
-                            scope.launch {
-                                if (title.isEmpty()) {
-                                    statusMsg = "ERROR: Title can't be empty"
-                                    return@launch
-                                }
-
-                                try {
-                                    statusMsg = "Adding new item..."
-                                    isAdding = true
-                                    api.addNote(
-                                        AddNoteRequest(
-                                            title = title,
-                                            description = description
-                                        )
-                                    )
-                                    isAdding = false
-                                    statusMsg = ""
-                                    title = ""
-                                    description = ""
-                                    delay(1000)
-                                    statusMsg = "Refreshing..."
-                                    notes.clear()
-                                    notes.addAll(api.getLastFiveItems())
-                                    setLoaded()
-                                } catch (e: IOException) {
-                                    e.printStackTrace()
-                                    isAdding = false
-                                    statusMsg = "ERROR: ${e.message}"
-                                }
-                            }
-                        },
-                        shape = RoundedCornerShape(4.dp),
-                        enabled = !isAdding
-                    ) {
-                        Text("ADD")
-                    }
+                        }
+                    },
+                    shape = RoundedCornerShape(4.dp),
+                    enabled = !isAdding
+                ) {
+                    Text("ADD")
                 }
+            }
 
-                Text(
-                    modifier = Modifier.padding(vertical = 10.dp), text = statusMsg
-                )
+            Text(
+                modifier = Modifier.padding(vertical = 10.dp), text = statusMsg
+            )
 
-                LazyColumn {
-                    items(notes) { item ->
-                        ElevatedCard(
-                            modifier = Modifier.padding(bottom = 3.dp)
+            LazyColumn {
+                items(notes) { item ->
+                    ElevatedCard(
+                        modifier = Modifier.padding(bottom = 3.dp)
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier.padding(start = 10.dp, end = 50.dp, top = 10.dp, bottom = 10.dp)
                         ) {
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = Modifier.padding(start = 10.dp, end = 50.dp, top = 10.dp, bottom = 10.dp)
-                            ) {
-                                Text(item.title, fontWeight = FontWeight.Bold)
-                                Text(item.description ?: "-")
-                                Text(
-                                    item.createdAt,
-                                    fontWeight = FontWeight.Thin,
-                                    fontStyle = FontStyle.Italic,
-                                    fontSize = 12.sp,
-                                    color = Color(0xFF888888)
-                                )
-                            }
+                            Text(item.title, fontWeight = FontWeight.Bold)
+                            Text(item.description ?: "-")
+                            Text(
+                                item.createdAt,
+                                fontWeight = FontWeight.Thin,
+                                fontStyle = FontStyle.Italic,
+                                fontSize = 12.sp,
+                                color = Color(0xFF888888)
+                            )
                         }
                     }
                 }
             }
 
-            // WebPage
         }
     }
 }

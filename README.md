@@ -1,13 +1,12 @@
 # retrosheet 📄
 
-Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
+Turn Google Spreadsheet to JSON endpoint.
+Supported Platforms: Android, iOS, JVM and JS
 
 ![https://github.com/theapache64/notes](demo.png)
 
 ## Benefits 🤗
 
-- 🚀 Use Google's server for reliable performance.
-- ⚡ Benefit from fast responses and no bandwidth limits.
 - 🔄 Migrate to your REST API with minimal code changes.
 - 📊 Manage data directly through the Google Spreadsheet app.
 - 🏃‍♂️ Speed up development of your POC or MVP with this library.
@@ -16,14 +15,14 @@ Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
 
 ![latestVersion](https://img.shields.io/github/v/release/theapache64/retrosheet)
 
-```groovy
+```kotlin
 
 repositories {
-  maven { url 'https://jitpack.io' } // Add jitpack
+  mavenCentral()
 }
 
 dependencies {
-  implementation 'com.github.theapache64:retrosheet:<latest.version>'
+  implementation("io.github.theapache64:retrosheet:<latest.version>")
 }
 ```
 

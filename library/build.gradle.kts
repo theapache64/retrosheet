@@ -9,15 +9,12 @@ plugins {
 kotlin {
     jvmToolchain(17)
 
-    jvm {
-        withJava()
-    }
+    jvm()
 
     js {
         browser()
         binaries.executable()
     }
-
 
     listOf(
         iosX64(),

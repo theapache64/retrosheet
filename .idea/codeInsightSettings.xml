@@ -3,32 +3,21 @@
   <component name="JavaProjectCodeInsightSettings">
     <excluded-names>
       <name>android.app.LauncherActivity.ListItem</name>
+      <name>android.graphics.Canvas</name>
       <name>android.graphics.drawable.Icon</name>
       <name>android.graphics.fonts.FontFamily</name>
       <name>android.inputmethodservice.Keyboard.Row</name>
       <name>android.text.layout.Alignment</name>
-      <name>android.widget.GridLayout.Alignment</name>
       <name>android.view.RoundedCorner</name>
       <name>android.view.Surface</name>
+      <name>android.widget.GridLayout.Alignment</name>
+      <name>androidx.compose.foundation.text.BasicText</name>
+      <name>androidx.compose.material.*</name>
+      <name>androidx.compose.material.Text</name>
       <name>java.lang.reflect.Modifier</name>
       <name>java.nio.file.WatchEvent.Modifier</name>
       <name>java.time.format.TextStyle</name>
       <name>org.w3c.dom.Text</name>
-
-      <!-- Optional: If you have your own design system and don't want to promote Material
-      Design usage within your team -->
-      <name>androidx.compose.material.*</name>
-
-      <!-- Optional: I think Compose is a much better fit for any custom Views, so hide the
-      Canvas API from the classic android view system to nudge developers to use Jetpack
-      Compose instead -->
-      <name>android.graphics.Canvas</name>
-
-      <!-- Optional: Just for demonstration purposes for the use case where you have created
-      your own variant of the Text composable and don't want developers to not use the ones provided
-      by Compose by default  -->
-      <name>androidx.compose.foundation.text.BasicText</name>
-      <name>androidx.compose.material.Text</name>
     </excluded-names>
   </component>
 </project>
