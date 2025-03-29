@@ -100,15 +100,15 @@ kotlin {
 }
 
 android {
-    namespace = "com.jetbrains.basicsample"
+    namespace = "io.github.theapache64.retrosheetsample"
     compileSdk = 35
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+    sourceSets["main"].java.srcDirs("src/androidMain/src")
 
     defaultConfig {
-        applicationId = "com.jetbrains.basicsample"
+        applicationId = "io.github.theapache64.retrosheetsample"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

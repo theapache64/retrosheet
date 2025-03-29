@@ -55,7 +55,9 @@ fun AppUi() {
         var isAdding by remember { mutableStateOf(false) }
 
         // Control and Tables
-        Column {
+        Column(
+            modifier = Modifier.padding(10.dp)
+        ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -64,14 +66,16 @@ fun AppUi() {
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("Title*") },
-                    enabled = !isAdding
+                    enabled = !isAdding,
+                    modifier = Modifier.weight(0.5f)
                 )
 
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description") },
-                    enabled = !isAdding
+                    enabled = !isAdding,
+                    modifier = Modifier.weight(0.5f)
                 )
             }
 
