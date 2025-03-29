@@ -2,10 +2,9 @@ package io.github.theapache64.retrosheet.integration
 
 import com.github.theapache64.expekt.should
 import io.github.theapache64.retrosheet.util.runBlockingTest
-import io.github.theapache64.retrosheetsample.AddNoteRequest
+import io.github.theapache64.retrosheetsample.Note
 import io.github.theapache64.retrosheetsample.createNotesApi
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import org.junit.Test
 
 class WriteTest {
@@ -17,14 +16,14 @@ class WriteTest {
         val notesApi = createNotesApi()
 
         //Write data
-        val request = AddNoteRequest("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
-        notesApi.addNote(request)
+        val newNote = Note("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
+        notesApi.addNote(newNote)
 
         // Read data
-        val remoteNote = notesApi.getNote(request.title)
+        val remoteNote = notesApi.findNoteByTitle(newNote.title)
         remoteNote.should.not.`null`
-        remoteNote.title.should.equal(request.title)
-        remoteNote.description.should.equal(request.description)
+        remoteNote.title.should.equal(newNote.title)
+        remoteNote.description.should.equal(newNote.description)
     }
 
     @Test
@@ -33,14 +32,14 @@ class WriteTest {
             setUseProxyForWrite(true)
         }
         //Write data
-        val request = AddNoteRequest("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
-        notesApi.addNote(request)
+        val newNote = Note("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
+        notesApi.addNote(newNote)
 
         // Read data
-        val remoteNote = notesApi.getNote(request.title)
+        val remoteNote = notesApi.findNoteByTitle(newNote.title)
         remoteNote.should.not.`null`
-        remoteNote.title.should.equal(request.title)
-        remoteNote.description.should.equal(request.description)
+        remoteNote.title.should.equal(newNote.title)
+        remoteNote.description.should.equal(newNote.description)
     }
 
 
@@ -50,7 +49,7 @@ class WriteTest {
     fun `Fails to write into a invalid sheet`() = runBlockingTest {
         val notesApi = createNotesApi()
         notesApi.addNoteToInvalidSheet(
-            AddNoteRequest("some title", "Dynamic Desc 1: ${Date()}")
+            Note("some title", "Dynamic Desc 1: ${Date()}")
         )
     }
 }

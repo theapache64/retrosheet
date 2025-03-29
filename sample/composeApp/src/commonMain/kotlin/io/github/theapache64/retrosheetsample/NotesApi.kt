@@ -23,7 +23,7 @@ interface NotesApi {
     @Write
     @POST(ADD_NOTE_ENDPOINT) // form name
     suspend fun addNote(
-        @Body addNoteRequest: Note
+        @Body note: Note
     ): Note
 
     /**
@@ -38,5 +38,5 @@ interface NotesApi {
      */
     @Write
     @POST("invalid_sheet") // form name
-    suspend fun addNoteToInvalidSheet(@Body addNoteRequest: Note): Note
+    suspend fun addNoteToInvalidSheet(@Body note: Note): Note
 }

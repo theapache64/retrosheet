@@ -36,7 +36,7 @@ kotlin {
 
         jvmTest.dependencies {
             implementation(kotlin("test"))
-            implementation(project(":sample"))
+            implementation(project(":sample:composeApp"))
             implementation(libs.expekt)
             implementation(libs.mockito.inline)
             implementation(libs.mockito.kotlin)

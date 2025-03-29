@@ -70,7 +70,7 @@ interface NotesApi {
 
     @Write
     @POST(ADD_NOTE_ENDPOINT)
-    suspend fun addNote(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
+    suspend fun addNote(@Body note: Note): Note
 }
 ```
 
@@ -152,7 +152,7 @@ fun main() = runBlocking {
 
     // Adding note
     val addNote = notesApi.addNote(
-        AddNoteRequest("Dynamic Note 1", "Dynamic Desc 1")
+        Note("Dynamic Note 1", "Dynamic Desc 1")
     )
     println(addNote)
     Unit
