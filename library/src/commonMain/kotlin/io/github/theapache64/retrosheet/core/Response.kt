@@ -39,7 +39,6 @@ class RetrosheetConverter(
             override suspend fun convert(result: KtorfitResult): Any {
                 return when (result) {
                     is KtorfitResult.Failure -> {
-                        println("QuickTag: RetrosheetConverter:convert: $result")
                         throw result.throwable
                     }
                     is KtorfitResult.Success -> {
