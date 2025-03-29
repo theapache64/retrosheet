@@ -47,7 +47,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "Retrosheet Sample"
+            baseName = "sample"
             isStatic = true
         }
     }

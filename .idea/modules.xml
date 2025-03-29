@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/projects.retrosheet.sample.main.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/projects.retrosheet.sample.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/retrosheet.library.jvmMain.iml" filepath="$PROJECT_DIR$/.idea/modules/library/retrosheet.library.jvmMain.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/retrosheet.sample.main.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/retrosheet.sample.main.iml" />
     </modules>
   </component>

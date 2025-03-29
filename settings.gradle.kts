@@ -1,6 +1,6 @@
 rootProject.name = "retrosheet"
 include(":library")
-include(":sample")
+include(":sample:composeApp")
 
 pluginManagement {
     repositories {
