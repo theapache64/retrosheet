@@ -9,6 +9,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
     id("org.jetbrains.compose") version "1.7.3"
     id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha03"
+    id("com.android.application")
 }
 
 kotlin {
@@ -32,19 +33,24 @@ kotlin {
         }
         binaries.executable()
     }
-
-    /*
-
-        listOf(
-            iosX64(),
-            iosArm64(),
-            iosSimulatorArm64()
-        ).forEach {
-            it.binaries.framework {
-                baseName = "Retrosheet Sample"
-                isStatic = true
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
             }
-        }*/
+        }
+    }
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "Retrosheet Sample"
+            isStatic = true
+        }
+    }
 
     sourceSets {
         commonMain.dependencies {
@@ -59,6 +65,11 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3 )
 
+        }
+
+        androidMain.dependencies {
+            api("androidx.activity:activity-compose:1.8.2")
+            api("androidx.appcompat:appcompat:1.6.1")
         }
 
         commonTest.dependencies {
@@ -78,14 +89,55 @@ kotlin {
             implementation(compose.html.core)
         }
 
-        /*jsMain.dependencies {
+        jsMain.dependencies {
         }
 
         iosMain.dependencies {
-        }*/
+        }
 
     }
     jvmToolchain(17)
+}
+
+android {
+    namespace = "com.jetbrains.basicsample"
+    compileSdk = 35
+
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+
+    defaultConfig {
+        applicationId = "com.jetbrains.basicsample"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        compose = true
+    }
+    kotlin {
+        jvmToolchain(17)
+    }
+
+    dependencies {
+        debugImplementation(compose.uiTooling)
+    }
 }
 
 compose.desktop {

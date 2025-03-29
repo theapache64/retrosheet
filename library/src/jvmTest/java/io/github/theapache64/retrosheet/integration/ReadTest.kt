@@ -22,6 +22,7 @@ class ReadTest {
     @Test
     fun `Reads list of data`() = runBlockingTest {
         notesApi.getLastFiveItems().size.should.above(1)
+        notesApi.getLastFiveItems().size.should.below(6)
         Unit
     }
 
