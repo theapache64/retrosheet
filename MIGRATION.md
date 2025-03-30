@@ -226,4 +226,4 @@ import io.github.theapache64.retrosheet.core.createRetrosheetPlugin
 
 ## Need Help?
 
-If you encounter any issues during migration, please open an issue on the [Retrosheet GitHub repository](https://github.com/theapache64/retrosheet).
+If you encounter any issues during migration, please open an issue on the [tracker](https://github.com/theapache64/retrosheet/issues).
