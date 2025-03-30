@@ -5,10 +5,9 @@ Turn Google Spreadsheet to JSON endpoint.
 
 ## 🤝 Benefits
 
-- 🖱️ asy  to use and real time interface (GoogleSheet)
-- 🔥 Free analytics via Google forms
+- 🔥 Free analytics via Google forms 
 - 🔄 Migrate to your REST API with minimal code changes.
-- 📊 Manage data directly through the Google Spreadsheet app.
+- 📊 You get a easy to use and real time interface for your data (GoogleSheet) ;)
 - 🏃‍♂️ Speed up development of your POC or MVP with this library.
 
 
@@ -177,14 +176,6 @@ fun createNotesApi(
 
 ## 🔄 Migration
 - Want to migrate from v1 or v2?Here's the [guide](https://github.com/theapache64/retrosheet/blob/master/MIGRATION.md)
-
-## 🤝 Contributing
-This project applies [`ktlint`](https://ktlint.github.io/) (without import ordering since it's conflicted with IDE's format). Before creating a PR, please make sure your code is aligned with `ktlint` (`./gradlew ktlint`).
-
-We can run auto-format with:
-```shell
-./gradlew ktlintFormat
-```
 
 ## Must Read ✋🏼
 Retrosheet is great for prototyping and shouldn’t be used in production for a real app. That said, I do use it in production for a few of my [side projects](https://github.com/theapache64/stackzy) for more than 5 years now. This library makes direct calls to Google APIs—so if they go down, we all go down. (So I'll be right there, drowning in tears with you.)
