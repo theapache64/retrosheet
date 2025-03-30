@@ -3,4 +3,5 @@ plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.ktorfit) apply false
+    alias(libs.plugins.androidApp) apply false
 }

@@ -9,20 +9,6 @@ pluginManagement {
         gradlePluginPortal()
         maven("https://jitpack.io")
     }
-    plugins {
-        kotlin("jvm") version "2.1.20"
-    }
-}
-
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:8.1.2")
-    }
 }
 
 plugins {

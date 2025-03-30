@@ -3,13 +3,13 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
     alias(libs.plugins.multiplatform)
+    alias(libs.plugins.androidApp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.1.20"
-    id("org.jetbrains.compose") version "1.7.3"
-    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha03"
-    id("com.android.application")
+    alias(libs.plugins.kotlinCompose)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.hotreload)
 }
 
 kotlin {
@@ -56,10 +56,10 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":library"))
             implementation(libs.ktorfit)
-            implementation("io.ktor:ktor-client-content-negotiation:3.1.1")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.1")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -68,15 +68,15 @@ kotlin {
         }
 
         androidMain.dependencies {
-            api("androidx.activity:activity-compose:1.8.2")
-            api("androidx.appcompat:appcompat:1.6.1")
+            api(libs.activity.compose)
+            api(libs.appcompat)
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
         jvmTest.dependencies {
-            implementation("junit:junit:4.13.2")
+            implementation(libs.junit)
 
             implementation(libs.expekt)
         }
