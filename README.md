@@ -5,9 +5,12 @@ Turn Google Spreadsheet to JSON endpoint.
 
 ## 🤝 Benefits
 
+- 🖱️ asy  to use and real time interface (GoogleSheet)
+- 🔥 Free analytics via Google forms
 - 🔄 Migrate to your REST API with minimal code changes.
 - 📊 Manage data directly through the Google Spreadsheet app.
 - 🏃‍♂️ Speed up development of your POC or MVP with this library.
+
 
 ## 🚀 Platform Supported
 
