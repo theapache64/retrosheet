@@ -173,7 +173,7 @@ fun createNotesApi(
 - Source: https://github.com/theapache64/retrosheet-jvm-sample. Check `sample` directory for more samples
 
 ## 🔄 Migration
-- Want to migrate from 1.x.x or 2.x.x? [Here's](https://github.com/theapache64/retrosheet-jvm-sample/commit/475df431575bf5c814b1fd37119fbdedd222c2f1) how you can do it
+- Want to migrate from v1 or v2?Here's the [guide](https://github.com/theapache64/retrosheet-jvm-sample/blob/master/MIGRATION.md)
 
 ## 🤝 Contributing
 This project applies [`ktlint`](https://ktlint.github.io/) (without import ordering since it's conflicted with IDE's format). Before creating a PR, please make sure your code is aligned with `ktlint` (`./gradlew ktlint`).
