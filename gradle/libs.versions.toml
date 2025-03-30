@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.1.20"
-publish = "0.25.3"
+publish = "0.31.0"
 expekt = "1.0.0"
 ksp = "2.1.20-1.0.32"
 ktorfit = "2.4.0"
