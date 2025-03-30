@@ -1,4 +1,4 @@
-# Retrosheet Migration Guide: v2 to v3
+# Retrosheet Migration Guide: v1 or v2 to v3
 
 > NOTE: This is an AI generated document, reviewed and modified by human, based on the [migration commit diff](https://github.com/theapache64/retrosheet-jvm-sample/commit/475df431575bf5c814b1fd37119fbdedd222c2f1) between v2 and v3. If you prefer concise change list, checkout the diff.
 
