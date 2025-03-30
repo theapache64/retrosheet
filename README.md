@@ -183,6 +183,9 @@ We can run auto-format with:
 ./gradlew ktlintFormat
 ```
 
+## Must Read ✋🏼
+Retrosheet is great for prototyping and shouldn’t be used in production for a real app. That said, I do use it in production for a few of my [side projects](https://github.com/theapache64/stackzy) for more than 5 years now. This library makes direct calls to Google APIs—so if they go down, we all go down. (So I'll be right there, drowning in tears with you.)
+
 ## ✍️ Author
 - theapache64  
 
