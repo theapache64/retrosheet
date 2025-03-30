@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaProjectCodeInsightSettings">
+    <excluded-names>
+      <name>android.app.LauncherActivity.ListItem</name>
+      <name>android.graphics.Canvas</name>
+      <name>android.graphics.drawable.Icon</name>
+      <name>android.graphics.fonts.FontFamily</name>
+      <name>android.inputmethodservice.Keyboard.Row</name>
+      <name>android.text.layout.Alignment</name>
+      <name>android.view.RoundedCorner</name>
+      <name>android.view.Surface</name>
+      <name>android.widget.GridLayout.Alignment</name>
+      <name>androidx.compose.foundation.text.BasicText</name>
+      <name>androidx.compose.material.*</name>
+      <name>androidx.compose.material.Text</name>
+      <name>java.lang.reflect.Modifier</name>
+      <name>java.nio.file.WatchEvent.Modifier</name>
+      <name>java.time.format.TextStyle</name>
+      <name>org.w3c.dom.Text</name>
+    </excluded-names>
+  </component>
+</project>

@@ -1,0 +1,45 @@
+[versions]
+activity-compose = "1.10.1"
+appcompat = "1.7.0"
+junit = "4.13.2"
+kotlin = "2.1.20"
+ksp = "2.1.20-1.0.32"
+kotlinx-coroutines-core = "1.10.1"
+ktor-client-content-negotiation = "3.1.1"
+publish = "0.31.0"
+expekt = "1.0.0"
+ktorfit = "2.4.1"
+kotlinx-serialization-json = "1.8.0"
+mockito-inline = "4.5.1"
+mockito-kotlin = "5.4.0"
+kotlinx-serialization-csv = "0.0.20"
+compose-plugin="1.7.3"
+hotreload="1.0.0-alpha03"
+agp="8.9.1"
+
+[libraries]
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+expekt = { group = "com.github.theapache64", name = "expekt", version.ref="expekt" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-client-content-negotiation" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor-client-content-negotiation" }
+ktorfit = { group = "de.jensklingenberg.ktorfit", name = "ktorfit-lib", version.ref="ktorfit" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
+kotlinx-serialization-csv = { module = "app.softwork:kotlinx-serialization-csv", version.ref = "kotlinx-serialization-csv" }
+
+
+
+[plugins]
+multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+kotlinCompose = {id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin"}
+compose = {id="org.jetbrains.compose", version.ref="compose-plugin"}
+hotreload = {id="org.jetbrains.compose.hot-reload", version.ref="hotreload"}
+androidApp = { id = "com.android.application", version.ref = "agp" }

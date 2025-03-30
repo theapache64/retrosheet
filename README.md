@@ -1,121 +1,145 @@
-# retrosheet 📄
-
-Turn Google Spreadsheet to JSON endpoint. [For Android and JVM].
+# 📝 retrosheet
+Turn Google Spreadsheet to JSON endpoint.
 
 ![https://github.com/theapache64/notes](demo.png)
 
-## Benefits 🤗
+## 🤝 Benefits
 
-- 🚀 Use Google's server for reliable performance.
-- ⚡ Benefit from fast responses and no bandwidth limits.
 - 🔄 Migrate to your REST API with minimal code changes.
 - 📊 Manage data directly through the Google Spreadsheet app.
 - 🏃‍♂️ Speed up development of your POC or MVP with this library.
 
-## Install 🤝
+## 🚀 Platform Supported
+
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white) ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+
+
+## 🤝 Install
 
 ![latestVersion](https://img.shields.io/github/v/release/theapache64/retrosheet)
 
-```groovy
-
+```kotlin
 repositories {
-  maven { url 'https://jitpack.io' } // Add jitpack
+    mavenCentral()
 }
 
 dependencies {
-  implementation 'com.github.theapache64:retrosheet:<latest.version>'
+    implementation("io.github.theapache64:retrosheet:<latest.version>")
 }
 ```
 
-## Usage ⌨️
+## ⌘️ Usage
 
-### Writing Data ✍️
+### ✍️ Writing Data
 
-#### Step 1: Create a Google Form 📝
-Create a form with required fields.
+#### 📝 Step 1: Create a Google Form
+Create a form with required fields.  
 ![Google Form](https://i.imgur.com/9PeK2EQ.png)
 
-#### Step 2: Set Response Destination 🎯
-Choose a Google Sheet to save responses.
-![Response Destination](https://i.imgur.com/fIzWiN5.png)
+#### 🎯 Step 2: Set Response Destination
+Choose a Google Sheet to save responses.  
+![Response Destination](https://i.imgur.com/fIzWiN5.png)  
 ![Sheet Selection](https://i.imgur.com/7ASAB55.png)
 
-#### Step 3: Customize Sheet 📊
-Rename sheet and columns (optional).
-![Before](https://i.imgur.com/keT8P1o.png)
+#### 📊 Step 3: Customize Sheet
+Rename sheet and columns (optional).  
+![Before](https://i.imgur.com/keT8P1o.png)  
 ![After](https://i.imgur.com/N6xfuZK.png)
 
-#### Step 4: Get Form Link 🔗
-Press `Send` and copy the link.
+#### 🔗 Step 4: Get Form Link
+Press `Send` and copy the link.  
 ![Form Link](https://i.imgur.com/veATAn5.png)
 
-#### Step 5: Create `RetrosheetInterceptor` 🔧
+#### 🔧 Step 5: Create `RetrosheetConfig` and attach it to the client
 ```kotlin
-val retrosheetInterceptor = RetrosheetInterceptor.Builder()
-    .setLogging(false)
-    .addSheet("notes", "created_at", "title", "description")
-    .addForm(ADD_NOTE_ENDPOINT, "Form Link")
+val config = RetrosheetConfig.Builder()
+    .setLogging(true)
+    // For reading from sheet
+    .addSheet(
+        "notes", // sheet name
+        "created_at", "title", "description" // columns in same order
+    )
+    // For writing to sheet
+    .addForm(
+        "add_note",
+        "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
+    )
     .build()
 
-val okHttpClient = OkHttpClient.Builder()
-    .addInterceptor(retrosheetInterceptor) // and attach the interceptor
-    .build()
+val ktorClient = HttpClient {
+    install(createRetrosheetPlugin(config)) {}
+    ...
+}
 ```
 
-#### Step 6: Create API Interface 🌐
+#### 🌐 Step 6: Create API Interface
 ```kotlin
 interface NotesApi {
-    @Read("SELECT *") 
+    @Read("SELECT *")
     @GET("notes")
     suspend fun getNotes(): List<Note>
 
     @Write
-    @POST(ADD_NOTE_ENDPOINT)
-    suspend fun addNote(@Body addNoteRequest: AddNoteRequest): AddNoteRequest
+    @POST("add_note")
+    suspend fun addNote(@Body note: Note): Note
 }
 ```
 
-
-> **@Write** is used for writing data and **@Read**: for reading data
+> **@Write** is used for writing data and **@Read** for reading data.
 
 [Query Language Guide](https://developers.google.com/chart/interactive/docs/querylanguage)
 
-### Reading Data 📖
+### 📚 Reading Data
 
-#### Step 7: Share Sheet 🔄
-Open a sheet and copy its shareable link.
+#### 🔄 Step 7: Share Sheet
+Open a sheet and copy its shareable link.  
 ![Copy Link](https://i.imgur.com/MNYD7mg.png)
 
-### Step 8: Edit Link ✂️
+#### ✂️ Step 8: Edit Link
 Trim the link after the last '/'.
 
 `https://docs.google.com/spreadsheets/d/1IcZTH6-g7cZeht_xr82SHJOuJXD_p55QueMrZcnsAvQ`~~/edit?usp=sharing~~
 
+#### 🔗 Step 9: Set Base URL
+Use the trimmed link as `baseUrl` in `Ktorfit`.
 
-### Step 9: Set Base URL 🔗
-Use the trimmed link as `baseUrl` in `Retrofit` or `OkHttp`.
-![Set Base URL](https://i.imgur.com/tFMNEC4.png)
+```kotlin
+val retrofit = Ktorfit.Builder()
+    // Like this 👇🏼
+    .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
+    .httpClient(ktorClient)
+    .converterFactories(RetrosheetConverter(config))
+    .build()
+```
 
 **Done 👍**
 
-## Full Example 🌟
+## 🌠 Full Example
 
 ```kotlin
-import com.squareup.moshi.Moshi
-import com.github.theapache64.retrosheet.RetrosheetInterceptor
-import kotlinx.coroutines.runBlocking
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+suspend fun main() {
+    val notesApi = buildNotesApi()
+    println(notesApi.getNotes())
 
-/**
- * Created by theapache64 : Jul 21 Tue,2020 @ 02:11
- */
-fun main() = runBlocking {
-  
-    // Building Retrosheet Interceptor
-    val retrosheetInterceptor = RetrosheetInterceptor.Builder()
-        .setLogging(false)
+    // Adding sample order
+    val newNote = notesApi.addNote(
+        Note(
+            createdAt = null,
+            title = "Dynamic Note 1",
+            description = "Dynámic Desc 1: ${Date()}"
+        )
+    )
+
+    println(newNote)
+}
+
+
+fun createNotesApi(
+    configBuilder: RetrosheetConfig.Builder.() -> Unit = {}
+): NotesApi {
+    val config = RetrosheetConfig.Builder()
+        .apply { this.configBuilder() }
+        .setLogging(true)
         // To Read
         .addSheet(
             "notes", // sheet name
@@ -124,62 +148,41 @@ fun main() = runBlocking {
         // To write
         .addForm(
             "add_note",
-            "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link" // form link
+            // Google form name
+            "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link"
         )
         .build()
 
-    // Building OkHttpClient 
-    val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(retrosheetInterceptor) // and attaching interceptor
+    val ktorClient = HttpClient {
+        install(createRetrosheetPlugin(config)) {}
+        install(ContentNegotiation) {
+            json()
+        }
+    }
+
+    val retrofit = Ktorfit.Builder()
+        // GoogleSheet Public URL
+        .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
+        .httpClient(ktorClient)
+        .converterFactories(RetrosheetConverter(config))
         .build()
 
-
-    val moshi = Moshi.Builder().build()
-
-    // Building retrofit client
-    val retrofit = Retrofit.Builder()
-        // with baseUrl as sheet's public URL    
-        .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/") // Sheet's public URL
-        // and attach previously created OkHttpClient
-        .client(okHttpClient)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-
-    // Now create the API interface
-    val notesApi = retrofit.create(NotesApi::class.java)
-  
-    // Reading notes
-    println(notesApi.getNotes())
-
-    // Adding note
-    val addNote = notesApi.addNote(
-        AddNoteRequest("Dynamic Note 1", "Dynamic Desc 1")
-    )
-    println(addNote)
-    Unit
+    return retrofit.createNotesApi()
 }
 ```
+- Source: https://github.com/theapache64/retrosheet-jvm-sample. Check `sample` directory for more samples
 
-## Samples 🌠
+## 🔄 Migration
+- Want to migrate from 1.x.x or 2.x.x? [Here's](https://github.com/theapache64/retrosheet-jvm-sample/commit/475df431575bf5c814b1fd37119fbdedd222c2f1) how you can do it
 
-- [Notes - JVM](https://github.com/theapache64/retrosheet/blob/master/src/main/kotlin/com/github/theapache64/retrosheet/sample/notes/Notes.kt)
-  - README Example 👆
-- [Notes - Android](https://github.com/theapache64/notes) - Android App : Simple note taking app, with add and list
-  feature
-- [Nemo](https://github.com/theapache64/nemo) - Android App :  E-Commerce App
-- [More JVM Samples](https://github.com/theapache64/retrosheet/tree/master/src/main/kotlin/com/github/theapache64/retrosheet/sample)
+## 🤝 Contributing
+This project applies [`ktlint`](https://ktlint.github.io/) (without import ordering since it's conflicted with IDE's format). Before creating a PR, please make sure your code is aligned with `ktlint` (`./gradlew ktlint`).
 
-## Contributing
-This project is applying [`ktlint`](https://ktlint.github.io/) (without import ordering since it's conflicted with IDE's 
-format). Before creating a PR, please make sure your code is aligned with `ktlint` (`./gradlew ktlint`).
 We can run auto-format with:
 ```shell
 ./gradlew ktlintFormat
 ```
-## Retrosheet JS
 
-- Coming Soon
+## ✍️ Author
+- theapache64  
 
-## Author ✍️
-
-- theapache64

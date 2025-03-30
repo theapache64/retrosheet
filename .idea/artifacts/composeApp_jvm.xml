@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="composeApp-jvm">
+    <output-path>$PROJECT_DIR$/sample/composeApp/build/libs</output-path>
+    <root id="archive" name="composeApp-jvm.jar">
+      <element id="module-output" name="retrosheet.sample.composeApp.jvmMain" />
+    </root>
+  </artifact>
+</component>

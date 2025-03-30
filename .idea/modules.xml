@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/retrosheet.library.iml" filepath="$PROJECT_DIR$/.idea/modules/library/retrosheet.library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/retrosheet.library.jvmMain.iml" filepath="$PROJECT_DIR$/.idea/modules/library/retrosheet.library.jvmMain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/retrosheet.sample.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/retrosheet.sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/composeApp/retrosheet.sample.composeApp.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/composeApp/retrosheet.sample.composeApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/retrosheet.sample.main.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/retrosheet.sample.main.iml" />
+    </modules>
+  </component>
+</project>

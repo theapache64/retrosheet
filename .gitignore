@@ -146,3 +146,4 @@ gradle-app.setting
 SecretConstants.kt
 local.properties
 .DS_Store
+.kotlin
