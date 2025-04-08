@@ -178,7 +178,9 @@ fun createNotesApi(
 - Want to migrate from v1 or v2?Here's the [guide](https://github.com/theapache64/retrosheet/blob/master/MIGRATION.md)
 
 ## Must Read ✋🏼
-Retrosheet is great for prototyping and shouldn’t be used in production for a real app. That said, I do use it in production for a few of my [side projects](https://github.com/theapache64/stackzy) for more than 5 years now. This library makes direct calls to Google APIs—so if they go down, we all go down. (So I'll be right there, drowning in tears with you.)
+Retrosheet is great for prototyping and not recommended to be used in production for real apps. This is because the library makes direct calls to Google APIs—so if those APIs go down, your app goes down with them.
+
+That said, I do use it in production for a few of my [side projects](https://github.com/theapache64/stackzy) :P, and it has been working fine for over 5 years now. (So if things break, I’ll be right there, drowning in tears with you.)
 
 ## ✍️ Author
 - theapache64  
