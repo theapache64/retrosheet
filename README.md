@@ -119,16 +119,61 @@ val retrofit = Ktorfit.Builder()
 
 ## 🌠 Full Example
 
+**build.gradle.kts**
 ```kotlin
+plugins {
+    kotlin("jvm") version "2.1.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
+    id("com.google.devtools.ksp") version "2.1.10-1.0.31"
+    id("de.jensklingenberg.ktorfit") version "2.5.1"
+}
+...
+dependencies {
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.3")
+    implementation("de.jensklingenberg.ktorfit:ktorfit-lib:2.5.1")
+    implementation("io.github.theapache64:retrosheet:3.0.0-alpha02")
+    testImplementation(kotlin("test"))
+}
+...
+```
+
+**NotesApi.kt**
+
+```kotlin
+interface NotesApi {
+    @Read("SELECT *")
+    @GET("notes")
+    suspend fun getNotes(): List<Note>
+
+    @Write
+    @POST("add_note")
+    suspend fun addNote(@Body note: Note): Note
+}
+```
+
+**Main.kt**
+```kotlin
+@Serializable
+data class Note(
+    @SerialName("Title")
+    val title: String,
+    @SerialName("Description")
+    val description: String?,
+    @SerialName("Timestamp")
+    val createdAt: String? = null,
+)
+
+
 suspend fun main() {
-    val notesApi = buildNotesApi()
+    val notesApi = createMyNotesApi()
     println(notesApi.getNotes())
 
     // Adding sample order
     val newNote = notesApi.addNote(
         Note(
             createdAt = null,
-            title = "Dynamic Note 1",
+            title = "Dynamic com.sample.Note 1",
             description = "Dynámic Desc 1: ${Date()}"
         )
     )
@@ -137,7 +182,7 @@ suspend fun main() {
 }
 
 
-fun createNotesApi(
+fun createMyNotesApi(
     configBuilder: RetrosheetConfig.Builder.() -> Unit = {}
 ): NotesApi {
     val config = RetrosheetConfig.Builder()
@@ -163,14 +208,14 @@ fun createNotesApi(
         }
     }
 
-    val retrofit = Ktorfit.Builder()
+    val ktorfit = Ktorfit.Builder()
         // GoogleSheet Public URL
         .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
         .httpClient(ktorClient)
         .converterFactories(RetrosheetConverter(config))
         .build()
 
-    return retrofit.createNotesApi()
+    return ktorfit.createNotesApi()
 }
 ```
 - Source: https://github.com/theapache64/retrosheet-jvm-sample. Check `sample` directory for more samples
