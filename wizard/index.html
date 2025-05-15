@@ -286,6 +286,12 @@
             <button class="btn btn-primary" id="submitBtn" type="submit">
                 GENERATE CODE
             </button>
+
+            <button class="btn btn-secondary" id="fillDummy" type="button" onclick="fillDummyUrls()">
+                FILL DUMMY URLS
+            </button>
+
+
         </form>
 
         <!-- Loading State -->
@@ -358,6 +364,19 @@
         }).catch(err => {
             console.error('Error copying text: ', err);
         });
+    }
+
+    // Fill dummy URLs
+    function fillDummyUrls(){
+        // Debug code
+        let debugSheetUrl = "https://docs.google.com/spreadsheets/d/1R-5dz_C9Dyeve7_GTvpbFeNboWmXFTvo7dH-MRvvUPk/edit?usp=sharing"
+        let debugSheetName = "messages"
+        let debugFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdJ4TACnJ_puQletur4h_FJX56XaOnnaBWHvgD2IwWNxP2Vrw/viewform?usp=dialog"
+
+        // Submit the form automatically
+        document.getElementById('googleSheetUrl').value = debugSheetUrl;
+        document.getElementById('sheetName').value = debugSheetName;
+        document.getElementById('googleFormUrl').value = debugFormUrl;
     }
 </script>
 </body>

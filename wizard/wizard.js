@@ -116,15 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let isDebug = false;
     if(isDebug){
-        // Debug code
-        let debugSheetUrl = "https://docs.google.com/spreadsheets/d/1R-5dz_C9Dyeve7_GTvpbFeNboWmXFTvo7dH-MRvvUPk/edit?usp=sharing"
-        let debugSheetName = "messages"
-        let debugFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdJ4TACnJ_puQletur4h_FJX56XaOnnaBWHvgD2IwWNxP2Vrw/viewform?usp=dialog"
-
-        // Submit the form automatically
-        document.getElementById('googleSheetUrl').value = debugSheetUrl;
-        document.getElementById('sheetName').value = debugSheetName;
-        document.getElementById('googleFormUrl').value = debugFormUrl;
+        fillDummyUrls()
 
         // Click the 'submitBtn'
         document.getElementById('submitBtn').click();
