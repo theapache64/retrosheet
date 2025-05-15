@@ -56,13 +56,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
 
+            // let host = "http://localhost:8091/retrosheet-wizard"
+            let host = "https://api.a64.in/retrosheet-wizard"
+
             // API url : POST http://localhost:8080/retrosheet-wizard/code (form data)
             /**
              * googleSheetUrl:https://docs.google.com/spreadsheets/d/12vMK4tdtpEbplmeg3Q3-qc3_yPKO92jp_o41wk4PYHg/edit?usp=sharing
              * googleFormUrl:https://docs.google.com/forms/d/e/1FAIpQLSdRUQAWjNw3EMFVaJkCqMISeOECht1FxYfq9JszpcPj2Qfkcg/viewform?usp=dialog
              * sheetName:marvel
              */
-            const response = await fetch('http://localhost:8080/retrosheet-wizard/code', {
+            const response = await fetch(host + '/code', {
                 method: 'POST',
                 // form data request
                 headers: {
@@ -111,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    let isDebug = true;
+    let isDebug = false;
     if(isDebug){
         // Debug code
         let debugSheetUrl = "https://docs.google.com/spreadsheets/d/1R-5dz_C9Dyeve7_GTvpbFeNboWmXFTvo7dH-MRvvUPk/edit?usp=sharing"
