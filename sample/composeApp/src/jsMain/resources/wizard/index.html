@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>RetroSheet Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #ff3e3e;
+            --secondary-color: #333333;
+            --accent-color: #4361ee;
+            --background-color: #f1f1f1;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+
+        .bg-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .bg-accent {
+            background-color: var(--accent-color);
+        }
+
+        .bg-background {
+            background-color: var(--background-color);
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-secondary {
+            color: var(--secondary-color);
+        }
+
+        .text-accent {
+            color: var(--accent-color);
+        }
+
+        .border-primary {
+            border-color: var(--primary-color);
+        }
+
+        .border-secondary {
+            border-color: var(--secondary-color);
+        }
+
+        .border-accent {
+            border-color: var(--accent-color);
+        }
+
+        .code-block {
+            filter: drop-shadow(6px 6px 0 #000);
+        }
+
+        .btn-shadow {
+            box-shadow: 4px 4px 0 #000;
+            transition: all 0.1s;
+        }
+
+        .btn-shadow:hover {
+            box-shadow: 2px 2px 0 #000;
+            transform: translate(2px, 2px);
+        }
+
+        .btn-shadow:active {
+            box-shadow: 0 0 0 #000;
+            transform: translate(4px, 4px);
+        }
+
+        .code-content {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .border-3 {
+            border-width: 3px;
+        }
+
+        .border-4 {
+            border-width: 4px;
+        }
+
+        .border-b-4 {
+            border-bottom-width: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen text-secondary p-5">
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="bg-accent p-5 border-4 border-black mb-8 flex transform -rotate-1">
+        <h1 class="text-4xl font-bold text-white transform rotate-3">
+            RETROSHEET TOOL
+        </h1>
+        <a class="bg-primary text-white px-5 py-3 mx-8 border-3 border-black font-bold btn-shadow no-underline"
+           href="https://a64.in/retrosheet/wizard"
+           target="_blank">
+            HOME
+        </a>
+
+        <a class="bg-primary text-white px-5 py-3 mr-8 border-3 border-black font-bold btn-shadow no-underline"
+           href="https://a64.in/retrosheet"
+           target="_blank">
+            JS SAMPLE
+        </a>
+
+        <a class="bg-primary text-white px-5 py-3 mr-8 border-3 border-black font-bold btn-shadow no-underline"
+           href="https://github.com/theapache64/retrosheet"
+           target="_blank">
+            VIEW ON GITHUB
+        </a>
+    </header>
+
+    <!-- Form Container -->
+    <div class="bg-white p-8 border-4 border-black transform rotate-1 code-block" id="formContainer">
+        <form class="space-y-6" id="retrosheetForm">
+            <div>
+                <label class="block text-xl font-bold mb-3 text-secondary" for="googleSheetUrl">
+                    Google Sheet URL:
+                </label>
+                <input class="w-full p-4 border-3 border-black bg-background text-base" id="googleSheetUrl"
+                       name="googleSheetUrl"
+                       placeholder="https://docs.google.com/spreadsheets/d/..."
+                       style="font-family: 'Courier New', monospace;"
+                       type="url">
+            </div>
+
+            <div>
+                <label class="block text-xl font-bold mb-3 text-secondary" for="sheetName">
+                    Sheet Name:
+                </label>
+                <input class="w-full p-4 border-3 border-black bg-background text-base" id="sheetName" name="sheetName"
+                       placeholder="Sheet1"
+                       style="font-family: 'Courier New', monospace;"
+                       type="text">
+            </div>
+
+            <div>
+                <label class="block text-xl font-bold mb-3 text-secondary" for="googleFormUrl">
+                    Google Form URL:
+                </label>
+                <input class="w-full p-4 border-3 border-black bg-background text-base" id="googleFormUrl"
+                       name="googleFormUrl"
+                       placeholder="https://docs.google.com/forms/d/e/..."
+                       style="font-family: 'Courier New', monospace;"
+                       type="url">
+            </div>
+
+            <button class="bg-primary text-white px-8 py-4 text-xl font-bold border-4 border-black btn-shadow w-full md:w-auto"
+                    id="submitBtn"
+                    type="submit">
+                GENERATE CODE
+            </button>
+        </form>
+
+        <!-- Loading State -->
+        <div class="text-center text-xl font-bold mt-6 text-accent" id="loading" style="display: none;">
+            Generating your RetroSheet code...
+        </div>
+
+        <!-- Error Message -->
+        <div class="bg-primary text-white p-4 border-4 border-black mt-6 font-bold" id="errorMessage"
+             style="display: none;">
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div class="space-y-6 mt-8" id="resultsContainer" style="display: none;">
+        <!-- build.gradle.kts -->
+        <div class="bg-white border-4 border-black code-block">
+            <div class="bg-accent text-white p-4 border-b-4 border-black flex justify-between items-center">
+                <div class="text-xl font-bold">build.gradle.kts</div>
+                <button class="bg-white text-secondary px-4 py-2 border-2 border-black btn-shadow font-bold"
+                        onclick="copyToClipboard('buildGradleCode')">
+                    COPY
+                </button>
+            </div>
+            <div class="p-5 bg-background code-content" id="buildGradleCode"></div>
+        </div>
+
+        <!-- Sheet.kt -->
+        <div class="bg-white border-4 border-black code-block">
+            <div class="bg-accent text-white p-4 border-b-4 border-black flex justify-between items-center">
+                <div class="text-xl font-bold" id="sheetCodeTitle">Sheet.kt</div>
+                <button class="bg-white text-secondary px-4 py-2 border-2 border-black btn-shadow font-bold"
+                        onclick="copyToClipboard('sheetCode')">
+                    COPY
+                </button>
+            </div>
+            <div class="p-5 bg-background code-content" id="sheetCode"></div>
+        </div>
+
+        <!-- Main.kt -->
+        <div class="bg-white border-4 border-black code-block">
+            <div class="bg-accent text-white p-4 border-b-4 border-black flex justify-between items-center">
+                <div class="text-xl font-bold">Main.kt</div>
+                <button class="bg-white text-secondary px-4 py-2 border-2 border-black btn-shadow font-bold"
+                        onclick="copyToClipboard('mainCode')">
+                    COPY
+                </button>
+            </div>
+            <div class="p-5 bg-background code-content" id="mainCode"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // URL validation patterns
+    const GOOGLE_SHEET_PATTERN = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/[a-zA-Z0-9-_]+/;
+    const GOOGLE_FORM_PATTERN = /^https:\/\/docs\.google\.com\/forms\/d\/e\/[a-zA-Z0-9-_]+/;
+
+    document.getElementById('retrosheetForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const googleSheetUrl = document.getElementById('googleSheetUrl').value.trim();
+        const sheetName = document.getElementById('sheetName').value.trim();
+        const googleFormUrl = document.getElementById('googleFormUrl').value.trim();
+
+        // Validation
+        if (!googleSheetUrl && !googleFormUrl) {
+            showError('Please provide either a Google Sheet URL or Google Form URL');
+            return;
+        }
+
+        if (googleSheetUrl && !GOOGLE_SHEET_PATTERN.test(googleSheetUrl)) {
+            showError('Invalid Google Sheet URL format. Please provide a valid Google Sheets URL.');
+            return;
+        }
+
+        if (googleFormUrl && !GOOGLE_FORM_PATTERN.test(googleFormUrl)) {
+            showError('Invalid Google Form URL format. Please provide a valid Google Forms URL.');
+            return;
+        }
+
+        // Prepare payload
+        const payload = {};
+
+        if (googleSheetUrl) {
+            payload.googleSheetUrl = googleSheetUrl;
+            if (sheetName) {
+                payload.sheetName = sheetName;
+            }
+        }
+
+        if (googleFormUrl) {
+            payload.googleFormUrl = googleFormUrl;
+        }
+
+        // Show loading state
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('errorMessage').style.display = 'none';
+
+        try {
+            // DO REST HERE
+            let data;
+
+
+
+
+            data = {
+                build_gradle: `plugins {
+    kotlin("jvm") version "2.1.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
+    id("com.google.devtools.ksp") version "2.1.10-1.0.31"
+    id("de.jensklingenberg.ktorfit") version "2.5.1"
+}
+...
+dependencies {
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.3")
+    implementation("de.jensklingenberg.ktorfit:ktorfit-lib:2.5.1")
+    implementation("io.github.theapache64:retrosheet:3.0.0-alpha02")
+    testImplementation(kotlin("test"))
+}
+...`,
+                sheet_class: `interface MyApi {
+    @Read("SELECT *")
+    @GET("`+sheetName+`")
+    suspend fun getItems(): List<MyModel>
+
+    @Write
+    @POST("add_note")
+    suspend fun addData(@Body note: MyModel): MyModel
+}`,
+                main_class: `@Serializable
+data class MyModel(
+    `+modelData+`
+)
+
+
+suspend fun main() {
+    val notesApi = createMyNotesApi()
+    println(notesApi.getNotes())
+
+    // Adding sample order
+    val newNote = notesApi.addNote(
+        Note(
+            createdAt = null,
+            title = "Dynamic com.sample.Note 1",
+            description = "Dynámic Desc 1: ${Date()}"
+        )
+    )
+
+    println(newNote)
+}
+
+
+fun createMyNotesApi(
+    configBuilder: RetrosheetConfig.Builder.() -> Unit = {}
+): NotesApi {
+    val config = RetrosheetConfig.Builder()
+        .apply { this.configBuilder() }
+        .setLogging(true)
+        // To Read
+        .addSheet(
+            "notes", // sheet name
+            "created_at", "title", "description" // columns in same order
+        )
+        // To write
+        .addForm(
+            "add_note",
+            // Google form name
+            "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link"
+        )
+        .build()
+
+    val ktorClient = HttpClient {
+        install(createRetrosheetPlugin(config)) {}
+        install(ContentNegotiation) {
+            json()
+        }
+    }
+
+    val ktorfit = Ktorfit.Builder()
+        // GoogleSheet Public URL
+        .baseUrl("https://docs.google.com/spreadsheets/d/1YTWKe7_mzuwl7AO1Es1aCtj5S9buh3vKauKCMjx1j_M/")
+        .httpClient(ktorClient)
+        .converterFactories(RetrosheetConverter(config))
+        .build()
+
+    return ktorfit.createNotesApi()
+}`
+            };
+
+
+            // Hide form and show results
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+
+            // Populate code blocks
+            document.getElementById('buildGradleCode').textContent = data.build_gradle || 'No build.gradle.kts content provided';
+            document.getElementById('sheetCode').textContent = data.sheet_class || 'No sheet class content provided';
+            document.getElementById('mainCode').textContent = data.main_class || 'No main class content provided';
+
+            // Update sheet code title if sheetName is provided
+            if (sheetName) {
+                document.getElementById('sheetCodeTitle').textContent = `${sheetName}.kt`;
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            showError('Failed to generate code. Please check your URLs and try again.');
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('submitBtn').disabled = false;
+        }
+    });
+
+    function showError(message) {
+        const errorElement = document.getElementById('errorMessage');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    async function copyToClipboard(elementId) {
+        const codeElement = document.getElementById(elementId);
+        const text = codeElement.textContent;
+
+        try {
+            await navigator.clipboard.writeText(text);
+
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            const originalBg = button.className;
+            button.textContent = 'COPIED!';
+            button.className = button.className.replace('bg-white', 'bg-green-500');
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.className = originalBg;
+            }, 1000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            const originalBg = button.className;
+            button.textContent = 'COPIED!';
+            button.className = button.className.replace('bg-white', 'bg-green-500');
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.className = originalBg;
+            }, 1000);
+        }
+    }
+</script>
+</body>
+</html>
