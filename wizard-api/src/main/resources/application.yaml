@@ -1,0 +1,7 @@
+ktor:
+    application:
+        modules:
+            - io.github.theapache64.retrosheet.ApplicationKt.module
+    deployment:
+      port: 8080
+      rootPath: /retrosheet-wizard
