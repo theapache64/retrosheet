@@ -30,7 +30,21 @@ dependencies {
 }
 ```
 
-## ⌘️ Usage
+## ⌘️ Setup (using wizard)
+
+![image](https://github.com/user-attachments/assets/933f94a5-4dce-4bce-82d2-6615004dc163)
+
+Using the wizard, you can setup the backend in ~3 mins
+
+**Steps:**
+1. Create a Google Form (if you want to write data) or a Google Sheet (if you want to read data) or both.
+2. Publish as usual and fill up the form in [wizard](https://a64.in/retrosheet/wizard/) 🧙🏼‍♂️
+3. Press `Generate Code` and copy paste it into your project
+
+**📹 Video Demo: https://www.youtube.com/watch?v=eWDquVbsebg**
+
+
+## ⌘️ Setup (manual)
 
 ### ✍️ Writing Data
 
