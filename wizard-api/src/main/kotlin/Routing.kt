@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.json.JSONArray
@@ -62,10 +63,15 @@ fun Application.configureRouting() {
                 )
 
                 sheetHeaders = CSV_PARSER_REGEX.findAll(csvData)
-                    .map { "\"${it.groupValues[1]}\"" }
+                    .map {
+                        val columnName = it.groupValues[1]
+                        if (columnName.equals("Timestamp", ignoreCase = true)) {
+                            "\"_$columnName\""
+                        } else {
+                            "\"$columnName\""
+                        }
+                    }
                     .toList()
-
-
             }
 
 
@@ -87,21 +93,21 @@ fun Application.configureRouting() {
 
             val isSeparateModelsNeeded = sheetHeaders != null && formTitles != null && sheetHeaders != formTitles
 
-            val addItemRequestModelName = if (isSeparateModelsNeeded) {
-                "AddItemRequest"
+            val addRowRequestModelName = if (isSeparateModelsNeeded) {
+                "AddRowRequest"
             } else {
-                "Item"
+                "Row"
             }
 
-            val addItemRequestVariableName = if (isSeparateModelsNeeded) {
-                "addItemRequest"
+            val addRowRequestVariableName = if (isSeparateModelsNeeded) {
+                "addRowRequest"
             } else {
-                "item"
+                "row"
             }
 
-            val addItemRequestModel = if (isSeparateModelsNeeded) {
+            val addRowRequestModel = if (isSeparateModelsNeeded) {
                 """@Serializable
-data class $addItemRequestModelName(
+data class $addRowRequestModelName(
 ${
                     formTitles.joinToString("\n") { fieldName ->
                         """   @SerialName($fieldName)
@@ -114,11 +120,11 @@ ${
             }
 
 
-            val itemModel = """@Serializable
-data class Item(
+            val rowModel = """@Serializable
+data class Row(
 ${
                 sheetHeaders?.joinToString("\n") { fieldName ->
-                    """   @SerialName($fieldName)
+                    """   @SerialName(${readVarFilter(fieldName)})
    val ${fieldName.toCamelcaseVariableName()}: String, """.trimMargin()
                 }
             }
@@ -126,8 +132,8 @@ ${
 
             val writeSample = if (!formTitles.isNullOrEmpty()) {
                 """// Adding sample order
-    val newItem = myApi.addItem(
-        $addItemRequestModelName(
+    val newRow = myApi.addRow(
+        $addRowRequestModelName(
 ${
                     formTitles.joinToString("\n") { fieldName ->
                         "           ${fieldName.toCamelcaseVariableName()} = \"sample ${
@@ -141,7 +147,7 @@ ${
         )
     )
                     
-    println(newItem)
+    println(newRow)
                 """.trimIndent()
             } else {
                 ""
@@ -151,18 +157,18 @@ ${
                 """// To Read
         .addSheet(
             "$sheetName", // sheet name
-            ${sheetHeaders.joinToString(", ") { fieldName -> "${fieldName}" }}  // columns in same order
+            ${sheetHeaders.joinToString(", ") { fieldName -> "$fieldName" }}  // columns in same order
         )""".trimIndent()
             } else {
                 ""
             }
 
-            val addItemKey = "add_item"
+            val addRowKey = "add_row"
             val writeConfig = if (formTitles != null) {
                 """// To write
         .addForm(
-            "$addItemKey", 
-            "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link"
+            "$addRowKey", 
+            "$googleFormUrl"
         )""".trimIndent()
             } else {
                 ""
@@ -170,8 +176,8 @@ ${
 
             val readSample = if (sheetHeaders != null) {
                 """// Reading sample
-    val items = myApi.getItems()
-    println(items)""".trimIndent()
+    val rows = myApi.getRows()
+    println(rows)""".trimIndent()
             } else {
                 ""
             }
@@ -180,15 +186,15 @@ ${
             val readApiFunctions = if (sheetHeaders != null) {
                 """@Read("SELECT *")
     @GET("$sheetName")
-    suspend fun getItems(): List<Item>""".trimIndent()
+    suspend fun getRows(): List<Row>""".trimIndent()
             } else {
                 ""
             }
 
             val writeApiFunction = if (formTitles != null) {
                 """@Write
-    @POST("$addItemKey")
-    suspend fun addItem(@Body $addItemRequestVariableName: $addItemRequestModelName): $addItemRequestModelName""".trimIndent()
+    @POST("$addRowKey")
+    suspend fun addRow(@Body $addRowRequestVariableName: $addRowRequestModelName): $addRowRequestModelName""".trimIndent()
             } else {
                 ""
             }
@@ -220,7 +226,9 @@ ${
                         }
                         ...
                     """.trimIndent(),
-                    api = """
+                    api = """import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 interface MyApi {
     $readApiFunctions
     
@@ -228,12 +236,12 @@ interface MyApi {
     
     // Add more API functions here
 }
-                    """.trimIndent(),
-                    main = """$addItemRequestModel
 
-$itemModel
+// Models
+$addRowRequestModel
 
-suspend fun main() {
+$rowModel""".trimIndent(),
+                    main = """suspend fun main() {
     val myApi = createMyApi()
     
     $readSample
@@ -274,6 +282,14 @@ fun createMyApi(
     }
 }
 
+private fun readVarFilter(column: String): String {
+    return if (column.equals("\"_Timestamp\"", ignoreCase = true)) {
+        "\"Timestamp\""
+    } else {
+        column
+    }
+}
+
 private val variableRegex = Regex("[^a-zA-Z0-9\\s]")
 
 /**
@@ -285,7 +301,11 @@ private fun String.toCamelcaseVariableName(): String {
         .filter { it.isNotEmpty() } // Remove empty strings
         .mapIndexed { index, word ->
             if (index == 0) {
-                word.lowercase()
+                if (!word[0].isLowerCase()) {
+                    word.lowercase()
+                } else {
+                    word
+                }
             } else {
                 word.lowercase().replaceFirstChar { it.uppercase() }
             }

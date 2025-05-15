@@ -114,9 +114,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let isDebug = true;
     if(isDebug){
         // Debug code
-        let debugSheetUrl = "https://docs.google.com/spreadsheets/d/1KBxVO5tXySbezBr-9rb2Y3qWo5PCMrvkD1aWQxZRepI/edit?usp=sharing"
-        let debugSheetName = "marvel"
-        let debugFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdRUQAWjNw3EMFVaJkCqMISeOECht1FxYfq9JszpcPj2Qfkcg/viewform?usp=dialog"
+        let debugSheetUrl = "https://docs.google.com/spreadsheets/d/1R-5dz_C9Dyeve7_GTvpbFeNboWmXFTvo7dH-MRvvUPk/edit?usp=sharing"
+        let debugSheetName = "messages"
+        let debugFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdJ4TACnJ_puQletur4h_FJX56XaOnnaBWHvgD2IwWNxP2Vrw/viewform?usp=dialog"
 
         // Submit the form automatically
         document.getElementById('googleSheetUrl').value = debugSheetUrl;
