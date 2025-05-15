@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrosheet Wizard</title>
+    <style>
+        :root {
+            --background: hsl(0 0% 100%);
+            --foreground: hsl(222.2 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222.2 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222.2 84% 4.9%);
+            --primary: hsl(0, 0%, 0%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(0, 0%, 100%);
+            --secondary-foreground: hsl(222.2 84% 4.9%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215.4 16.3% 46.9%);
+            --accent: hsl(0deg 0% 87.89%);
+            --accent-foreground: hsl(222.2 84% 4.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --input: hsl(214.3 31.8% 91.4%);
+            --ring: hsl(221.2 83.2% 53.3%);
+            --radius: 0.375rem;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--card);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--foreground);
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        .btn-primary:hover {
+            background-color: hsl(0, 0%, 21%);
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent);
+        }
+
+        /* Form */
+        .form-container {
+            background-color: var(--card);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--foreground);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--input);
+            border-radius: var(--radius);
+            font-size: 14px;
+            background-color: var(--background);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Loading and Error States */
+        .loading {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--muted-foreground);
+            margin-top: 24px;
+        }
+
+        .error {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-top: 24px;
+            font-weight: 500;
+        }
+
+        /* Code Blocks */
+        .code-container {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: var(--accent);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .code-content {
+            overflow-y: auto;
+        }
+
+        /* Prism overrides for Kotlin */
+        pre {
+            margin: 0;
+            overflow: auto;
+        }
+
+        /* Display property helper */
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-nav {
+                justify-content: center;
+            }
+
+            .btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/kotlin.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <header class="header">
+        <h1>Retrosheet Wizard</h1>
+        <nav class="header-nav">
+            <a class="btn btn-secondary" href="https://a64.in/retrosheet/wizard" target="_blank">
+                HOME
+            </a>
+            <a class="btn btn-secondary" href="https://a64.in/retrosheet" target="_blank">
+                JS SAMPLE
+            </a>
+            <a class="btn btn-secondary" href="https://github.com/theapache64/retrosheet" target="_blank">
+                VIEW ON GITHUB
+            </a>
+        </nav>
+    </header>
+
+    <!-- Form Container -->
+    <div class="form-container" id="formContainer">
+        <form id="retrosheetForm">
+            <div class="form-group">
+                <label class="form-label" for="googleSheetUrl">
+                    Google Sheet URL:
+                </label>
+                <input
+                        class="form-input"
+                        id="googleSheetUrl"
+                        name="googleSheetUrl"
+                        placeholder="https://docs.google.com/spreadsheets/d/..."
+                        type="url"
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="sheetName">
+                    Sheet Name:
+                </label>
+                <input
+                        class="form-input"
+                        id="sheetName"
+                        name="sheetName"
+                        placeholder="Sheet1"
+                        type="text"
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="googleFormUrl">
+                    Google Form URL:
+                </label>
+                <input
+                        class="form-input"
+                        id="googleFormUrl"
+                        name="googleFormUrl"
+                        placeholder="https://docs.google.com/forms/d/e/..."
+                        type="url"
+                >
+            </div>
+
+            <button class="btn btn-primary" id="submitBtn" type="submit">
+                GENERATE CODE
+            </button>
+        </form>
+
+        <!-- Loading State -->
+        <div class="loading hidden" id="loading">
+            Generating your Retrosheet code...
+        </div>
+
+        <!-- Error Message -->
+        <div class="error hidden" id="errorMessage">
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="resultsContainer" class="hidden">
+        <!-- build.gradle.kts -->
+        <div class="code-container">
+            <div class="code-header">
+                <div class="code-title">build.gradle.kts</div>
+                <button class="btn btn-secondary" onclick="copyToClipboard('buildGradleCode', this)">
+                    COPY
+                </button>
+            </div>
+            <div class="code-content">
+                <pre><code class="language-kotlin" id="buildGradleCode"></code></pre>
+            </div>
+        </div>
+
+        <!-- Sheet.kt -->
+        <div class="code-container">
+            <div class="code-header">
+                <div class="code-title" id="sheetCodeTitle">Sheet.kt</div>
+                <button class="btn btn-secondary" onclick="copyToClipboard('sheetCode', this)">
+                    COPY
+                </button>
+            </div>
+            <div class="code-content">
+                <pre ><code class="language-kotlin" id="sheetCode"></code></pre>
+            </div>
+        </div>
+
+        <!-- Main.kt -->
+        <div class="code-container">
+            <div class="code-header">
+                <div class="code-title">Main.kt</div>
+                <button class="btn btn-secondary" onclick="copyToClipboard('mainCode', this)">
+                    COPY
+                </button>
+            </div>
+            <div class="code-content">
+                <pre ><code class="language-kotlin" id="mainCode"></code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="wizard.js" type="text/javascript"></script>
+<script>
+    // copyToClipboard function
+    function copyToClipboard(elementId, buttonElement) {
+        const codeElement = document.getElementById(elementId);
+        const codeText = codeElement.innerText;
+
+        navigator.clipboard.writeText(codeText).then(() => {
+            // Change onclick element content for 5 seconds
+            buttonElement.innerHTML = '<b> COPIED!</b>';
+
+            setTimeout(() => {
+                buttonElement.innerText = 'COPY';
+            }, 5000);
+        }).catch(err => {
+            console.error('Error copying text: ', err);
+        });
+    }
+</script>
+</body>
+</html>
