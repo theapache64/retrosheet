@@ -220,7 +220,7 @@ ${
                             implementation("de.jensklingenberg.ktorfit:ktorfit-lib:2.5.1")
                             
                             // Retrosheet
-                            implementation("io.github.theapache64:retrosheet:3.0.0-alpha02")
+                            implementation("io.github.theapache64:retrosheet:3.0.0")
                             
                             ...
                         }

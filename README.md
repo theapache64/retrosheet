@@ -145,7 +145,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.1.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.3")
     implementation("de.jensklingenberg.ktorfit:ktorfit-lib:2.5.1")
-    implementation("io.github.theapache64:retrosheet:3.0.0-alpha02")
+    implementation("io.github.theapache64:retrosheet:3.0.0")
     testImplementation(kotlin("test"))
 }
 ...
