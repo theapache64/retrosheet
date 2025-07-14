@@ -1,10 +1,8 @@
 package io.github.theapache64.retrosheetsample
 
-import de.jensklingenberg.ktorfit.http.Body
-import de.jensklingenberg.ktorfit.http.GET
-import de.jensklingenberg.ktorfit.http.POST
-import de.jensklingenberg.ktorfit.http.Query
+import de.jensklingenberg.ktorfit.http.*
 import io.github.theapache64.retrosheet.annotations.Read
+import io.github.theapache64.retrosheet.annotations.Update
 import io.github.theapache64.retrosheet.annotations.Write
 
 
@@ -21,10 +19,23 @@ interface NotesApi {
     suspend fun getLastFiveItems(): List<Note>
 
     @Write
-    @POST(ADD_NOTE_ENDPOINT) // form name
+    @POST(WRITE_NOTE_ENDPOINT) // form name
     suspend fun addNote(
         @Body note: Note
     ): Note
+
+    @Write
+    @POST(WRITE_NOTE_ENDPOINT) // form name
+    suspend fun addNoteForUpdate(
+        @Body note: Note
+    ): String
+
+    @Update
+    @POST(WRITE_NOTE_ENDPOINT) // form name
+    suspend fun updateNote(
+        @Tag updateKey: String,
+        @Body note: Note
+    ): String
 
     /**
      * To test failure scenario.

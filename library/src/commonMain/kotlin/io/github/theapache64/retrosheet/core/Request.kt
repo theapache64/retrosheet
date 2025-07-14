@@ -10,7 +10,7 @@ fun createRetrosheetPlugin(config: RetrosheetConfig): ClientPlugin<Unit> {
             val config: RetrosheetConfig = config
             when {
                 isGoogleFormSubmit(request.annotations, request.method.value) -> {
-                    modRequestForWrite(
+                    modRequestForAddOrUpdate(
                         request,
                         config
                     )

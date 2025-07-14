@@ -28,6 +28,7 @@ class RetrosheetConverter(
 
     companion object {
         private val TAG = RetrosheetConverter::class.simpleName
+        private val updateKeyRegex = "<a href=\".+edit2=(?<updateKey>.+?)\">Edit your response</a>".toRegex()
     }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -48,6 +49,11 @@ class RetrosheetConverter(
                             isGoogleFormSubmit(request.annotations, request.method.value) -> {
                                 val formResp = result
                                 if (formResp.response.status == HttpStatusCode.OK) {
+                                    // If return type is String
+                                    if(typeData.typeInfo.kotlinType?.classifier == String::class) {
+                                        // Get updateKey from the response
+                                        return parseUpdateKeyFromResponse(formResp.response.bodyAsText())
+                                    }
                                     val requestJson = request.attributes[requestJsonKey]
                                     val serializer = serializer(typeData.typeInfo.kotlinType ?: error("Type not found"))
                                     return config.json.decodeFromString(serializer, requestJson)
@@ -129,6 +135,12 @@ class RetrosheetConverter(
                         }
                     }
                 }
+            }
+
+            private fun parseUpdateKeyFromResponse(response: String): String {
+                return updateKeyRegex.find(response)?.groupValues?.getOrNull(1) ?: error(
+                    "Couldn't find update key in the response. Please check if the form has 'Allow response editing' option enabled."
+                )
             }
         }
     }

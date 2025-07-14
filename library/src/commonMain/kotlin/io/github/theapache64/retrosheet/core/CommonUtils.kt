@@ -1,5 +1,6 @@
 package io.github.theapache64.retrosheet.core
 
+import io.github.theapache64.retrosheet.annotations.Update
 import io.github.theapache64.retrosheet.annotations.Write
 import io.ktor.http.ParametersBuilder
 import io.ktor.util.AttributeKey
@@ -10,7 +11,7 @@ internal fun isGoogleFormSubmit(
     annotations: List<Any>,
     method: String
 ): Boolean {
-    val isForm = annotations.find { it is Write } != null
+    val isForm = annotations.find { it is Write || it is Update } != null
     val requestMethod = method
     if (isForm && requestMethod != "POST") {
         throw IllegalArgumentException("@Write should be always @POST, found @$requestMethod")

@@ -11,7 +11,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 internal const val SHEET_NAME = "notes"
-internal const val ADD_NOTE_ENDPOINT = "add_note"
+internal const val WRITE_NOTE_ENDPOINT = "add_note"
 
 
 @Serializable
@@ -37,7 +37,7 @@ fun createNotesApi(
         )
         // To write
         .addForm(
-            ADD_NOTE_ENDPOINT,
+            WRITE_NOTE_ENDPOINT,
             // Google form name
             "https://docs.google.com/forms/d/e/1FAIpQLSdmavg6P4eZTmIu-0M7xF_z-qDCHdpGebX8MGL43HSGAXcd3w/viewform?usp=sf_link"
         )

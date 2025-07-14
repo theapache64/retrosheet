@@ -27,6 +27,41 @@ class WriteTest {
     }
 
     @Test
+    fun `Update data`() = runBlockingTest {
+
+        val notesApi = createNotesApi()
+
+        //Add data
+        val note = Note("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
+        val updateKey = notesApi.addNoteForUpdate(note)
+        updateKey.length.should.be.above(0)
+
+        // Read data
+        val remoteNote = notesApi.findNoteByTitle(note.title)
+        remoteNote.should.not.`null`
+        remoteNote.title.should.equal(note.title)
+        remoteNote.description.should.equal(note.description)
+
+        // Edit data
+        val updatedNote = Note("Titlé - ${UUID.randomUUID()}", "Dynámic Desc 1: ${Date()}")
+        notesApi.updateNote(updateKey, updatedNote)
+
+        // Confirm old data is not there
+        val oldNoteResult = try {
+            notesApi.findNoteByTitle(note.title)
+        } catch (_: NoSuchElementException) {
+            null
+        }
+        oldNoteResult.should.`null`
+
+        // Confirm updated data
+        val updatedRemoteNote = notesApi.findNoteByTitle(updatedNote.title)
+        updatedRemoteNote.should.not.`null`
+        updatedRemoteNote.title.should.equal(updatedRemoteNote.title)
+        updatedRemoteNote.description.should.equal(updatedRemoteNote.description)
+    }
+
+    @Test
     fun `Writes data (proxy)`() = runBlockingTest {
         val notesApi = createNotesApi {
             setUseProxyForWrite(true)
@@ -41,8 +76,6 @@ class WriteTest {
         remoteNote.title.should.equal(newNote.title)
         remoteNote.description.should.equal(newNote.description)
     }
-
-
 
 
     @Test(expected = IllegalArgumentException::class)
