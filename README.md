@@ -149,7 +149,6 @@ The Update feature allows you to modify existing rows in your Google Sheet. Here
 #### 📝 Step 1: Enable Response Editing
 In your Google Form, go to **Settings** → **General** → Enable **"Allow response editing"**.
 
-![Enable Response Editing](https://i.imgur.com/example.png)
 
 #### 🔧 Step 2: Get Update Key
 When adding data that you might want to update later, return a `String` from your `@Write` function instead of the object:
