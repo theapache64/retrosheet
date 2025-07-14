@@ -41,6 +41,16 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALUSERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_MAVENCENTRALPASSWORD }}
 
+      - name: Get Previous Release Tag
+        id: get_previous_tag
+        run: |
+          # Get the latest release tag (excluding the current one we're about to create)
+          PREVIOUS_TAG=$(git tag -l --sort=-version:refname | grep -v "^${{ github.event.inputs.versionName }}$" | head -n 1)
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          echo "Previous tag: $PREVIOUS_TAG"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create and push tag
         run: |
           git config --global user.email "theapache64@gmail.com"
@@ -51,6 +61,25 @@ jobs:
         env:
           TAG: ${{ github.event.inputs.versionName }}
 
+      - name: Generate Changelog
+        id: generate_changelog
+        run: |
+          PREVIOUS_TAG="${{ steps.get_previous_tag.outputs.previous_tag }}"
+          CURRENT_TAG="${{ github.event.inputs.versionName }}"
+          
+          if [ -z "$PREVIOUS_TAG" ]; then
+            echo "No previous tag found. This might be the first release."
+            CHANGELOG="## What's New\n\nThis is the first release of the project! 🎉\n\n### Changes\n- Initial release\n\n---\n\n**Full Changelog**: https://github.com/${{ github.repository }}/commits/$CURRENT_TAG"
+          else
+            echo "Generating changelog from $PREVIOUS_TAG to $CURRENT_TAG"
+            CHANGELOG="## What's New\n\nSee the changes between [\`$PREVIOUS_TAG\`](https://github.com/${{ github.repository }}/tree/$PREVIOUS_TAG) and [\`$CURRENT_TAG\`](https://github.com/${{ github.repository }}/tree/$CURRENT_TAG)\n\n---\n\n**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREVIOUS_TAG...$CURRENT_TAG"
+          fi
+          
+          # Save changelog to output (properly escaped for GitHub Actions)
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Create Release on GitHub
         id: create_release
         uses: actions/create-release@v1
@@ -59,5 +88,6 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.versionName }}
           release_name: ${{ github.event.inputs.versionName }}
+          body: ${{ steps.generate_changelog.outputs.changelog }}
           draft: true
           prerelease: false
