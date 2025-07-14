@@ -57,6 +57,9 @@ Choose a Google Sheet to save responses.
 ![Response Destination](https://i.imgur.com/fIzWiN5.png)  
 ![Sheet Selection](https://i.imgur.com/7ASAB55.png)
 
+#### ⚙️ Step 2.1: Enable Response Editing (Optional)
+If you plan to use the Update feature, go to **Settings** → **General** → Enable **"Allow response editing"**.
+
 #### 📊 Step 3: Customize Sheet
 Rename sheet and columns (optional).  
 ![Before](https://i.imgur.com/keT8P1o.png)  
@@ -90,6 +93,11 @@ val ktorClient = HttpClient {
 
 #### 🌐 Step 6: Create API Interface
 ```kotlin
+import de.jensklingenberg.ktorfit.http.*
+import io.github.theapache64.retrosheet.annotations.Read
+import io.github.theapache64.retrosheet.annotations.Update
+import io.github.theapache64.retrosheet.annotations.Write
+
 interface NotesApi {
     @Read("SELECT *")
     @GET("notes")
@@ -97,11 +105,15 @@ interface NotesApi {
 
     @Write
     @POST("add_note")
-    suspend fun addNote(@Body note: Note): Note
+    suspend fun addNote(@Body note: Note): String
+    
+    @Update
+    @POST("add_note")
+    suspend fun updateNote(@Tag updateKey: String, @Body note: Note): Note
 }
 ```
 
-> **@Write** is used for writing data and **@Read** for reading data.
+> **@Write** is used for adding data, **@Read** for reading data, and **@Update** for updating existing row.
 
 [Query Language Guide](https://developers.google.com/chart/interactive/docs/querylanguage)
 
@@ -130,6 +142,53 @@ val retrofit = Ktorfit.Builder()
 
 **Done 👍**
 
+### 🔄 Updating Data
+
+The Update feature allows you to modify existing rows in your Google Sheet. Here's how to set it up:
+
+#### 📝 Step 1: Enable Response Editing
+In your Google Form, go to **Settings** → **General** → Enable **"Allow response editing"**.
+
+![Enable Response Editing](https://i.imgur.com/example.png)
+
+#### 🔧 Step 2: Get Update Key
+When adding data that you might want to update later, return a `String` from your `@Write` function instead of the object:
+
+```kotlin
+@Write
+@POST("add_note")
+suspend fun addNoteForUpdate(@Body note: Note): String
+```
+
+The returned `String` is the `updateKey` that you'll use to update the row later.
+
+#### 🔄 Step 3: Update the Row
+Use the `@Update` annotation with the `updateKey` as a `@Tag` parameter:
+
+```kotlin
+@Update
+@POST("add_note")
+suspend fun updateNote(@Tag updateKey: String, @Body note: Note): Note
+```
+
+#### 📝 Example Usage
+```kotlin
+// Add a note and get the update key
+val updateKey = notesApi.addNoteForUpdate(
+    Note("Initial Title", "Initial Description")
+)
+
+// Later, update the note using the key
+notesApi.updateNote(
+    updateKey,
+    Note("Updated Title", "Updated Description")
+)
+```
+
+> **⚠️ Important**: Make sure to enable **"Allow response editing"** in your Google Form settings, otherwise the update feature won't work.
+
+**Done 👍**
+
 ## 🌠 Full Example
 
 **build.gradle.kts**
@@ -154,6 +213,11 @@ dependencies {
 **NotesApi.kt**
 
 ```kotlin
+import de.jensklingenberg.ktorfit.http.*
+import io.github.theapache64.retrosheet.annotations.Read
+import io.github.theapache64.retrosheet.annotations.Update
+import io.github.theapache64.retrosheet.annotations.Write
+
 interface NotesApi {
     @Read("SELECT *")
     @GET("notes")
@@ -162,6 +226,14 @@ interface NotesApi {
     @Write
     @POST("add_note")
     suspend fun addNote(@Body note: Note): Note
+    
+    @Write
+    @POST("add_note")
+    suspend fun addNoteForUpdate(@Body note: Note): String
+    
+    @Update
+    @POST("add_note")
+    suspend fun updateNote(@Tag updateKey: String, @Body note: Note): Note
 }
 ```
 
@@ -182,16 +254,36 @@ suspend fun main() {
     val notesApi = createMyNotesApi()
     println(notesApi.getNotes())
 
-    // Adding sample order
+    // Adding sample note
     val newNote = notesApi.addNote(
         Note(
             createdAt = null,
-            title = "Dynamic com.sample.Note 1",
-            description = "Dynámic Desc 1: ${Date()}"
+            title = "Dynamic Note 1",
+            description = "Dynamic Desc 1: ${Date()}"
         )
     )
+    println("Added: $newNote")
 
-    println(newNote)
+    // Adding note for update and getting update key
+    val updateKey = notesApi.addNoteForUpdate(
+        Note(
+            createdAt = null,
+            title = "Note to Update",
+            description = "Original Description: ${Date()}"
+        )
+    )
+    println("Update key: $updateKey")
+
+    // Updating the note
+    val updatedNote = notesApi.updateNote(
+        updateKey,
+        Note(
+            createdAt = null,
+            title = "Updated Note Title",
+            description = "Updated Description: ${Date()}"
+        )
+    )
+    println("Updated: $updatedNote")
 }
 
 
