@@ -6,11 +6,13 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.json.JSONArray
-import java.net.URL
-import java.net.URLEncoder
 
 @Serializable
 class CodeResponse(
@@ -21,8 +23,106 @@ class CodeResponse(
 
 private val CSV_PARSER_REGEX = "\"([^\"]*)\"(?:,|\$)".toRegex()
 
+private suspend fun ApplicationCall.validateAndGetUrl(): String? {
+    val url = request.queryParameters["url"]
+
+    if (url.isNullOrBlank() || !url.matches(Regex("^https://docs\\.google\\.com/forms/d/e/.*$"))) {
+        respond(HttpStatusCode.BadRequest, "Invalid or missing URL parameter")
+        return null
+    }
+
+    return url
+}
+
 fun Application.configureRouting() {
     routing {
+        // Proxy endpoints for retrosheet
+        route("/retrosheet") {
+            // OPTIONS endpoint for CORS preflight requests
+            options {
+                val url = call.validateAndGetUrl() ?: return@options
+                call.respond(HttpStatusCode.NoContent)
+            }
+
+            // GET endpoint
+            get {
+                val url = call.validateAndGetUrl() ?: return@get
+
+                try {
+                    val response = URL(url).readText()
+
+                    // Forward the response
+                    call.respond(HttpStatusCode.OK, response)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, "Proxy request failed: ${e.message}")
+                }
+            }
+
+            // POST endpoint
+            post {
+                val url = call.validateAndGetUrl() ?: return@post
+
+                try {
+                    val requestBody = call.receiveText()
+
+                    val urlConnection = URL(url).openConnection() as HttpURLConnection
+                    urlConnection.requestMethod = "POST"
+                    urlConnection.doOutput = true
+
+                    // Get original content type from request, default to form data
+                    val originalContentType = call.request.header("Content-Type") ?: "application/x-www-form-urlencoded"
+                    urlConnection.setRequestProperty("Content-Type", originalContentType)
+
+                    // Forward headers
+                    call.request.headers.forEach { key, values ->
+                        if (key.lowercase() !in listOf("host", "content-length", "content-type", "accept-encoding")) {
+                            values.forEach { value ->
+                                urlConnection.setRequestProperty(key, value)
+                            }
+                        }
+                    }
+
+                    // Write request body
+                    OutputStreamWriter(urlConnection.outputStream).use { writer ->
+                        writer.write(requestBody)
+                        writer.flush()
+                    }
+
+                    val responseCode = urlConnection.responseCode
+
+                    // Read response from appropriate stream based on status code
+                    val responseMessage = try {
+                        if (responseCode >= 200 && responseCode < 300) {
+                            urlConnection.inputStream.bufferedReader().use { it.readText() }
+                        } else {
+                            urlConnection.errorStream?.bufferedReader()?.use { it.readText() }
+                                ?: urlConnection.inputStream.bufferedReader().use { it.readText() }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        "Error reading response: ${e.message}"
+                    }
+
+                    // Forward response content type if available
+                    val staticResponseHeaders = listOf<String>(
+                        "Content-Type",
+                    )
+
+                    for (key in staticResponseHeaders) {
+                        urlConnection.getHeaderField(key)?.let { headerValue ->
+                            call.response.headers.append(key, headerValue)
+                        }
+                    }
+
+                    // Forward the response
+                    call.respond(HttpStatusCode.fromValue(responseCode), responseMessage)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    call.respond(HttpStatusCode.InternalServerError, "Proxy request failed: ${e.message}")
+                }
+            }
+        }
+
         post("/code") {
             // Params: googleSheetUrl, sheetName, googleFormUrl
             val params = call.receiveParameters()
