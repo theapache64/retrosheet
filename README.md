@@ -196,15 +196,15 @@ notesApi.updateNote(
 The `@KeyValue` annotation allows you to read data from a Google Sheet that is structured as key-value pairs. This is particularly useful for configuration data or settings.
 
 #### Sheet Structure
-Your sheet should have two columns: `key` and `value`
+Your sheet should have exactly two columns named `key` and `value`:
 
-| key | value |
-|-----|-------|
-| total_products | 99 |
-| products_per_page | 10 |
-| total_pages | 10 |
-| currency | $ |
-| delivery_charge | 40 |
+| key                 | value |
+|---------------------|-------|
+| total_products      | 99    |
+| products_per_page   | 10    |
+| total_pages         | 10    |
+| currency            | $     |
+| delivery_charge     | 40    |
 
 #### Usage Example
 
@@ -235,7 +235,7 @@ interface ConfigApi {
 }
 ```
 
-The `@KeyValue` annotation automatically transforms the key-value pair data into a standard format that can be mapped to your data class.
+The `@KeyValue` annotation automatically transforms the key-value pair data by converting the vertical key-value structure into a horizontal row format, allowing the data to be mapped directly to your data class properties.
 
 ### 📋 Reading Lists with @Read
 
