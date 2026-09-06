@@ -192,6 +192,82 @@ notesApi.updateNote(
 
 **Done 👍**
 
+## 📖 Additional Features
+
+### 🔑 Reading Key-Value Data with @KeyValue
+
+The `@KeyValue` annotation allows you to read data from a Google Sheet that is structured as key-value pairs. This is particularly useful for configuration data or settings.
+
+#### Sheet Structure
+Your sheet should have exactly two columns named `key` and `value`:
+
+| key                 | value |
+|---------------------|-------|
+| total_products      | 99    |
+| products_per_page   | 10    |
+| total_pages         | 10    |
+| currency            | $     |
+| delivery_charge     | 40    |
+
+#### Usage Example
+
+**Data Model**
+```kotlin
+@Serializable
+data class Config(
+    @SerialName("total_products")
+    val totalProducts: Int,
+    @SerialName("products_per_page")
+    val productsPerPage: Int,
+    @SerialName("total_pages")
+    val totalPages: Int,
+    @SerialName("currency")
+    val currency: String,
+    @SerialName("delivery_charge")
+    val deliveryCharge: Int
+)
+```
+
+**API Interface**
+```kotlin
+interface ConfigApi {
+    @KeyValue
+    @Read("SELECT *")
+    @GET("config")
+    suspend fun getConfig(): Config
+}
+```
+
+The `@KeyValue` annotation automatically transforms the key-value pair data by converting the vertical key-value structure into a horizontal row format, allowing the data to be mapped directly to your data class properties.
+
+### 📋 Reading Lists with @Read
+
+The `@Read` annotation supports returning both single objects and lists of objects, depending on your query and return type.
+
+#### Single Object
+Use when you expect exactly one result:
+
+```kotlin
+@Read("SELECT * WHERE id = :id")
+@GET("notes")
+suspend fun getNoteById(@Query("id") id: String): Note
+```
+
+#### List of Objects
+Use when you expect multiple results:
+
+```kotlin
+@Read("SELECT *")
+@GET("notes")
+suspend fun getAllNotes(): List<Note>
+
+@Read("SELECT * ORDER BY created_at DESC LIMIT 10")
+@GET("notes")
+suspend fun getRecentNotes(): List<Note>
+```
+
+> **💡 Tip**: Use the [Google Visualization API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage) to filter, sort, and limit your results directly in the query.
+
 ## 🌠 Full Example
 
 **build.gradle.kts**
